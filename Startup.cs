@@ -12,6 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.data;
+using shop_giay_server._Services;
+using shop_giay_server.models;
+using shop_giay_server._Repository;
 
 namespace shop_giay_server
 {
@@ -27,8 +30,15 @@ namespace shop_giay_server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped(typeof(IAsyncRepository<>), typeof(BaseRepository<>));
+
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
+            // services.AddScoped<IService<Cart>, CartService>();
+
+            // CRUD services
+            // AddScoped: This must equals or less usage lifetime to dataContext.
+            // services.AddScoped<IService<Cart>, CartService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
