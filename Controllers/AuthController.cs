@@ -14,11 +14,11 @@ namespace shop_giay_server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthControllers : ControllerBase
+    public class AuthController : ControllerBase
     {
         private readonly IAuthRepository repo;
         private readonly IConfiguration config;
-        public AuthControllers(IAuthRepository repo, IConfiguration config)
+        public AuthController(IAuthRepository repo, IConfiguration config)
         {
             this.config = config;
             this.repo = repo;
