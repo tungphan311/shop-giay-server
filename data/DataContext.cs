@@ -28,5 +28,7 @@ namespace shop_giay_server.data
         public DbSet<Address> Addresss { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<CustomerType> CustomerTypes { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
     }
 }
