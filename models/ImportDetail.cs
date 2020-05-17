@@ -1,6 +1,6 @@
 namespace shop_giay_server.models
 {
-    public class ImportDetail
+    public class ImportDetail: BaseEntity
     {
         public int Id { get; set; }
 

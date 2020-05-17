@@ -1,6 +1,6 @@
 namespace shop_giay_server.models
 {
-    public class CartItem
+    public class CartItem: BaseEntity
     {
         public int Id { get; set; }
 

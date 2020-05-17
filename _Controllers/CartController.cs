@@ -29,7 +29,10 @@ namespace shop_giay_server._Controllers
         public async Task<ActionResult<IEnumerable<Cart>>> GetAll()
         {
             var items = await _repository.GetAll();
-            return Ok(items);
+            return Ok(new {
+                data = items,
+                code = 200
+            });
         }
 
         // GET: api/Cart/5

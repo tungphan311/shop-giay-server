@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
+
 
 namespace shop_giay_server.models
 {
-    public class Import
+    public class Import: BaseEntity
     {
-        public int Id { get; set; }
+        // public int Id { get; set; }
 
         public DateTime ImportDate { get; set; }
 
@@ -13,5 +15,7 @@ namespace shop_giay_server.models
         public float TotalCost { get; set; }
 
         public int ProviderId { get; set; }
+
+        // public List<ImportDetail> ImportDetails { get; set; }
     }
 }
