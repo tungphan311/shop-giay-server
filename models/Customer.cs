@@ -20,7 +20,8 @@ namespace shop_giay_server.models
 
         public float Point { get; set; }
 
-        public string PasswordHash { get; set; }
+        public byte[] PasswordHash { get; set; }
+        public byte[] PasswordSalt { get; set; }
 
         public int CustomerTypeId { get; set; }
     }

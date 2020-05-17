@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace shop_giay_server.Migrations
 {
-    public partial class CraeteDB : Migration
+    public partial class UpdateDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -95,7 +95,8 @@ namespace shop_giay_server.Migrations
                     PhoneNumber = table.Column<string>(nullable: true),
                     Gender = table.Column<int>(nullable: false),
                     Point = table.Column<float>(nullable: false),
-                    PasswordHash = table.Column<string>(nullable: true),
+                    PasswordHash = table.Column<byte[]>(nullable: true),
+                    PasswordSalt = table.Column<byte[]>(nullable: true),
                     CustomerTypeId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -219,6 +220,19 @@ namespace shop_giay_server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Roles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SaleProducts",
                 columns: table => new
                 {
@@ -247,6 +261,28 @@ namespace shop_giay_server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sales", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Shoes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Code = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    Rating = table.Column<float>(nullable: false),
+                    StyleId = table.Column<int>(nullable: false),
+                    BrandId = table.Column<int>(nullable: false),
+                    GenderId = table.Column<int>(nullable: false),
+                    Price = table.Column<float>(nullable: false),
+                    IsNew = table.Column<bool>(nullable: false),
+                    IsOnSale = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Shoes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -320,6 +356,23 @@ namespace shop_giay_server.Migrations
                 {
                     table.PrimaryKey("PK_Stocks", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Username = table.Column<string>(nullable: true),
+                    PasswordHash = table.Column<byte[]>(nullable: true),
+                    PasswordSalt = table.Column<byte[]>(nullable: true),
+                    RoleId = table.Column<int>(nullable: false),
+                    DeleteFlag = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -364,10 +417,16 @@ namespace shop_giay_server.Migrations
                 name: "Payments");
 
             migrationBuilder.DropTable(
+                name: "Roles");
+
+            migrationBuilder.DropTable(
                 name: "SaleProducts");
 
             migrationBuilder.DropTable(
                 name: "Sales");
+
+            migrationBuilder.DropTable(
+                name: "Shoes");
 
             migrationBuilder.DropTable(
                 name: "ShoesBrands");
@@ -383,6 +442,9 @@ namespace shop_giay_server.Migrations
 
             migrationBuilder.DropTable(
                 name: "Stocks");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

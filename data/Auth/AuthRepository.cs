@@ -23,46 +23,50 @@ namespace shop_giay_server.data
                 return null;
             }
 
-            if (!VerifyPassword(password, user.PasswordHash))
+            if (!VerifyPassword(password, user.PasswordHash, user.PasswordSalt))
             {
                 return null;
             }
 
+
             return user;
         }
 
-        private bool VerifyPassword(string password, string passwordHash)
+        private bool VerifyPassword(string password, byte[] passwordHash, byte[] passwordSalt)
         {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512())
+            using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
             {
-                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password)).ToString();
+                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
 
-                if (passwordHash == computedHash)
+                for (int i = 0; i < computedHash.Length; i++)
                 {
-                    return true;
+                    if (computedHash[i] != passwordHash[i])
+                    {
+                        return false;
+                    }
                 }
-                else
-                {
-                    return false;
-                }
+
             }
+            return true;
         }
 
-        private void CreatePasswordHash(string password, out byte[] passwordHash)
+        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new System.Security.Cryptography.HMACSHA512())
             {
+                passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
         }
 
         public async Task<User> Register(User user, string password)
         {
-            byte[] passwordHash;
+            byte[] passwordHash, passwordSalt;
 
-            CreatePasswordHash(password, out passwordHash);
+            CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
-            user.PasswordHash = passwordHash.ToString();
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
 
             await context.Users.AddAsync(user);
             await context.SaveChangesAsync();

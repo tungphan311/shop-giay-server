@@ -9,8 +9,8 @@ using shop_giay_server.data;
 namespace shop_giay_server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200516074724_AddUser")]
-    partial class AddUser
+    [Migration("20200517114504_UpdateDB")]
+    partial class UpdateDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -113,8 +113,11 @@ namespace shop_giay_server.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("TEXT");
+                    b.Property<byte[]>("PasswordHash")
+                        .HasColumnType("BLOB");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .HasColumnType("BLOB");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("TEXT");
@@ -524,8 +527,11 @@ namespace shop_giay_server.Migrations
                     b.Property<bool>("DeleteFlag")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("TEXT");
+                    b.Property<byte[]>("PasswordHash")
+                        .HasColumnType("BLOB");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .HasColumnType("BLOB");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("INTEGER");
