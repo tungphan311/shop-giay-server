@@ -34,6 +34,8 @@ namespace shop_giay_server
 
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
+            services.AddCors();
+            services.AddScoped<IAuthRepository, AuthRepository>();
             // services.AddScoped<IService<Cart>, CartService>();
 
             // CRUD services

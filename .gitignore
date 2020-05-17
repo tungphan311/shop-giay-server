@@ -1,6 +1,9 @@
 /obj/*
 /bin/*
 
+shop-giay.db
+
+
 ## Visual Studio .gitignore
 ## Source: https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
