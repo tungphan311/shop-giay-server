@@ -1,9 +1,11 @@
+using System.Collections.Generic;
+
 namespace shop_giay_server.models
 {
-    public class Color
+    public class Color: BaseEntity
     {
-        public int Id { get; set; }
-
         public string Name { get; set; }
+
+        public List<Stock> Stocks { get; set; }
     }
 }

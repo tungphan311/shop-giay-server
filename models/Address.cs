@@ -1,9 +1,7 @@
 namespace shop_giay_server.models
 {
-    public class Address
+    public class Address: BaseEntity
     {
-        public int Id { get; set; }
-
         public string City { get; set; }
 
         public string District { get; set; }
@@ -13,5 +11,6 @@ namespace shop_giay_server.models
         public string Street { get; set; }
 
         public int CustomerId { get; set; }
+        public Customer Customer { get; set; }
     }
 }

@@ -1,9 +1,11 @@
+using System.Collections.Generic;
+
 namespace shop_giay_server.models
 {
-    public class Gender
+    public class Gender: BaseEntity
     {
-        public int Id { get; set; }
-
         public string Name { get; set; }
+
+        public List<Shoes> ShoesList { get; set; }
     }
 }
