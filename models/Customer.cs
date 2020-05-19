@@ -1,11 +1,10 @@
 using System;
+using System.Collections.Generic;
 
 namespace shop_giay_server.models
 {
-    public class Customer
+    public class Customer: BaseEntity
     {
-        public int Id { get; set; }
-
         public string Username { get; set; }
 
         public string Name { get; set; }
@@ -23,6 +22,14 @@ namespace shop_giay_server.models
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
 
+        public int CartId { get; set; }
+        public Cart Cart { get; set; }
+
         public int CustomerTypeId { get; set; }
+        public CustomerType CustomerType { get; set; }
+
+        public List<Address> Addresses { get; set; }
+        public List<CustomerReview> CustomerReviews { get; set; }
+        public List<Order> Orders { get; set; }
     }
 }

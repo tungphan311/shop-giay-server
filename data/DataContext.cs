@@ -5,6 +5,19 @@ namespace shop_giay_server.data
 {
     public class DataContext : DbContext
     {
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Shoes>()
+                .HasOne<ShoesType>(s => s.ShoesType)
+                .WithMany(t => t.ShoesList)
+                .HasForeignKey(s => s.StyleId);
+
+            modelBuilder.Entity<Shoes>()
+                .HasOne<ShoesBrand>(s => s.ShoesBrand)
+                .WithMany(t => t.ShoesList)
+                .HasForeignKey(s => s.BrandId);
+        }
+
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
         public DbSet<Shoes> Shoes { get; set; }
