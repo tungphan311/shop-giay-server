@@ -9,8 +9,8 @@ using shop_giay_server.data;
 namespace shop_giay_server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200518155352_update-rela")]
-    partial class updaterela
+    [Migration("20200519164225_UpdateRelations")]
+    partial class UpdateRelations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -51,9 +51,6 @@ namespace shop_giay_server.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -105,6 +102,9 @@ namespace shop_giay_server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
                     b.Property<int>("CustomerTypeId")
                         .HasColumnType("int");
 
@@ -137,6 +137,11 @@ namespace shop_giay_server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CartId")
+                        .IsUnique();
+
+                    b.HasIndex("CustomerTypeId");
+
                     b.ToTable("Customers");
                 });
 
@@ -162,6 +167,8 @@ namespace shop_giay_server.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
 
                     b.HasIndex("ShoesId");
 
@@ -289,6 +296,13 @@ namespace shop_giay_server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("PaymentId")
+                        .IsUnique();
+
+                    b.HasIndex("SaleId");
+
                     b.ToTable("Orders");
                 });
 
@@ -315,6 +329,10 @@ namespace shop_giay_server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("StockId");
+
                     b.ToTable("OrderItems");
                 });
 
@@ -330,12 +348,6 @@ namespace shop_giay_server.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("OrderId1")
-                        .HasColumnType("int");
-
                     b.Property<int>("PaymentType")
                         .HasColumnType("int");
 
@@ -346,8 +358,6 @@ namespace shop_giay_server.Migrations
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrderId1");
 
                     b.ToTable("Payments");
                 });
@@ -460,22 +470,16 @@ namespace shop_giay_server.Migrations
                     b.Property<float>("Rating")
                         .HasColumnType("float");
 
-                    b.Property<int?>("ShoesBrandId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ShoesTypeId")
-                        .HasColumnType("int");
-
                     b.Property<int>("StyleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BrandId");
+
                     b.HasIndex("GenderId");
 
-                    b.HasIndex("ShoesBrandId");
-
-                    b.HasIndex("ShoesTypeId");
+                    b.HasIndex("StyleId");
 
                     b.ToTable("Shoes");
                 });
@@ -610,7 +614,7 @@ namespace shop_giay_server.Migrations
             modelBuilder.Entity("shop_giay_server.models.Address", b =>
                 {
                     b.HasOne("shop_giay_server.models.Customer", "Customer")
-                        .WithMany()
+                        .WithMany("Addresses")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -619,7 +623,7 @@ namespace shop_giay_server.Migrations
             modelBuilder.Entity("shop_giay_server.models.CartItem", b =>
                 {
                     b.HasOne("shop_giay_server.models.Cart", "Cart")
-                        .WithMany()
+                        .WithMany("CartItems")
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -631,9 +635,30 @@ namespace shop_giay_server.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("shop_giay_server.models.Customer", b =>
+                {
+                    b.HasOne("shop_giay_server.models.Cart", "Cart")
+                        .WithOne("Customer")
+                        .HasForeignKey("shop_giay_server.models.Customer", "CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("shop_giay_server.models.CustomerType", "CustomerType")
+                        .WithMany("Customers")
+                        .HasForeignKey("CustomerTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("shop_giay_server.models.CustomerReview", b =>
                 {
-                    b.HasOne("shop_giay_server.models.Shoes", null)
+                    b.HasOne("shop_giay_server.models.Customer", "Customer")
+                        .WithMany("CustomerReviews")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("shop_giay_server.models.Shoes", "Shoes")
                         .WithMany("CustomerReviews")
                         .HasForeignKey("ShoesId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -664,17 +689,46 @@ namespace shop_giay_server.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("shop_giay_server.models.Payment", b =>
+            modelBuilder.Entity("shop_giay_server.models.Order", b =>
+                {
+                    b.HasOne("shop_giay_server.models.Customer", "Customer")
+                        .WithMany("Orders")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("shop_giay_server.models.Payment", "Payment")
+                        .WithOne("Order")
+                        .HasForeignKey("shop_giay_server.models.Order", "PaymentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("shop_giay_server.models.Sale", "Sale")
+                        .WithMany("Orders")
+                        .HasForeignKey("SaleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("shop_giay_server.models.OrderItem", b =>
                 {
                     b.HasOne("shop_giay_server.models.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("shop_giay_server.models.Stock", "Stock")
                         .WithMany()
-                        .HasForeignKey("OrderId1");
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("shop_giay_server.models.SaleProduct", b =>
                 {
                     b.HasOne("shop_giay_server.models.Sale", "Sale")
-                        .WithMany()
+                        .WithMany("SaleProducts")
                         .HasForeignKey("SaleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -688,19 +742,23 @@ namespace shop_giay_server.Migrations
 
             modelBuilder.Entity("shop_giay_server.models.Shoes", b =>
                 {
+                    b.HasOne("shop_giay_server.models.ShoesBrand", "ShoesBrand")
+                        .WithMany("ShoesList")
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("shop_giay_server.models.Gender", "Gender")
                         .WithMany("ShoesList")
                         .HasForeignKey("GenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("shop_giay_server.models.ShoesBrand", "ShoesBrand")
-                        .WithMany()
-                        .HasForeignKey("ShoesBrandId");
-
                     b.HasOne("shop_giay_server.models.ShoesType", "ShoesType")
-                        .WithMany()
-                        .HasForeignKey("ShoesTypeId");
+                        .WithMany("ShoesList")
+                        .HasForeignKey("StyleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("shop_giay_server.models.ShoesImage", b =>
@@ -736,7 +794,7 @@ namespace shop_giay_server.Migrations
             modelBuilder.Entity("shop_giay_server.models.User", b =>
                 {
                     b.HasOne("shop_giay_server.models.Role", "Role")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
