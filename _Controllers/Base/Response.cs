@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace shop_giay_server._Controllers
 {
@@ -14,7 +15,14 @@ namespace shop_giay_server._Controllers
 
         public Response(IEnumerable<ItemType> data, string code = "OK", string msg = "Success.")
         {
-            Data = Newtonsoft.Json.JsonConvert.SerializeObject(data.ToList()).ToString();
+            // ReferenceLoopHandling.Ignore
+            var returnData = data.ToList();
+            var convertSetting = new JsonSerializerSettings
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects
+            };
+
+            Data = JsonConvert.SerializeObject(returnData, Formatting.Indented, convertSetting);
             Total = data.Count();
             Code = code;
             Msg = msg;

@@ -59,12 +59,16 @@ namespace shop_giay_server._Repository
 
         public async Task<IEnumerable<T>> GetAll(IQueryCollection queries)
         {
-            var result = _dataContext.Set<T>();
+            var query = _dataContext.Set<T>().AsQueryable();
+
+            // Included all navigations properties
+            foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
+                query = query.Include(p.Name);
 
             // todo: generic filter
             var a = typeof(T).GetMembers();
             var b = typeof(T).GetProperties();
-            return await result.ToListAsync();
+            return await query.ToListAsync();
         }
 
         public async Task<IEnumerable<T>> GetWhere(Expression<Func<T, bool>> predicate)
