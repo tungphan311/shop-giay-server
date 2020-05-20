@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using shop_giay_server.data;
 using shop_giay_server.models;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace shop_giay_server._Repository
 {
@@ -56,9 +57,14 @@ namespace shop_giay_server._Repository
             return false;
         }
 
-        public async Task<IEnumerable<T>> GetAll()
+        public async Task<IEnumerable<T>> GetAll(IQueryCollection queries)
         {
-            return await _dataContext.Set<T>().ToListAsync();
+            var result = _dataContext.Set<T>();
+
+            // todo: generic filter
+            var a = typeof(T).GetMembers();
+            var b = typeof(T).GetProperties();
+            return await result.ToListAsync();
         }
 
         public async Task<IEnumerable<T>> GetWhere(Expression<Func<T, bool>> predicate)

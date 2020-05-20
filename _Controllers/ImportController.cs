@@ -10,35 +10,33 @@ using shop_giay_server.models;
 using shop_giay_server._Services;
 using shop_giay_server._Repository;
 using shop_giay_server._Controllers;
+using Microsoft.Extensions.Logging;
 
 namespace shop_giay_server
 {
     [Route("api/[controller]")]
     [ApiController]
     public class ImportController: ControllerBase
+    // public class ImportController: 
     {
         private readonly IAsyncRepository<Import> _importRepo;
         private readonly IAsyncRepository<ImportDetail> _importDetailRepo;
 
         public ImportController(IAsyncRepository<Import> importRepo, IAsyncRepository<ImportDetail> importDetailRepo)
+            // : base(importRepo)
         {
             _importRepo = importRepo;
             _importDetailRepo = importDetailRepo;
         }
 
-        // GET: api/import
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var items = await _importRepo.GetAll();
-            // return Ok(new Response<Import>(new List<Import>()));
-            return Ok(new {
-                code = "OK",
-                msg = "Success.",
-                data = items,
-                total = items.Count()
-            });;
-        }
+       // GET: api/import
+        //[HttpGet]
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    var items = await _importRepo.GetAll();
+        //    var res = new Response<Import>(new List<Import>(items));
+        //    return Ok(res);
+        //}
 
         // GET: api/import/5
         [HttpGet("{id}")]

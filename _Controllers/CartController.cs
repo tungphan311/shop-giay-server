@@ -17,23 +17,23 @@ namespace shop_giay_server._Controllers
     public class CartController : ControllerBase
     {
         // private readonly IService<Cart> _service;
-        private readonly IAsyncRepository<Cart> _repository;
+        //private readonly IAsyncRepository<Cart> _repository;
 
-        public CartController(IAsyncRepository<Cart> repository)
-        {
-            _repository = repository;
-        }
+        //public CartController(IAsyncRepository<Cart> repository)
+        //{
+        //    _repository = repository;
+        //}
 
-        // GET: api/Cart
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cart>>> GetAll()
-        {
-            var items = await _repository.GetAll();
-            return Ok(new {
-                data = items,
-                code = 200
-            });
-        }
+        //// GET: api/Cart
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Cart>>> GetAll()
+        //{
+        //    var items = await _repository.GetAll();
+        //    return Ok(new {
+        //        data = items,
+        //        code = 200
+        //    });
+        //}
 
         // GET: api/Cart/5
         //[HttpGet("{id}")]

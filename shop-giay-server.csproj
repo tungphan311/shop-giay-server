@@ -18,6 +18,7 @@
     <Folder Include="_Controllers\" />
     <Folder Include="_Services\" />
     <Folder Include="_Repository\" />
+    <Folder Include="_Controllers\Base\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="data\seeds\ShoesImages.json" />
