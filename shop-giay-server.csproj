@@ -19,4 +19,7 @@
     <Folder Include="_Services\" />
     <Folder Include="_Repository\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Remove="data\seeds\ShoesImages.json" />
+  </ItemGroup>
 </Project>

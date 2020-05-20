@@ -371,7 +371,7 @@ namespace shop_giay_server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Provider");
+                    b.ToTable("Providers");
                 });
 
             modelBuilder.Entity("shop_giay_server.models.Role", b =>

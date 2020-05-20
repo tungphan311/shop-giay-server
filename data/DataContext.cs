@@ -20,6 +20,7 @@ namespace shop_giay_server.data
 
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
+        public DbSet<Provider> Providers { get; set; }
         public DbSet<Shoes> Shoes { get; set; }
         public DbSet<ShoesType> ShoesTypes { get; set; }
         public DbSet<ShoesBrand> ShoesBrands { get; set; }
@@ -38,7 +39,7 @@ namespace shop_giay_server.data
         public DbSet<Sale> Sales { get; set; }
         public DbSet<SaleProduct> SaleProducts { get; set; }
         public DbSet<CustomerReview> CustomerReviews { get; set; }
-        public DbSet<Address> Addresss { get; set; }
+        public DbSet<Address> Addresses { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<CustomerType> CustomerTypes { get; set; }
         public DbSet<User> Users { get; set; }

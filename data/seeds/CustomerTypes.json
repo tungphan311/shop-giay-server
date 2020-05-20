@@ -1,0 +1,12 @@
+﻿[
+  {
+    "name": "Premium",
+    "description": "This is premium customer type.",
+    "point": 100
+  },
+  {
+    "name": "Normal",
+    "description": "This is normal customer type.",
+    "point":  200
+  }
+]

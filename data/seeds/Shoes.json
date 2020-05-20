@@ -4,16 +4,16 @@
     "Name": "Adidas Yeezy Boost 350 V2 (Earth)",
     "Description": "Developed by Kanye West, the Adidas Yeezy Boost 350 V2 is the latest version of the popular 350 model. Constructed with a Primeknit upper, they also feature internal toebox reinforcement, see-through panel, full-length Boost technology, rope laces, and a two-toned rubber outsole. This specific colorway is a limited release to the US region.",
     "StyleId": 1,
-    "BrandId": 1,
-    "GenderId": 1,
+    "BrandId": 2,
+    "GenderId": 3,
     "Price": 324.95
   },
   {
     "Code": "SH0002",
     "Name": "Adidas Yeezy Boost 350 V2 (Earth)",
     "Description": "Developed by Kanye West, the Adidas Yeezy Boost 350 V2 is the latest version of the popular 350 model. Constructed with a Primeknit upper, they also feature internal toebox reinforcement, see-through panel, full-length Boost technology, rope laces, and a two-toned rubber outsole. This specific colorway is a limited release to the US region.",
-    "StyleId": 1,
-    "BrandId": 1,
+    "StyleId": 2,
+    "BrandId": 2,
     "GenderId": 1,
     "Price": 324.95
   },
@@ -21,7 +21,7 @@
     "Code": "SH0003",
     "Name": "Adidas Yeezy Boost 350 V2 (Earth)",
     "Description": "Developed by Kanye West, the Adidas Yeezy Boost 350 V2 is the latest version of the popular 350 model. Constructed with a Primeknit upper, they also feature internal toebox reinforcement, see-through panel, full-length Boost technology, rope laces, and a two-toned rubber outsole. This specific colorway is a limited release to the US region.",
-    "StyleId": 1,
+    "StyleId": 2,
     "BrandId": 1,
     "GenderId": 1,
     "Price": 324.95
@@ -31,7 +31,7 @@
     "Name": "Adidas Yeezy Boost 350 V2 (Earth)",
     "Description": "Developed by Kanye West, the Adidas Yeezy Boost 350 V2 is the latest version of the popular 350 model. Constructed with a Primeknit upper, they also feature internal toebox reinforcement, see-through panel, full-length Boost technology, rope laces, and a two-toned rubber outsole. This specific colorway is a limited release to the US region.",
     "StyleId": 1,
-    "BrandId": 1,
+    "BrandId": 2,
     "GenderId": 1,
     "Price": 324.95
   },
@@ -40,8 +40,8 @@
     "Name": "Adidas Yeezy Boost 350 V2 (Earth)",
     "Description": "Developed by Kanye West, the Adidas Yeezy Boost 350 V2 is the latest version of the popular 350 model. Constructed with a Primeknit upper, they also feature internal toebox reinforcement, see-through panel, full-length Boost technology, rope laces, and a two-toned rubber outsole. This specific colorway is a limited release to the US region.",
     "StyleId": 1,
-    "BrandId": 1,
-    "GenderId": 1,
+    "BrandId": 3,
+    "GenderId": 2,
     "Price": 324.95
   },
   {
@@ -49,7 +49,7 @@
     "Name": "Adidas Yeezy Boost 350 V2 (Earth)",
     "Description": "Developed by Kanye West, the Adidas Yeezy Boost 350 V2 is the latest version of the popular 350 model. Constructed with a Primeknit upper, they also feature internal toebox reinforcement, see-through panel, full-length Boost technology, rope laces, and a two-toned rubber outsole. This specific colorway is a limited release to the US region.",
     "StyleId": 1,
-    "BrandId": 1,
+    "BrandId": 2,
     "GenderId": 1,
     "Price": 324.95
   }

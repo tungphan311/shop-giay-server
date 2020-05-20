@@ -9,8 +9,8 @@ using shop_giay_server.data;
 namespace shop_giay_server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200519164225_UpdateRelations")]
-    partial class UpdateRelations
+    [Migration("20200520035131_UpdateDB")]
+    partial class UpdateDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -373,7 +373,7 @@ namespace shop_giay_server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Provider");
+                    b.ToTable("Providers");
                 });
 
             modelBuilder.Entity("shop_giay_server.models.Role", b =>

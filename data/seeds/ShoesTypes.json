@@ -1,0 +1,14 @@
+﻿[
+    {
+        "name": "Sport",
+        "description":  "This is sport shoes."
+    },
+    {
+        "name": "Casual",
+        "description": "This is casual shoes."
+    },
+    {
+        "name": "Event",
+        "description": "This is event shoes."
+    }
+]

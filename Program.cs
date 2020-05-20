@@ -28,7 +28,8 @@ namespace shop_giay_server
 
                     context.Database.Migrate();
 
-                    Seed.SeedShoes(context);
+                    // Seed.SeedShoes(context);
+                    Seed.SeedAll(context);
                 }
                 catch (System.Exception ex)
                 {
