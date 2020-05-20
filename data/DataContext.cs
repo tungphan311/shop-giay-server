@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using shop_giay_server.models;
 
 namespace shop_giay_server.data
@@ -16,6 +18,21 @@ namespace shop_giay_server.data
                 .HasOne<ShoesBrand>(s => s.ShoesBrand)
                 .WithMany(t => t.ShoesList)
                 .HasForeignKey(s => s.BrandId);
+        }
+
+        // Logging
+        public static readonly ILoggerFactory MyLoggerFactory
+    = LoggerFactory.Create(builder =>
+    {
+        builder.AddFilter((category, level) =>
+                    category == DbLoggerCategory.Database.Command.Name
+                    && level == LogLevel.Information)
+                .AddConsole();
+    });
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseLoggerFactory(MyLoggerFactory);
         }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }

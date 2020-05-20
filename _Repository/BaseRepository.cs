@@ -7,12 +7,16 @@ using shop_giay_server.data;
 using shop_giay_server.models;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using System.Linq.Dynamic.Core;
 
 namespace shop_giay_server._Repository
 {
     public class BaseRepository<T> : IAsyncRepository<T> where T : BaseEntity
     {
         private DataContext _dataContext;
+
+        private int defaultPageSize = 20;
+        private int defaultPageNumber = 1;
 
         public BaseRepository(DataContext context)
         {
@@ -60,14 +64,51 @@ namespace shop_giay_server._Repository
         public async Task<IEnumerable<T>> GetAll(IQueryCollection queries)
         {
             var query = _dataContext.Set<T>().AsQueryable();
+            var dict = queries.ToDictionary(
+                p => p.Key.ToLower(),
+                p => p.Value.ToString());
+
+            var pageSize = -1;
+            var pageNumber = -1;
+
+
+            // Paging
+            this.GetPageInfo(dict, ref pageNumber, ref pageSize);
+            if (pageSize != -1 || pageNumber != -1)
+            {
+                if (pageSize == -1) pageSize = defaultPageSize;
+                if (pageNumber == -1) pageNumber = defaultPageNumber;
+
+                query = query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize);
+            }
+            
+
+            // Filter by queries
+            foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetProperties())
+            {
+                if (!dict.ContainsKey(p.Name.ToLower())) continue;
+
+                var rawVl = dict[p.Name.ToLower()];
+                var type = p.PropertyInfo.PropertyType;
+                try
+                {
+                    var vl = Convert.ChangeType(rawVl, type);
+                    query = query.Where(String.Format($"{p.Name} = {vl}"));
+                }
+                catch
+                {
+                    Console.WriteLine($"[INFO] Cannot convert {rawVl} to type {type} while applying query: {p.Name}");
+                }
+            }
+
 
             // Included all navigations properties
             foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
                 query = query.Include(p.Name);
 
-            // todo: generic filter
-            var a = typeof(T).GetMembers();
-            var b = typeof(T).GetProperties();
+
             return await query.ToListAsync();
         }
 
@@ -84,6 +125,24 @@ namespace shop_giay_server._Repository
         Task<T> IAsyncRepository<T>.GetById(int id)
         {
             throw new NotImplementedException();
+        }
+
+        private void GetPageInfo(Dictionary<string, string> queries, ref int pageNumber, ref int pageSize)
+        {
+            string pNumb = null;
+            string pSize = null;
+
+            if (queries.TryGetValue("pagesize", out pSize)) {
+                var value = -1;
+                Int32.TryParse(pSize, out value);
+                if (value > 0) pageSize = value;
+            }
+            if (queries.TryGetValue("page", out pNumb)) {
+                var value = -1;
+                Int32.TryParse(pNumb, out value);
+                if (value > 0) pageNumber = value;
+            }
+
         }
     }
 }

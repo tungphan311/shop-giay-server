@@ -10,6 +10,8 @@ namespace shop_giay_server._Controllers
     {
         public SizeController(IAsyncRepository<Size> repo, ILogger<SizeController> logger)
             : base(repo, logger)
-        { }
+        {
+            
+        }
     }
 }

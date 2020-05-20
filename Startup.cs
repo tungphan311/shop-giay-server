@@ -31,17 +31,12 @@ namespace shop_giay_server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
             services.AddScoped(typeof(IAsyncRepository<>), typeof(BaseRepository<>));
-
             services.AddDbContext<DataContext>(x => x.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
             services.AddCors();
             services.AddScoped<IAuthRepository, AuthRepository>();
-            // services.AddScoped<IService<Cart>, CartService>();
-
-            // CRUD services
-            // AddScoped: This must equals or less usage lifetime to dataContext.
-            // services.AddScoped<IService<Cart>, CartService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
