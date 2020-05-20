@@ -38,6 +38,21 @@ namespace shop_giay_server._Controllers
             var res = new Response<Model>(new List<Model>(items));
             return Ok(res);
         }
+
+
+        //        // GET: api/import/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCart(int id)
+        {
+            var item = await _repository.GetById(id);
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            var res = new Response<Model>(new List<Model>() { item });
+            return Ok(res);
+        }
     }
 
     public class GeneralQueryString

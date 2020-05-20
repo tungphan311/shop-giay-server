@@ -23,14 +23,14 @@ namespace shop_giay_server._Repository
             _dataContext= context;
         }
 
-        public ValueTask<T> GetById(int id)
+        public async Task<T> GetById(int id)
         {
-            return _dataContext.Set<T>().FindAsync(id);
+            return await FirstOrDefault(o => o.Id == id);
         }
 
-        public Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate)
+        public async Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate)
         {
-            return _dataContext.Set<T>().FirstOrDefaultAsync(predicate);
+            return await _dataContext.Set<T>().FirstOrDefaultAsync(predicate);
         }
 
         public async Task<T> Add(T entity)
@@ -117,16 +117,16 @@ namespace shop_giay_server._Repository
             return await _dataContext.Set<T>().Where(predicate).ToListAsync();
         }
 
-        public Task<int> CountAll() => _dataContext.Set<T>().CountAsync();
+        public async Task<int> CountAll() => await _dataContext.Set<T>().CountAsync();
 
-        public Task<int> CountWhere(Expression<Func<T, bool>> predicate)
-            => _dataContext.Set<T>().CountAsync(predicate);
+        public async Task<int> CountWhere(Expression<Func<T, bool>> predicate)
+            => await _dataContext.Set<T>().CountAsync(predicate);
 
-        Task<T> IAsyncRepository<T>.GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
 
+
+        //
+        //  Helper class
+        //
         private void GetPageInfo(Dictionary<string, string> queries, ref int pageNumber, ref int pageSize)
         {
             string pNumb = null;
