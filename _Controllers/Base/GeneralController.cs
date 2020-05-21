@@ -11,16 +11,28 @@ using shop_giay_server._Services;
 using shop_giay_server._Repository;
 using shop_giay_server._Controllers;
 using Microsoft.Extensions.Logging;
+using shop_giay_server.Dtos;
+using AutoMapper;
 
 namespace shop_giay_server._Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GeneralController<Model>: ControllerBase where Model : BaseEntity
+    public class GeneralController<Model, DTO>: ControllerBase
+        where Model : BaseEntity
+        where DTO : BaseDTO
     {
-        private readonly IAsyncRepository<Model> _repository;
-        private readonly ILogger _logger;
+        protected readonly IAsyncRepository<Model> _repository;
+        protected readonly ILogger _logger;
+        protected readonly IMapper _mapper;
 
+
+        public GeneralController(IAsyncRepository<Model> repository, ILogger logger, IMapper mapper)
+        {
+            _repository = repository;
+            _logger = logger;
+            _mapper = mapper;
+        }
 
         public GeneralController(IAsyncRepository<Model> repository, ILogger logger)
         {
@@ -35,7 +47,13 @@ namespace shop_giay_server._Controllers
         {
             var queries = this.Request.Query;
             var items = await _repository.GetAll(queries);
-            var res = new Response<Model>(new List<Model>(items));
+
+
+            var source = new Source<List<Model>> { Value = items.ToList() };
+            var result = _mapper.Map<Source<List<Model>>, Destination<List<DTO>>>(source);
+
+            // var res = new Response<List<DTO>>(result.Value);
+            var res = new Response<DTO>(result.Value);
             return Ok(res);
         }
 
@@ -55,8 +73,13 @@ namespace shop_giay_server._Controllers
         }
     }
 
-    public class GeneralQueryString
+    public class Source<T>
     {
+        public T Value { get; set; }
+    }
 
+    public class Destination<T>
+    {
+        public T Value { get; set; }
     }
 }

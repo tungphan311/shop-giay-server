@@ -15,6 +15,9 @@ using shop_giay_server.data;
 using shop_giay_server._Services;
 using shop_giay_server.models;
 using shop_giay_server._Repository;
+using AutoMapper;
+using shop_giay_server.Dtos;
+using shop_giay_server._Controllers;
 
 namespace shop_giay_server
 {
@@ -31,12 +34,24 @@ namespace shop_giay_server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
+            // Generic Repository
             services.AddScoped(typeof(IAsyncRepository<>), typeof(BaseRepository<>));
+
+            // DB
             services.AddDbContext<DataContext>(x => x.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+
+            // AutoMapper
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
             services.AddControllers();
             services.AddCors();
             services.AddScoped<IAuthRepository, AuthRepository>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,4 +76,40 @@ namespace shop_giay_server
             });
         }
     }
+
+    public class MappingProfile : Profile
+    {
+        public MappingProfile()
+        {
+            CreateMap<Size, SizeDTO>();
+            CreateMap<Address, AddressDTO>();
+            CreateMap<Cart, CartDTO>();
+            CreateMap<CartItem, CartItemDTO>();
+            CreateMap<Color, ColorDTO>();
+            CreateMap<Customer, CustomerDTO>();
+            CreateMap<CustomerReview, CustomerReviewDTO>();
+            CreateMap<CustomerType, CustomerTypeDTO>();
+            CreateMap<Gender, GenderDTO>();
+            CreateMap<Import, ImportDTO>();
+            CreateMap<ImportDetail, ImportDetailDTO>();
+            CreateMap<Order, OrderDTO>();
+            CreateMap<Stock, StockDTO>();
+            CreateMap<OrderItem, OrderItemDTO>();
+            CreateMap<Payment, PaymentDTO>();
+            CreateMap<Provider, ProviderDTO>();
+            CreateMap<Role, RoleDTO>();
+            CreateMap<Sale, SaleDTO>();
+            CreateMap<SaleProduct, SaleProductDTO>();
+            CreateMap<Shoes, ShoesDTO>();
+            CreateMap<ShoesBrand, ShoesBrandDTO>();
+            CreateMap<ShoesImage, ShoesImageDTO>();
+            CreateMap<ShoesType, ShoesTypeDTO>();
+            CreateMap<Size, SizeDTO>();
+            CreateMap<User, UserDTO>();
+            CreateMap<Stock, StockDTO>();
+
+            CreateMap(typeof(Source<>), typeof(Destination<>));
+        }
+    }
+
 }
