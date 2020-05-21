@@ -19,7 +19,7 @@ namespace shop_giay_server._Controllers
             var convertSetting = new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                MaxDepth = 3,
+                MaxDepth = 4,
             };
 
             // DataJson = returnData;
