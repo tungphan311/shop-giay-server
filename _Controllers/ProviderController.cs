@@ -16,11 +16,11 @@ namespace shop_giay_server._Controllers
         { }
 
         [HttpPost]
-        public async Task<IActionResult> Add(string Name)
+        public async Task<IActionResult> Add([FromBody] ProviderForCreateDTO dto)
         {
             var provideForCreate = new Provider
             {
-                Name = Name
+                Name = dto.Name
             };
 
             var item = await _repository.Add(provideForCreate);
