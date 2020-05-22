@@ -9,8 +9,8 @@ using shop_giay_server.Dtos;
 namespace shop_giay_server._Controllers
 {
     public class Response<ItemType>
-        // where ItemType// : BaseEntity
-        // where DTOType : BaseDTO
+    // where ItemType// : BaseEntity
+    // where DTOType : BaseDTO
     {
         public string Code { get; set; }
         public string Msg { get; set; }
@@ -35,6 +35,21 @@ namespace shop_giay_server._Controllers
             // DataJson = data; 
             Data = JsonConvert.SerializeObject(data, Formatting.None, convertSetting);
             Total = data.Count();
+            Code = code;
+            Msg = msg;
+        }
+
+        public Response(ItemType data, string code = "OK", string msg = "Success.")
+        {
+            var convertSetting = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                MaxDepth = 4,
+            };
+
+            // DataJson = data; 
+            Data = JsonConvert.SerializeObject(data, Formatting.None, convertSetting);
+            Total = 1;
             Code = code;
             Msg = msg;
         }

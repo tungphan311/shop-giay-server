@@ -18,7 +18,7 @@ namespace shop_giay_server._Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GeneralController<Model, DTO>: ControllerBase
+    public class GeneralController<Model, DTO> : ControllerBase
         where Model : BaseEntity
         where DTO : BaseDTO
     {
@@ -33,13 +33,6 @@ namespace shop_giay_server._Controllers
             _logger = logger;
             _mapper = mapper;
         }
-
-        public GeneralController(IAsyncRepository<Model> repository, ILogger logger)
-        {
-            _repository = repository;
-            _logger = logger;
-        }
-
 
         // GET: api/import
         [HttpGet]
@@ -58,7 +51,7 @@ namespace shop_giay_server._Controllers
         }
 
 
-        //        // GET: api/import/5
+        // GET: api/import/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCart(int id)
         {

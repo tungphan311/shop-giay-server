@@ -96,7 +96,10 @@ namespace shop_giay_server
             CreateMap<Stock, StockDTO>();
             CreateMap<OrderItem, OrderItemDTO>();
             CreateMap<Payment, PaymentDTO>();
+
             CreateMap<Provider, ProviderDTO>();
+            CreateMap<ProviderForCreateDTO, Provider>();
+
             CreateMap<Role, RoleDTO>();
             CreateMap<Sale, SaleDTO>();
             CreateMap<SaleProduct, SaleProductDTO>();
