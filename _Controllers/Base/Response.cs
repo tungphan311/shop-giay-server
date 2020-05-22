@@ -39,7 +39,7 @@ namespace shop_giay_server._Controllers
             Msg = msg;
         }
 
-        public Response(ItemType data, string code = "OK", string msg = "Success.")
+        public Response(object data, string code = "OK", string msg = "Success.")
         {
             var convertSetting = new JsonSerializerSettings
             {

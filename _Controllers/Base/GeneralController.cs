@@ -70,7 +70,12 @@ namespace shop_giay_server._Controllers
         {
             var source = new Source<DTO>() { Value = dto };
             var result = _mapper.Map<Source<DTO>, Destination<Model>>(source);
-            return Ok(result);
+
+            var item = await _repository.Add(result.Value);
+
+            var res = new Response<Provider>(item);
+
+            return Ok(res);
         }
     }
 
