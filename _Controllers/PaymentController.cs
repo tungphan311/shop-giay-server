@@ -4,13 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using shop_giay_server._Repository;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.Dtos;
+using AutoMapper;
 
 namespace shop_giay_server._Controllers
 {
     public class PaymentController : GeneralController<Payment, PaymentDTO>
     {
-        public PaymentController(IAsyncRepository<Payment> repo, ILogger<PaymentController> logger)
-            : base(repo, logger)
+        public PaymentController(IAsyncRepository<Payment> repo, ILogger<PaymentController> logger, IMapper mapper)
+            : base(repo, logger, mapper)
         { }
     }
 }

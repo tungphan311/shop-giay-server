@@ -4,13 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using shop_giay_server._Repository;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.Dtos;
+using AutoMapper;
 
 namespace shop_giay_server._Controllers
 {
     public class ImportController : GeneralController<Import, ImportDTO>
     {
-        public ImportController(IAsyncRepository<Import> repo, ILogger<ImportController> logger)
-            : base(repo, logger)
+        public ImportController(IAsyncRepository<Import> repo, ILogger<ImportController> logger, IMapper mapper)
+            : base(repo, logger, mapper)
         { }
     }
 }
