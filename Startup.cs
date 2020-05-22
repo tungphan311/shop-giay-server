@@ -81,37 +81,39 @@ namespace shop_giay_server
     {
         public MappingProfile()
         {
-            CreateMap<Size, SizeDTO>();
-            CreateMap<Address, AddressDTO>();
-            CreateMap<Cart, CartDTO>();
-            CreateMap<CartItem, CartItemDTO>();
-            CreateMap<Color, ColorDTO>();
-            CreateMap<Customer, CustomerDTO>();
-            CreateMap<CustomerReview, CustomerReviewDTO>();
-            CreateMap<CustomerType, CustomerTypeDTO>();
-            CreateMap<Gender, GenderDTO>();
-            CreateMap<Import, ImportDTO>();
-            CreateMap<ImportDetail, ImportDetailDTO>();
-            CreateMap<Order, OrderDTO>();
-            CreateMap<Stock, StockDTO>();
-            CreateMap<OrderItem, OrderItemDTO>();
-            CreateMap<Payment, PaymentDTO>();
+            CreateMap<Size, SizeDTO>().ReverseMap();
+            CreateMap<Address, AddressDTO>().ReverseMap();
+            CreateMap<Cart, CartDTO>().ReverseMap();
+            CreateMap<CartItem, CartItemDTO>().ReverseMap();
+            CreateMap<Color, ColorDTO>().ReverseMap();
+            CreateMap<Customer, CustomerDTO>().ReverseMap();
+            CreateMap<CustomerReview, CustomerReviewDTO>().ReverseMap();
+            CreateMap<CustomerType, CustomerTypeDTO>().ReverseMap();
+            CreateMap<Gender, GenderDTO>().ReverseMap();
+            CreateMap<Import, ImportDTO>().ReverseMap();
+            CreateMap<ImportDetail, ImportDetailDTO>().ReverseMap();
+            CreateMap<Order, OrderDTO>().ReverseMap();
+            CreateMap<Stock, StockDTO>().ReverseMap();
+            CreateMap<OrderItem, OrderItemDTO>().ReverseMap();
+            CreateMap<Payment, PaymentDTO>().ReverseMap();
 
-            CreateMap<Provider, ProviderDTO>();
-            CreateMap<ProviderForCreateDTO, Provider>();
+            CreateMap<Provider, ProviderDTO>().ReverseMap();
+            CreateMap<ProviderForCreateDTO, Provider>().ReverseMap();
 
-            CreateMap<Role, RoleDTO>();
-            CreateMap<Sale, SaleDTO>();
-            CreateMap<SaleProduct, SaleProductDTO>();
-            CreateMap<Shoes, ShoesDTO>();
-            CreateMap<ShoesBrand, ShoesBrandDTO>();
-            CreateMap<ShoesImage, ShoesImageDTO>();
-            CreateMap<ShoesType, ShoesTypeDTO>();
-            CreateMap<Size, SizeDTO>();
-            CreateMap<User, UserDTO>();
-            CreateMap<Stock, StockDTO>();
+            CreateMap<Role, RoleDTO>().ReverseMap();
+            CreateMap<Sale, SaleDTO>().ReverseMap();
+            CreateMap<SaleProduct, SaleProductDTO>().ReverseMap();
+            CreateMap<Shoes, ShoesDTO>().ReverseMap();
+            CreateMap<ShoesBrand, ShoesBrandDTO>().ReverseMap();
+            CreateMap<ShoesImage, ShoesImageDTO>().ReverseMap();
+            CreateMap<ShoesType, ShoesTypeDTO>().ReverseMap();
+            CreateMap<Size, SizeDTO>().ReverseMap();
+            CreateMap<User, UserDTO>().ReverseMap();
+            CreateMap<Stock, StockDTO>().ReverseMap();
 
-            CreateMap(typeof(Source<>), typeof(Destination<>));
+      
+
+            CreateMap(typeof(Source<>), typeof(Destination<>)).ReverseMap();
         }
     }
 

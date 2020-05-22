@@ -64,6 +64,14 @@ namespace shop_giay_server._Controllers
             var res = new Response<Model>(new List<Model>() { item });
             return Ok(res);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Add(DTO dto)
+        {
+            var source = new Source<DTO>() { Value = dto };
+            var result = _mapper.Map<Source<DTO>, Destination<Model>>(source);
+            return Ok(result);
+        }
     }
 
     public class Source<T>
