@@ -5,6 +5,8 @@ using shop_giay_server._Repository;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.Dtos;
 using AutoMapper;
+using System;
+using System.Collections.Generic;
 
 namespace shop_giay_server._Controllers
 {
@@ -13,6 +15,49 @@ namespace shop_giay_server._Controllers
         public ImportController(IAsyncRepository<Import> repo, ILogger<ImportController> logger, IMapper mapper)
             : base(repo, logger, mapper)
         { }
+
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] ImportForCreateDTO dto)
+        {
+            var details = dto.Details;
+
+            int totalCost = 0;
+            int totalQuantity = 0;
+
+            foreach (var detail in details)
+            {
+                totalCost += detail.Quantity * detail.OriginalPrice;
+                totalQuantity += detail.Quantity;
+            }
+
+            var importDetails = new List<ImportDetail>();
+            foreach (var detail in details)
+            {
+                var importDetail = new ImportDetail
+                {
+                    Quantity = detail.Quantity,
+                    OriginalPrice = detail.OriginalPrice,
+                    StockId = detail.StockId,
+                };
+
+                importDetails.Add(importDetail);
+            }
+
+            var import = new Import
+            {
+                ImportDate = DateTime.Now,
+                TotalQuantity = totalQuantity,
+                TotalCost = totalCost,
+                ProviderId = dto.ProviderId,
+                ImportDetails = importDetails
+            };
+
+            var item = await _repository.Add(import);
+
+            var res = new Response<Import>(item, Ok().StatusCode.ToString(), "Nhập hàng thành công");
+
+            return Ok(res);
+        }
     }
 }
 

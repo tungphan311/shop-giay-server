@@ -14,5 +14,19 @@ namespace shop_giay_server._Controllers
         public ProviderController(IAsyncRepository<Provider> repo, ILogger<ProviderController> logger, IMapper mapper)
             : base(repo, logger, mapper)
         { }
+
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] ProviderForCreateDTO dto)
+        {
+            var provideForCreate = new Provider
+            {
+                Name = dto.Name
+            };
+
+            var item = await _repository.Add(provideForCreate);
+            var res = new Response<Provider>(item);
+            
+            return Ok(res);
+        }
     }
 }
