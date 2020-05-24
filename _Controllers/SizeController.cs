@@ -16,5 +16,20 @@ namespace shop_giay_server._Controllers
         {
             
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] SizeForCreateDTO dto)
+        {
+            var size = new Size
+            {
+                Name = dto.Name
+            };
+
+            var item = await _repository.Add(size);
+
+            var res = new Response<Size>(item);
+            
+            return Ok(res);
+        }
     }
 }
