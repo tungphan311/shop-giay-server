@@ -65,18 +65,18 @@ namespace shop_giay_server._Controllers
             return Ok(res);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Add(DTO dto)
-        {
-            var source = new Source<DTO>() { Value = dto };
-            var result = _mapper.Map<Source<DTO>, Destination<Model>>(source);
+        // [HttpPost]
+        // public async Task<IActionResult> Add(DTO dto)
+        // {
+        //     var source = new Source<DTO>() { Value = dto };
+        //     var result = _mapper.Map<Source<DTO>, Destination<Model>>(source);
 
-            var item = await _repository.Add(result.Value);
+        //     var item = await _repository.Add(result.Value);
 
-            var res = new Response<Provider>(item);
+        //     var res = new Response<Provider>(item);
 
-            return Ok(res);
-        }
+        //     return Ok(res);
+        // }
     }
 
     public class Source<T>
