@@ -13,5 +13,20 @@ namespace shop_giay_server._Controllers
         public ColorController(IAsyncRepository<Color> repo, ILogger<ColorController> logger, IMapper mapper)
             : base(repo, logger, mapper)
         { }
+
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] ColorForCreateDTO dto)
+        {
+            var color = new Color
+            {
+                Name = dto.Name
+            };
+
+            var item = await _repository.Add(color);
+
+            var res = new Response<Color>(item);
+            
+            return Ok(res);
+        }
     }
 }

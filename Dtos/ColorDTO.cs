@@ -6,6 +6,6 @@ namespace shop_giay_server.Dtos
     {
         public string Name { get; set; }
 
-        public List<StockDTO> Stocks { get; set; }
+        // public List<StockDTO> Stocks { get; set; }
     }
 }
