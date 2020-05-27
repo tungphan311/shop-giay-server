@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "",
+    "appService.deploySubpath": "bin\\Release\\netcoreapp3.1\\publish"
+}
