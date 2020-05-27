@@ -41,11 +41,9 @@ namespace shop_giay_server._Controllers
             var queries = this.Request.Query;
             var items = await _repository.GetAll(queries);
 
-
             var source = new Source<List<Model>> { Value = items.ToList() };
             var result = _mapper.Map<Source<List<Model>>, Destination<List<DTO>>>(source);
 
-            // var res = new Response<List<DTO>>(result.Value);
             var res = new Response<DTO>(result.Value);
             return Ok(res);
         }
@@ -65,18 +63,29 @@ namespace shop_giay_server._Controllers
             return Ok(res);
         }
 
-        // [HttpPost]
-        // public async Task<IActionResult> Add(DTO dto)
-        // {
-        //     var source = new Source<DTO>() { Value = dto };
-        //     var result = _mapper.Map<Source<DTO>, Destination<Model>>(source);
 
-        //     var item = await _repository.Add(result.Value);
+        #region Helper methods
 
-        //     var res = new Response<Provider>(item);
+        public async Task<IActionResult> AddItem(Model item)
+        {
+            IActionResult result = BadRequest(Response<Model>.BadRequest());
+            try
+            {
+                var insertedItem = await _repository.Add(item);
+                result = Ok(Response<Model>.Ok(insertedItem));
+            }
+            catch (DbUpdateException ex)
+            {
+                var res = Response<Model>.BadRequest($"Cannot add new { typeof(Model).Name }.");
+                result = BadRequest(res);
+                _logger.LogError(ex.ToString());
+            }
 
-        //     return Ok(res);
-        // }
+            return result;
+        }
+
+        #endregion
+
     }
 
     public class Source<T>

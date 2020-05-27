@@ -13,5 +13,18 @@ namespace shop_giay_server._Controllers
         public ShoesTypeController(IAsyncRepository<ShoesType> repo, ILogger<ShoesTypeController> logger, IMapper mapper)
             : base(repo, logger, mapper)
         { }
+
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] ShoesTypeDTO model)
+        {
+            // Validate
+            if (string.IsNullOrEmpty(model.Name))
+            {
+                return BadRequest(Response<ShoesType>.BadRequest("Not enough information to create."));
+            }
+
+            var item = _mapper.Map<ShoesType>(model);
+            return await this.AddItem(item);
+        }
     }
 }

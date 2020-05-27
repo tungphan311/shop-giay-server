@@ -14,6 +14,7 @@ namespace shop_giay_server._Repository
         Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate);
 
         Task<T> Add(T entity);
+        Task<IEnumerable<T>> Add(IEnumerable<T> entities);
         Task<T> Update(T entity);
         Task<bool> Remove(int id);
 
@@ -23,5 +24,6 @@ namespace shop_giay_server._Repository
         Task<int> CountAll();
         Task<int> CountWhere(Expression<Func<T, bool>> predicate);
 
+        Task<bool> ExistWhere(Expression<Func<T, bool>> predicate);
     }
 }

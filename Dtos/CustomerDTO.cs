@@ -22,7 +22,7 @@ namespace shop_giay_server.Dtos
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
 
-        public int CartId { get; set; }
+        // public int CartId { get; set; }
         public CartDTO Cart { get; set; }
 
         public int CustomerTypeId { get; set; }

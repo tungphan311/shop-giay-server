@@ -15,18 +15,20 @@ namespace shop_giay_server._Controllers
         { }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] ColorForCreateDTO dto)
+        public async Task<IActionResult> Add([FromBody] ColorDTO model)
         {
+            // Validate
+            if (string.IsNullOrEmpty(model.Name))
+            {
+                return BadRequest(Response<ShoesType>.BadRequest("Not enough information to create."));
+            }
+
             var color = new Color
             {
-                Name = dto.Name
+                Name = model.Name
             };
 
-            var item = await _repository.Add(color);
-
-            var res = new Response<Color>(item);
-            
-            return Ok(res);
+            return await this.AddItem(color);
         }
     }
 }

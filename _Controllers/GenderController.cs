@@ -13,5 +13,18 @@ namespace shop_giay_server._Controllers
         public GenderController(IAsyncRepository<Gender> repo, ILogger<GenderController> logger, IMapper mapper)
             : base(repo, logger, mapper)
         { }
+
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] GenderDTO model)
+        {
+            // Validate
+            if (string.IsNullOrEmpty(model.Name))
+            {
+                return BadRequest(Response<ShoesType>.BadRequest("Not enough information to create."));
+            }
+
+            var item = _mapper.Map<Gender>(model);
+            return await this.AddItem(item);
+        }
     }
 }

@@ -13,5 +13,27 @@ namespace shop_giay_server._Controllers
         public CustomController(IAsyncRepository<Customer> repo, ILogger<CustomController> logger, IMapper mapper)
             : base(repo, logger, mapper)
         { }
+
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] CustomerDTO model)
+        {
+            // Validate
+            var existed = await _repository.ExistWhere(c => c.Email == model.Email
+                    || c.PhoneNumber == model.PhoneNumber
+                    || c.Username == model.Username);
+
+            if (existed)
+            {
+                return BadRequest(Response<Customer>.BadRequest("Customer has been existed."));
+            }
+
+
+            var item = _mapper.Map<Customer>(model);
+            return await this.AddItem(item);
+        }
+
+        #region Helper Methods
+
+        #endregion
     }
 }
