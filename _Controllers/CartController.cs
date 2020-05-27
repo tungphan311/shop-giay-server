@@ -5,6 +5,7 @@ using shop_giay_server._Repository;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.Dtos;
 using AutoMapper;
+using System.Collections.Generic;
 
 namespace shop_giay_server._Controllers
 {
@@ -13,7 +14,35 @@ namespace shop_giay_server._Controllers
         public CartController(IAsyncRepository<Cart> repo, ILogger<CartController> logger, IMapper mapper)
             : base(repo, logger, mapper)
         { }
+
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] CreateCart model)
+        {
+            // Validate
+            var cartExisted = await _repository.ExistWhere((c) => c.CustomerId == model.CustomerId);
+            if (cartExisted)
+            {
+                return BadRequest(Response<Cart>.BadRequest("Cannot create more than one cart."));
+            }
+
+            var item = new Cart
+            {
+                CustomerId = model.CustomerId
+            };
+
+            return await this.AddItem(item);
+        }
     }
+
+    public class CreateCart
+    {
+        public int CustomerId { get; set; }
+    }
+
+    //public class InsertCartItem
+    //{
+    //    public List<CartItemDTO> items;
+    //}
 }
 
 

@@ -13,5 +13,19 @@ namespace shop_giay_server._Controllers
         public CustomerTypeController(IAsyncRepository<CustomerType> repo, ILogger<CustomerTypeController> logger, IMapper mapper)
             : base(repo, logger, mapper)
         { }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] CustomerTypeDTO model)
+        {
+            // Validate
+            if (string.IsNullOrEmpty(model.Name))
+            {
+                return BadRequest(Response<ShoesType>.BadRequest("Not enough information to create."));
+            }
+
+            var item = _mapper.Map<CustomerType>(model);
+            return await this.AddItem(item);
+        }
     }
 }

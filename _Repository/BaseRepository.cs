@@ -40,6 +40,13 @@ namespace shop_giay_server._Repository
             return entity;
         }
 
+        public async Task<IEnumerable<T>> Add(IEnumerable<T> entities)
+        {
+            await _dataContext.Set<T>().AddRangeAsync(entities);
+            await _dataContext.SaveChangesAsync();
+            return entities;
+        }
+
         public async Task<T> Update(T entity)
         {
             _dataContext.Entry(entity).State = EntityState.Modified;
@@ -122,7 +129,10 @@ namespace shop_giay_server._Repository
         public async Task<int> CountWhere(Expression<Func<T, bool>> predicate)
             => await _dataContext.Set<T>().CountAsync(predicate);
 
-
+        public async Task<bool> ExistWhere(Expression<Func<T, bool>> predicate)
+        {
+            return await _dataContext.Set<T>().AnyAsync(predicate);
+        }
 
         //
         //  Helper class
@@ -144,5 +154,6 @@ namespace shop_giay_server._Repository
             }
 
         }
+        
     }
 }

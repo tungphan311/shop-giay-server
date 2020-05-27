@@ -87,7 +87,7 @@ namespace shop_giay_server
             CreateMap<CartItem, CartItemDTO>().ReverseMap();
 
             CreateMap<Color, ColorDTO>().ReverseMap();
-            CreateMap<ColorForCreateDTO, Color>().ReverseMap();
+            // CreateMap<ColorForCreateDTO, Color>().ReverseMap();
 
             CreateMap<Customer, CustomerDTO>().ReverseMap();
             CreateMap<CustomerReview, CustomerReviewDTO>().ReverseMap();
@@ -95,7 +95,7 @@ namespace shop_giay_server
             CreateMap<Gender, GenderDTO>().ReverseMap();
 
             CreateMap<Import, ImportDTO>().ReverseMap();
-            CreateMap<ImportForCreateDTO, Import>().ReverseMap();
+            // CreateMap<ImportForCreateDTO, Import>().ReverseMap();
 
             CreateMap<ImportDetail, ImportDetailDTO>().ReverseMap();
             CreateMap<Order, OrderDTO>().ReverseMap();
@@ -104,7 +104,7 @@ namespace shop_giay_server
             CreateMap<Payment, PaymentDTO>().ReverseMap();
 
             CreateMap<Provider, ProviderDTO>().ReverseMap();
-            CreateMap<ProviderForCreateDTO, Provider>().ReverseMap();
+            // CreateMap<ProviderForCreateDTO, Provider>().ReverseMap();
 
             CreateMap<Role, RoleDTO>().ReverseMap();
             CreateMap<Sale, SaleDTO>().ReverseMap();
@@ -115,7 +115,7 @@ namespace shop_giay_server
             CreateMap<ShoesType, ShoesTypeDTO>().ReverseMap();
 
             CreateMap<Size, SizeDTO>().ReverseMap();
-            CreateMap<SizeForCreateDTO, Size>().ReverseMap();
+            // CreateMap<SizeForCreateDTO, Size>().ReverseMap();
 
             CreateMap<User, UserDTO>().ReverseMap();
             CreateMap<Stock, StockDTO>().ReverseMap();

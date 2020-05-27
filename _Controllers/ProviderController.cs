@@ -16,17 +16,20 @@ namespace shop_giay_server._Controllers
         { }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] ProviderForCreateDTO dto)
+        public async Task<IActionResult> Add([FromBody] ProviderDTO model)
         {
-            var provideForCreate = new Provider
+            // Validate
+            if (string.IsNullOrEmpty(model.Name))
             {
-                Name = dto.Name
+                return BadRequest(Response<ShoesType>.BadRequest("Not enough information to create."));
+            }
+
+            var provide = new Provider
+            {
+                Name = model.Name
             };
 
-            var item = await _repository.Add(provideForCreate);
-            var res = new Response<Provider>(item);
-            
-            return Ok(res);
+            return await this.AddItem(provide);
         }
     }
 }

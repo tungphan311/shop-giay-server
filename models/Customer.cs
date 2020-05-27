@@ -22,7 +22,7 @@ namespace shop_giay_server.models
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
 
-        public int CartId { get; set; }
+        // public int CartId { get; set; }
         public Cart Cart { get; set; }
 
         public int CustomerTypeId { get; set; }
