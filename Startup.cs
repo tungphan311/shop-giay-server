@@ -30,7 +30,6 @@ namespace shop_giay_server
 
         public IConfiguration Configuration { get; }
 
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -38,7 +37,7 @@ namespace shop_giay_server
             services.AddScoped(typeof(IAsyncRepository<>), typeof(BaseRepository<>));
 
             // DB
-            services.AddDbContext<DataContext>(x => x.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             // AutoMapper
             var mappingConfig = new MapperConfiguration(mc =>
@@ -62,7 +61,9 @@ namespace shop_giay_server
                 app.UseDeveloperExceptionPage();
             }
 
-            // app.UseHttpsRedirection();
+            app.UseDeveloperExceptionPage();
+
+            app.UseHttpsRedirection();
 
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
@@ -70,9 +71,14 @@ namespace shop_giay_server
 
             app.UseAuthorization();
 
+            app.UseDefaultFiles();
+
+            app.UseStaticFiles();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapFallbackToController("Index", "Fallback");
             });
         }
     }
@@ -120,7 +126,7 @@ namespace shop_giay_server
             CreateMap<User, UserDTO>().ReverseMap();
             CreateMap<Stock, StockDTO>().ReverseMap();
 
-      
+
 
             CreateMap(typeof(Source<>), typeof(Destination<>)).ReverseMap();
         }

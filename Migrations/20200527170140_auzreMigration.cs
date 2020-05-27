@@ -1,31 +1,18 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace shop_giay_server.Migrations
 {
-    public partial class UpdateDB : Migration
+    public partial class auzreMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Carts",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Carts", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Colors",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -38,7 +25,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     Point = table.Column<float>(nullable: false)
@@ -53,7 +40,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -66,7 +53,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     PaymentType = table.Column<int>(nullable: false),
                     TransactionId = table.Column<string>(nullable: true),
                     Date = table.Column<DateTime>(nullable: false),
@@ -83,7 +70,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -96,7 +83,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -109,7 +96,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     SaleType = table.Column<int>(nullable: false),
                     Amount = table.Column<int>(nullable: false),
                     BeginDate = table.Column<DateTime>(nullable: false),
@@ -126,7 +113,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true),
                     Country = table.Column<string>(nullable: true)
                 },
@@ -140,7 +127,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true)
                 },
@@ -154,7 +141,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -167,7 +154,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Username = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     DateOfBirth = table.Column<DateTime>(nullable: false),
@@ -177,18 +164,11 @@ namespace shop_giay_server.Migrations
                     Point = table.Column<float>(nullable: false),
                     PasswordHash = table.Column<byte[]>(nullable: true),
                     PasswordSalt = table.Column<byte[]>(nullable: true),
-                    CartId = table.Column<int>(nullable: false),
                     CustomerTypeId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Customers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Customers_Carts_CartId",
-                        column: x => x.CartId,
-                        principalTable: "Carts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Customers_CustomerTypes_CustomerTypeId",
                         column: x => x.CustomerTypeId,
@@ -202,7 +182,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     ImportDate = table.Column<DateTime>(nullable: false),
                     TotalQuantity = table.Column<int>(nullable: false),
                     TotalCost = table.Column<float>(nullable: false),
@@ -224,7 +204,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Username = table.Column<string>(nullable: true),
                     PasswordHash = table.Column<byte[]>(nullable: true),
                     PasswordSalt = table.Column<byte[]>(nullable: true),
@@ -247,7 +227,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Code = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
@@ -283,11 +263,11 @@ namespace shop_giay_server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Addresss",
+                name: "Addresses",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     City = table.Column<string>(nullable: true),
                     District = table.Column<string>(nullable: true),
                     Ward = table.Column<string>(nullable: true),
@@ -296,9 +276,28 @@ namespace shop_giay_server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Addresss", x => x.Id);
+                    table.PrimaryKey("PK_Addresses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Addresss_Customers_CustomerId",
+                        name: "FK_Addresses_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Carts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CustomerId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Carts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Carts_Customers_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "Id",
@@ -310,7 +309,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     OrderDate = table.Column<DateTime>(nullable: false),
                     Total = table.Column<int>(nullable: false),
                     Status = table.Column<string>(nullable: true),
@@ -349,7 +348,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Date = table.Column<DateTime>(nullable: false),
                     Content = table.Column<string>(nullable: true),
                     Rate = table.Column<int>(nullable: false),
@@ -378,7 +377,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     ColorId = table.Column<int>(nullable: false),
                     ImagePath = table.Column<string>(nullable: true),
                     ShoesId = table.Column<int>(nullable: false)
@@ -399,7 +398,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Instock = table.Column<int>(nullable: false),
                     ShoesId = table.Column<int>(nullable: false),
                     SizeId = table.Column<int>(nullable: false),
@@ -433,7 +432,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Amount = table.Column<int>(nullable: false),
                     CartId = table.Column<int>(nullable: false),
                     StockId = table.Column<int>(nullable: false)
@@ -460,7 +459,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Quantity = table.Column<int>(nullable: false),
                     OriginalPrice = table.Column<int>(nullable: false),
                     StockId = table.Column<int>(nullable: false),
@@ -488,7 +487,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Amount = table.Column<int>(nullable: false),
                     PricePerUnit = table.Column<float>(nullable: false),
                     Total = table.Column<float>(nullable: false),
@@ -517,7 +516,7 @@ namespace shop_giay_server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     SaleId = table.Column<int>(nullable: false),
                     StockId = table.Column<int>(nullable: false)
                 },
@@ -539,8 +538,8 @@ namespace shop_giay_server.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Addresss_CustomerId",
-                table: "Addresss",
+                name: "IX_Addresses_CustomerId",
+                table: "Addresses",
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
@@ -554,6 +553,12 @@ namespace shop_giay_server.Migrations
                 column: "StockId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Carts_CustomerId",
+                table: "Carts",
+                column: "CustomerId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CustomerReviews_CustomerId",
                 table: "CustomerReviews",
                 column: "CustomerId");
@@ -562,12 +567,6 @@ namespace shop_giay_server.Migrations
                 name: "IX_CustomerReviews_ShoesId",
                 table: "CustomerReviews",
                 column: "ShoesId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Customers_CartId",
-                table: "Customers",
-                column: "CartId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customers_CustomerTypeId",
@@ -669,7 +668,7 @@ namespace shop_giay_server.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Addresss");
+                name: "Addresses");
 
             migrationBuilder.DropTable(
                 name: "CartItems");
@@ -691,6 +690,9 @@ namespace shop_giay_server.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Carts");
 
             migrationBuilder.DropTable(
                 name: "Imports");
@@ -724,9 +726,6 @@ namespace shop_giay_server.Migrations
 
             migrationBuilder.DropTable(
                 name: "Sizes");
-
-            migrationBuilder.DropTable(
-                name: "Carts");
 
             migrationBuilder.DropTable(
                 name: "CustomerTypes");
