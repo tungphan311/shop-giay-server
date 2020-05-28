@@ -8,6 +8,7 @@ using shop_giay_server.models;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.Linq.Dynamic.Core;
+using Microsoft.Extensions.Primitives;
 
 namespace shop_giay_server._Repository
 {
@@ -68,7 +69,7 @@ namespace shop_giay_server._Repository
             return false;
         }
 
-        public async Task<IEnumerable<T>> GetAll(IQueryCollection queries)
+        public async Task<IEnumerable<T>> GetAll(Dictionary<string, StringValues> queries)
         {
             var query = _dataContext.Set<T>().AsQueryable();
             var dict = queries.ToDictionary(

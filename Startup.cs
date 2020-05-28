@@ -91,27 +91,18 @@ namespace shop_giay_server
             CreateMap<Address, AddressDTO>().ReverseMap();
             CreateMap<Cart, CartDTO>().ReverseMap();
             CreateMap<CartItem, CartItemDTO>().ReverseMap();
-
             CreateMap<Color, ColorDTO>().ReverseMap();
-            // CreateMap<ColorForCreateDTO, Color>().ReverseMap();
-
             CreateMap<Customer, CustomerDTO>().ReverseMap();
             CreateMap<CustomerReview, CustomerReviewDTO>().ReverseMap();
             CreateMap<CustomerType, CustomerTypeDTO>().ReverseMap();
             CreateMap<Gender, GenderDTO>().ReverseMap();
-
             CreateMap<Import, ImportDTO>().ReverseMap();
-            // CreateMap<ImportForCreateDTO, Import>().ReverseMap();
-
             CreateMap<ImportDetail, ImportDetailDTO>().ReverseMap();
             CreateMap<Order, OrderDTO>().ReverseMap();
             CreateMap<Stock, StockDTO>().ReverseMap();
             CreateMap<OrderItem, OrderItemDTO>().ReverseMap();
             CreateMap<Payment, PaymentDTO>().ReverseMap();
-
             CreateMap<Provider, ProviderDTO>().ReverseMap();
-            // CreateMap<ProviderForCreateDTO, Provider>().ReverseMap();
-
             CreateMap<Role, RoleDTO>().ReverseMap();
             CreateMap<Sale, SaleDTO>().ReverseMap();
             CreateMap<SaleProduct, SaleProductDTO>().ReverseMap();
@@ -119,13 +110,34 @@ namespace shop_giay_server
             CreateMap<ShoesBrand, ShoesBrandDTO>().ReverseMap();
             CreateMap<ShoesImage, ShoesImageDTO>().ReverseMap();
             CreateMap<ShoesType, ShoesTypeDTO>().ReverseMap();
-
             CreateMap<Size, SizeDTO>().ReverseMap();
-            // CreateMap<SizeForCreateDTO, Size>().ReverseMap();
-
             CreateMap<User, UserDTO>().ReverseMap();
             CreateMap<Stock, StockDTO>().ReverseMap();
 
+            CreateMap<Shoes, ReponseShoesDTO>()
+                .ForMember(des => des.name, opt => opt.MapFrom(s => s.Name))
+                .ForMember(des => des.id, opt => opt.MapFrom(s => s.Id))
+                .ForMember(des => des.description, opt => opt.MapFrom(s => s.Description))
+                .ForMember(des => des.price, opt => opt.MapFrom(s => s.Price))
+                .ForMember(des => des.isNew, opt => opt.MapFrom(s => s.IsNew))
+                .ForMember(des => des.isOnSale, opt => opt.MapFrom(s => s.IsOnSale))
+                .ForMember(
+                    des => des.imagePath,
+                    opt => opt.MapFrom((s, d) => s.ShoesImages.Count > 0 ? s.ShoesImages[0].ImagePath : "")
+                )
+                .ForMember(des => des.quantity, opt => opt.MapFrom((s, d) => {
+                    var total = 0;
+                    foreach (var stock in s.Stocks)
+                    {
+                        total += stock.Instock;
+                    }
+                    return total;
+                }))
+                .ForMember(des => des.salePrice, opt => opt.MapFrom((s, d) => {
+                    // todo
+                    return 0;
+                }))
+                .ForMember(des => des.description, opt => opt.MapFrom(s => s.ShoesType.Name));
 
 
             CreateMap(typeof(Source<>), typeof(Destination<>)).ReverseMap();

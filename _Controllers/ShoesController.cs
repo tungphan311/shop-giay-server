@@ -5,14 +5,41 @@ using shop_giay_server._Repository;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.Dtos;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
+using System.Linq;
 
 namespace shop_giay_server._Controllers
 {
     public class ShoesController : GeneralController<Shoes, ShoesDTO>
     {
-        public ShoesController(IAsyncRepository<Shoes> repo, ILogger<ShoesController> logger, IMapper mapper)
+        private IAsyncRepository<Gender> _genderRepo;
+
+
+        public ShoesController(IAsyncRepository<Shoes> repo, IAsyncRepository<Gender> genderRepo, ILogger<ShoesController> logger, IMapper mapper)
             : base(repo, logger, mapper)
-        { }
+        {
+            _genderRepo = genderRepo;
+        }
+
+        public override async Task<IActionResult> GetAllForClient()
+        {
+            var dict = this.Request.Query.ToDictionary(
+                p => p.Key.ToLower(),
+                p => p.Value);
+
+            StringValues gender = "";
+            if (dict.TryGetValue("gender", out gender))
+            {
+                if (gender != "")
+                {
+                    var genderModel = _genderRepo.GetWhere(g => g.Name == gender.ToString());
+                    dict["genderId"] = genderModel.Id.ToString();
+                }
+            }
+
+            return await _GetAllForClient<ReponseShoesDTO>(dict);
+        }
 
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CreateShoesBody model)
@@ -65,5 +92,19 @@ namespace shop_giay_server._Controllers
                 && BrandId > 0
                 && GenderId > 0;
         }
+    }
+
+    public class ReponseShoesDTO : BaseDTO
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+        public string description { get; set; }
+        public int price { get; set; }
+        public int isNew { get; set; }
+        public int isOnSale { get; set; }
+        public string imagePath { get; set; }
+        public int quantity { get; set; }
+        public int salePrice { get; set; }
+        public string styleName { get; set; }
     }
 }

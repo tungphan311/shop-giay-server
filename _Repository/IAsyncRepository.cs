@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace shop_giay_server._Repository
 {
@@ -18,7 +19,7 @@ namespace shop_giay_server._Repository
         Task<T> Update(T entity);
         Task<bool> Remove(int id);
 
-        Task<IEnumerable<T>> GetAll(IQueryCollection queries);
+        Task<IEnumerable<T>> GetAll(Dictionary<string, StringValues> queries);
         Task<IEnumerable<T>> GetWhere(Expression<Func<T, bool>> predicate);
 
         Task<int> CountAll();
