@@ -31,7 +31,12 @@ namespace shop_giay_server._Repository
 
         public async Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate)
         {
-            return await _dataContext.Set<T>().FirstOrDefaultAsync(predicate);
+            var query = _dataContext.Set<T>().AsQueryable(); //.FirstOrDefaultAsync(predicate);
+
+            foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
+                query = query.Include(p.Name);
+
+            return await query.FirstAsync(predicate);
         }
 
         public async Task<T> Add(T entity)
@@ -100,9 +105,18 @@ namespace shop_giay_server._Repository
 
                 var rawVl = dict[p.Name.ToLower()];
                 var type = p.PropertyInfo.PropertyType;
+
                 try
                 {
-                    var vl = Convert.ChangeType(rawVl, type);
+                    dynamic vl = null;
+                    if (type == typeof(bool))
+                    {
+                        vl = rawVl == "0" ? false : true;
+                    } else
+                    {
+                        vl = Convert.ChangeType(rawVl, type);
+                    }
+
                     query = query.Where(String.Format($"{p.Name} = {vl}"));
                 }
                 catch

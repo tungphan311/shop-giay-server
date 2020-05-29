@@ -114,7 +114,8 @@ namespace shop_giay_server
             CreateMap<User, UserDTO>().ReverseMap();
             CreateMap<Stock, StockDTO>().ReverseMap();
 
-            CreateMap<Shoes, ReponseShoesDTO>()
+            // Shoes -> ResponseShoesDTO
+            CreateMap<Shoes, ResponseShoesDTO>()
                 .ForMember(des => des.name, opt => opt.MapFrom(s => s.Name))
                 .ForMember(des => des.id, opt => opt.MapFrom(s => s.Id))
                 .ForMember(des => des.description, opt => opt.MapFrom(s => s.Description))
@@ -135,9 +136,47 @@ namespace shop_giay_server
                 }))
                 .ForMember(des => des.salePrice, opt => opt.MapFrom((s, d) => {
                     // todo
-                    return 0;
+                    return 1000000;
                 }))
                 .ForMember(des => des.description, opt => opt.MapFrom(s => s.ShoesType.Name));
+
+
+            // Shoes -> ResponseShoesDetailDTO
+            CreateMap<Shoes, ResponseShoesDetailDTO>()
+                .ForMember(des => des.id, opt => opt.MapFrom(s => s.Id))
+                .ForMember(des => des.code, opt => opt.MapFrom(s => s.Code))
+                .ForMember(des => des.name, opt => opt.MapFrom(s => s.Name))
+                .ForMember(des => des.description, opt => opt.MapFrom(s => s.Description))
+                .ForMember(des => des.rating, opt => opt.MapFrom(s => s.Rating))
+                .ForMember(des => des.ratingCount, opt => opt.MapFrom((s, d) =>
+                {
+                    // todo
+                    return 14;
+                }))
+                .ForMember(des => des.styleName, opt => opt.MapFrom(s => s.ShoesType.Name))
+                .ForMember(des => des.brandName, opt => opt.MapFrom(s => s.ShoesBrand.Name))
+                .ForMember(des => des.genderName, opt => opt.MapFrom(s => s.Gender.Name))
+                .ForMember(des => des.price, opt => opt.MapFrom(s => s.Price))
+                .ForMember(des => des.isNew, opt => opt.MapFrom(s => s.IsNew))
+                .ForMember(des => des.isOnSale, opt => opt.MapFrom(s => s.IsOnSale))
+                .ForMember(des => des.images, opt => opt.MapFrom((s, d) =>
+                {
+                    var results = new List<String>();
+                    foreach (var i in s.ShoesImages)
+                    {
+                        results.Add(i.ImagePath);
+                    }
+                    return results;
+                }))
+                .ForMember(des => des.sizes, opt => opt.MapFrom((s, d) =>
+                {
+                    var results = new List<String>();
+                    foreach (var i in s.Stocks)
+                    {
+                        results.Add(i.Size.Name);
+                    }
+                    return results;
+                }));
 
 
             CreateMap(typeof(Source<>), typeof(Destination<>)).ReverseMap();

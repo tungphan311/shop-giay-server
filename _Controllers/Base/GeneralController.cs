@@ -75,8 +75,9 @@ namespace shop_giay_server._Controllers
         }
 
         // GET: api/import/5
+        [Route("client/[controller]")]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCart(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var item = await _repository.GetById(id);
             if (item == null)
@@ -87,6 +88,31 @@ namespace shop_giay_server._Controllers
             var res = new Response<Model>(new List<Model>() { item });
             return Ok(res);
         }
+
+
+        [Route("client/[controller]/{id:int}")]
+        [HttpGet]
+        public async Task<IActionResult> GetForClient(int id)
+        {
+            return await _GetForClient<DTO>(id);
+        }
+
+
+        protected virtual async Task<IActionResult> _GetForClient<ResponseDTO>(int id) where ResponseDTO : BaseDTO
+        {
+            IActionResult actionResult = NotFound(Response<Model>.NotFound());
+            var item = await _repository.GetById(id);
+            var source = new Source<Model> { Value = item };
+            var result = _mapper.Map<Source<Model>, Destination<ResponseDTO>>(source);
+
+            if (item != null)
+            {
+                actionResult = Ok(Response<ResponseDTO>.Ok(result.Value));
+            }
+
+            return actionResult;
+        }
+
 
 
         #region Helper methods

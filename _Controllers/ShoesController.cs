@@ -8,19 +8,27 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using System.Linq;
+using System.Collections.Generic;
+using shop_giay_server.data;
+using Microsoft.EntityFrameworkCore;
 
 namespace shop_giay_server._Controllers
 {
     public class ShoesController : GeneralController<Shoes, ShoesDTO>
     {
-        private IAsyncRepository<Gender> _genderRepo;
+        private DataContext _context;
 
 
-        public ShoesController(IAsyncRepository<Shoes> repo, IAsyncRepository<Gender> genderRepo, ILogger<ShoesController> logger, IMapper mapper)
+        public ShoesController(
+            IAsyncRepository<Shoes> repo,
+            DataContext context,
+            ILogger<ShoesController> logger,
+            IMapper mapper)
             : base(repo, logger, mapper)
         {
-            _genderRepo = genderRepo;
+            _context = context;
         }
+
 
         public override async Task<IActionResult> GetAllForClient()
         {
@@ -33,13 +41,48 @@ namespace shop_giay_server._Controllers
             {
                 if (gender != "")
                 {
-                    var genderModel = _genderRepo.GetWhere(g => g.Name == gender.ToString());
+                    var genderModel = await _context.Genders.FirstAsync(g => g.Name == gender.ToString());
                     dict["genderId"] = genderModel.Id.ToString();
                 }
             }
 
-            return await _GetAllForClient<ReponseShoesDTO>(dict);
+            StringValues isNewShoes = "";
+            if (dict.TryGetValue("new", out isNewShoes))
+            {
+                if (isNewShoes != "")
+                {
+                    dict["isNew"] = isNewShoes; 
+                }
+            }
+
+            return await _GetAllForClient<ResponseShoesDTO>(dict);
         }
+
+
+        protected override async Task<IActionResult> _GetForClient<DTO>(int id)
+        {
+
+            IActionResult actionResult = NotFound(Response<Shoes>.NotFound());
+            var item = await _repository.GetById(id);
+            var result = _mapper.Map<ResponseShoesDetailDTO>(item);
+
+            foreach (var stock in item.Stocks)
+            {
+                var size = await _context.Sizes.FindAsync(stock.SizeId);
+                if (size != null)
+                {
+                    result.sizes.Add(size.Name);
+                }
+            }
+
+            if (item != null)
+            {
+                actionResult = Ok(Response<ResponseShoesDetailDTO>.Ok(result));
+            }
+
+            return actionResult;
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CreateShoesBody model)
@@ -68,6 +111,8 @@ namespace shop_giay_server._Controllers
             return await this.AddItem(shoes);
         }
 
+        
+
     }
 
     public class CreateShoesBody
@@ -94,7 +139,7 @@ namespace shop_giay_server._Controllers
         }
     }
 
-    public class ReponseShoesDTO : BaseDTO
+    public class ResponseShoesDTO : BaseDTO
     {
         public int id { get; set; }
         public string name { get; set; }
@@ -106,5 +151,26 @@ namespace shop_giay_server._Controllers
         public int quantity { get; set; }
         public int salePrice { get; set; }
         public string styleName { get; set; }
+    }
+
+    public class ResponseShoesDetailDTO : BaseDTO
+    {
+        public int id { get; set; }
+        public string code { get; set; }
+        public string name { get; set; }
+        public string description { get; set; }
+        public float rating { get; set; }
+        public float ratingCount { get; set; }
+        public string styleName { get; set; }
+        public string brandName { get; set; }
+        public string genderName { get; set; }
+        public int price { get; set; }
+        public int isNew { get; set; }
+        public int isOnSale { get; set; }
+        public int salePrice { get; set; }
+        public List<string> images { get; set; } = new List<string>();
+
+        [IgnoreMap]
+        public List<string> sizes { get; set; } = new List<string>();
     }
 }
