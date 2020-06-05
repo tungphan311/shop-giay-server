@@ -11,6 +11,7 @@ using System.Linq;
 using System.Collections.Generic;
 using shop_giay_server.data;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace shop_giay_server._Controllers
 {
@@ -83,7 +84,7 @@ namespace shop_giay_server._Controllers
             return actionResult;
         }
 
-
+        [Route("admin/[controller]")]
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CreateShoesBody model)
         {
@@ -91,6 +92,21 @@ namespace shop_giay_server._Controllers
             if (!model.IsValid())
             {
                 return BadRequest(Response<Shoes>.BadRequest("Not enough information to create."));
+            }
+
+            var images = model.Images;
+            Console.WriteLine(model.Images.Count);
+
+            var shoesImages = new List<ShoesImage>();
+
+            foreach (var image in images)
+            {
+                var shoesImage = new ShoesImage
+                {
+                    ColorId = image.ColorId,
+                    ImagePath = image.ImagePath,
+                };
+                shoesImages.Add(shoesImage);
             }
 
             var shoes = new Shoes()
@@ -104,15 +120,13 @@ namespace shop_giay_server._Controllers
                 IsOnSale = model.IsOnSale,
                 StyleId = model.StyleId,
                 BrandId = model.BrandId,
-                GenderId = model.GenderId
+                GenderId = model.GenderId,
+                ShoesImages = shoesImages
             };
 
             if (shoes.IsNew) shoes.IsNew = true;
             return await this.AddItem(shoes);
         }
-
-        
-
     }
 
     public class CreateShoesBody
@@ -127,6 +141,7 @@ namespace shop_giay_server._Controllers
         public int StyleId { get; set; }
         public int BrandId { get; set; }
         public int GenderId { get; set; }
+        public List<ShoesImageDTO> Images { get; set; } = new List<ShoesImageDTO>();
 
         public bool IsValid()
         {
