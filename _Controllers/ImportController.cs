@@ -20,6 +20,7 @@ namespace shop_giay_server._Controllers
             _stockRepository = stockRepo;
         }
 
+        [Route("admin/[controller]")]
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CreateImport model)
         {
