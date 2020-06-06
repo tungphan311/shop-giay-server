@@ -59,7 +59,6 @@ namespace shop_giay_server._Controllers
             return await _GetAllForClient<ResponseShoesDTO>(dict);
         }
 
-
         protected override async Task<IActionResult> _GetForClient<DTO>(int id)
         {
 
@@ -84,6 +83,15 @@ namespace shop_giay_server._Controllers
             return actionResult;
         }
 
+        public async Task<bool> isExist(string code)
+        {
+            if (await _context.Shoes.AnyAsync(s => s.Code == code)) 
+            {
+                return true;
+            }
+            return false;
+        } 
+
         [Route("admin/[controller]")]
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CreateShoesBody model)
@@ -92,6 +100,11 @@ namespace shop_giay_server._Controllers
             if (!model.IsValid())
             {
                 return BadRequest(Response<Shoes>.BadRequest("Not enough information to create."));
+            }
+
+            if (await isExist(model.Code))
+            {
+                return BadRequest(Response<Shoes>.BadRequest("Shoes's code is already existed"));
             }
 
             var images = model.Images;
@@ -109,6 +122,19 @@ namespace shop_giay_server._Controllers
                 shoesImages.Add(shoesImage);
             }
 
+            var stocks = new List<Stock>();
+
+            foreach (var item in model.Stocks)
+            {
+                var s = new Stock
+                {
+                    ColorId = item.ColorId,
+                    SizeId = item.SizeId,
+                    Instock = item.Instock,
+                };
+                stocks.Add(s);
+            }
+
             var shoes = new Shoes()
             {
                 Code = model.Code,
@@ -121,27 +147,59 @@ namespace shop_giay_server._Controllers
                 StyleId = model.StyleId,
                 BrandId = model.BrandId,
                 GenderId = model.GenderId,
-                ShoesImages = shoesImages
+                ShoesImages = shoesImages,
+                Stocks = stocks
             };
 
             if (shoes.IsNew) shoes.IsNew = true;
             return await this.AddItem(shoes);
         }
+
+        //[Route("admin/[controller]/stock")]
+        //[HttpPost]
+        //public async Task<IActionResult> AddShoesStock([FromBody] UpdateShoesStockBody model)
+        //{
+        //    if (!(await _repository.ExistWhere(s => s.Id == model.ShoesId)))
+        //    {
+        //        return BadRequest(Response<Shoes>.BadRequest("ShoesId not exists."));
+        //    }
+
+        //    if ((await _context.Stocks.AnyAsync(o =>
+        //            o.ShoesId == model.ShoesId
+        //            && o.SizeId == model.SizeId
+        //            && o.ColorId == model.ColorId))
+        //        )
+        //    {
+        //        return BadRequest(Response<Shoes>.BadRequest("Stock has exists."));
+        //    }
+
+        //    var stockResult = await _context.Stocks.AddAsync(new Stock
+        //    {
+        //        ShoesId = model.ShoesId,
+        //        SizeId = model.SizeId,
+        //        ColorId = model.ColorId
+        //    });
+        //    return Ok(Response<Stock>.Ok(stockResult));
+        //}
+
     }
+
+    
 
     public class CreateShoesBody
     {
         public string Code { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public float Rating { get; set; }
+        public float Rating { get; set; } = 0;
         public float Price { get; set; }
-        public bool IsNew { get; set; }
-        public bool IsOnSale { get; set; }
+        public bool IsNew { get; set; } = false;
+        public bool IsOnSale { get; set; } = false;
         public int StyleId { get; set; }
         public int BrandId { get; set; }
         public int GenderId { get; set; }
         public List<ShoesImageDTO> Images { get; set; } = new List<ShoesImageDTO>();
+        public List<StockDTO> Stocks { get; set; } = new List<StockDTO>();
 
         public bool IsValid()
         {
@@ -152,6 +210,13 @@ namespace shop_giay_server._Controllers
                 && BrandId > 0
                 && GenderId > 0;
         }
+    }
+
+    public class UpdateShoesStockBody
+    {
+        public int ShoesId { get; set; }
+        public int SizeId { get; set; }
+        public int ColorId { get; set; }
     }
 
     public class ResponseShoesDTO : BaseDTO
