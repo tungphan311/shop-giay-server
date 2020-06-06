@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using AutoMapper;
 using shop_giay_server.models;
 using shop_giay_server.Dtos;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace shop_giay_server._Controllers
 {
@@ -80,6 +81,11 @@ namespace shop_giay_server._Controllers
         {
             var empty = new List<ItemType>();
             return new Response<ItemType>(empty, "ERROR", "Not Found.");
+        }
+
+        internal static object Ok(EntityEntry<Stock> stockResult)
+        {
+            throw new NotImplementedException();
         }
     }
 

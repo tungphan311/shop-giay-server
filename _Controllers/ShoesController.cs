@@ -127,7 +127,37 @@ namespace shop_giay_server._Controllers
             if (shoes.IsNew) shoes.IsNew = true;
             return await this.AddItem(shoes);
         }
+
+        [Route("admin/[controller]/stock")]
+        [HttpPost]
+        public async Task<IActionResult> AddShoesStock([FromBody] UpdateShoesStockBody model)
+        {
+            if (!(await _repository.ExistWhere(s => s.Id == model.ShoesId)))
+            {
+                return BadRequest(Response<Shoes>.BadRequest("ShoesId not exists."));
+            }
+
+            if ((await _context.Stocks.AnyAsync(o =>
+                    o.ShoesId == model.ShoesId
+                    && o.SizeId == model.SizeId
+                    && o.ColorId == model.ColorId))
+                )
+            {
+                return BadRequest(Response<Shoes>.BadRequest("Stock has exists."));
+            }
+
+            var stockResult = await _context.Stocks.AddAsync(new Stock
+            {
+                ShoesId = model.ShoesId,
+                SizeId = model.SizeId,
+                ColorId = model.ColorId
+            });
+            return Ok(Response<Stock>.Ok(stockResult));
+        }
+
     }
+
+    
 
     public class CreateShoesBody
     {
@@ -152,6 +182,13 @@ namespace shop_giay_server._Controllers
                 && BrandId > 0
                 && GenderId > 0;
         }
+    }
+
+    public class UpdateShoesStockBody
+    {
+        public int ShoesId { get; set; }
+        public int SizeId { get; set; }
+        public int ColorId { get; set; }
     }
 
     public class ResponseShoesDTO : BaseDTO
