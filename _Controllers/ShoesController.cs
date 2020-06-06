@@ -59,7 +59,6 @@ namespace shop_giay_server._Controllers
             return await _GetAllForClient<ResponseShoesDTO>(dict);
         }
 
-
         protected override async Task<IActionResult> _GetForClient<DTO>(int id)
         {
 
@@ -84,6 +83,15 @@ namespace shop_giay_server._Controllers
             return actionResult;
         }
 
+        public async Task<bool> isExist(string code)
+        {
+            if (await _context.Shoes.AnyAsync(s => s.Code == code)) 
+            {
+                return true;
+            }
+            return false;
+        } 
+
         [Route("admin/[controller]")]
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CreateShoesBody model)
@@ -92,6 +100,11 @@ namespace shop_giay_server._Controllers
             if (!model.IsValid())
             {
                 return BadRequest(Response<Shoes>.BadRequest("Not enough information to create."));
+            }
+
+            if (await isExist(model.Code))
+            {
+                return BadRequest(Response<Shoes>.BadRequest("Shoes's code is already existed"));
             }
 
             var images = model.Images;
