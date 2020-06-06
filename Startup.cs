@@ -23,6 +23,8 @@ namespace shop_giay_server
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -48,7 +50,16 @@ namespace shop_giay_server
             services.AddSingleton(mapper);
 
             services.AddControllers();
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:3000", "https://shoess.azurewebsites.net/")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                });
+            });
             services.AddScoped<IAuthRepository, AuthRepository>();
 
         }
@@ -65,7 +76,7 @@ namespace shop_giay_server
 
             app.UseHttpsRedirection();
 
-            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseRouting();
 
@@ -126,7 +137,8 @@ namespace shop_giay_server
                     des => des.imagePath,
                     opt => opt.MapFrom((s, d) => s.ShoesImages.Count > 0 ? s.ShoesImages[0].ImagePath : "")
                 )
-                .ForMember(des => des.quantity, opt => opt.MapFrom((s, d) => {
+                .ForMember(des => des.quantity, opt => opt.MapFrom((s, d) =>
+                {
                     var total = 0;
                     foreach (var stock in s.Stocks)
                     {
@@ -134,7 +146,8 @@ namespace shop_giay_server
                     }
                     return total;
                 }))
-                .ForMember(des => des.salePrice, opt => opt.MapFrom((s, d) => {
+                .ForMember(des => des.salePrice, opt => opt.MapFrom((s, d) =>
+                {
                     // todo
                     return 1000000;
                 }))
