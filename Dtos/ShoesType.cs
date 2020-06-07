@@ -8,6 +8,6 @@ namespace shop_giay_server.Dtos
 
         public string Description { get; set; }
 
-        public List<ShoesDTO> ShoesList { get; set; }
+        // public List<ShoesDTO> ShoesList { get; set; }
     }
 }

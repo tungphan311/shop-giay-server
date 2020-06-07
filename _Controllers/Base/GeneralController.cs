@@ -33,6 +33,8 @@ namespace shop_giay_server._Controllers
             _mapper = mapper;
         }
 
+        #region Admin
+
         // GET: api/admin/[resources]
         [Route("admin/[controller]")]
         [HttpGet]
@@ -43,6 +45,59 @@ namespace shop_giay_server._Controllers
                 p => p.Value);
             return await _GetAllForClient<DTO>(dict);
         }
+
+        // DELETE: api/admin/[resources]/5
+        [Route("admin/[controller]/{id:int}")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteForAdmin(int id, bool setFlag = true)
+        {
+            var item = await _repository.GetById(id);
+            if (item == null)
+            {
+                return NotFound(Response<Model>.NotFound());
+            }
+
+            IActionResult response = BadRequest(Response<Model>.BadRequest());
+            if (setFlag)
+            {
+                item.DeleteFlag = true;
+                item = await _repository.Update(item);
+                response = Ok(Response<Model>.OkDeleted(item));
+            }
+            else
+            {
+                var result = await _repository.Remove(id);
+                response = result
+                    ? Ok(Response<Model>.OkDeleted(item, "Removed from database."))
+                    : response;
+            }
+            return response;
+        }
+
+
+        // Helper method
+        protected async Task<IActionResult> _UpdateItemForAdminAsync(Model model)
+        {
+            IActionResult response = BadRequest(Response<Model>.NotFound());
+            if (!(await _repository.ExistWhere(m => m.Id == model.Id)))
+            {
+                return response;
+            }
+
+            var item = await _repository.Update(model);
+            if (item == null)
+            {
+                return response; 
+            }
+
+            response = Ok(Response<Model>.Ok(item));
+            return response;
+        }
+
+        #endregion
+
+
+        #region Client
 
         // GET: api/client/[resources]
         [Route("client/[controller]")]
@@ -55,6 +110,7 @@ namespace shop_giay_server._Controllers
 
         private async Task<List<ResponseDTO>> GetModels<ResponseDTO>(Dictionary<string, StringValues> queries)
         {
+            
             var items = await _repository.GetAll(queries);
             items = items.Where(i => i.DeleteFlag == false);
             var source = new Source<List<Model>> { Value = items.ToList() };
@@ -75,7 +131,7 @@ namespace shop_giay_server._Controllers
             return actionResult;
         }
 
-        // GET: api/import/5
+        // GET: api/client/[resources]/5
         [Route("client/[controller]")]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
@@ -90,14 +146,10 @@ namespace shop_giay_server._Controllers
             return Ok(res);
         }
 
+        #endregion
 
-        [Route("client/[controller]/{id:int}")]
-        [HttpGet]
-        public async Task<IActionResult> GetForClient(int id)
-        {
-            return await _GetForClient<DTO>(id);
-        }
 
+        #region Helper methods
 
         protected virtual async Task<IActionResult> _GetForClient<ResponseDTO>(int id) where ResponseDTO : BaseDTO
         {
@@ -115,10 +167,7 @@ namespace shop_giay_server._Controllers
         }
 
 
-
-        #region Helper methods
-
-        public async Task<IActionResult> AddItem(Model item)
+        protected async Task<IActionResult> AddItem(Model item)
         {
             IActionResult result = BadRequest(Response<Model>.BadRequest());
             try

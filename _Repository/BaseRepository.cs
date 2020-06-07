@@ -55,7 +55,7 @@ namespace shop_giay_server._Repository
 
         public async Task<T> Update(T entity)
         {
-            _dataContext.Entry(entity).State = EntityState.Modified;
+            _dataContext.Attach(entity);
             await _dataContext.SaveChangesAsync();
             return entity;
         }
