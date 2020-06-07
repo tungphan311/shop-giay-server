@@ -125,6 +125,17 @@ namespace shop_giay_server
             CreateMap<User, UserDTO>().ReverseMap();
             CreateMap<Stock, StockDTO>().ReverseMap();
 
+            CreateMap<ShoesType, ShoesTypeLiteDTO>().ReverseMap();
+            CreateMap<Size, SizeLiteDTO>().ReverseMap();
+            CreateMap<ShoesBrand, ShoesBrandLiteDTO>().ReverseMap();
+            CreateMap<Color, ColorLiteDTO>().ReverseMap();
+            CreateMap<Stock, StockLiteDTO>().ReverseMap();
+            CreateMap<Gender, GenderLiteDTO>().ReverseMap();
+            CreateMap<Stock, StockLiteDTO>().ReverseMap();
+            CreateMap<CustomerReview, CustomerReviewLiteDTO>().ReverseMap();
+            CreateMap<ShoesImage, ShoesImageLiteDTO>().ReverseMap();
+
+
             // Shoes -> ResponseShoesDTO
             CreateMap<Shoes, ResponseShoesDTO>()
                 .ForMember(des => des.name, opt => opt.MapFrom(s => s.Name))

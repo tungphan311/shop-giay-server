@@ -2,7 +2,7 @@ using System;
 
 namespace shop_giay_server.Dtos
 {
-    public class CustomerReviewDTO: BaseDTO
+    public class CustomerReviewLiteDTO : BaseDTO
     {
         public DateTime Date { get; set; }
 
@@ -11,9 +11,14 @@ namespace shop_giay_server.Dtos
         public int Rate { get; set; }
 
         public int ShoesId { get; set; }
-        public ShoesDTO Shoes { get; set; }
 
         public int CustomerId { get; set; }
+    }
+
+    public class CustomerReviewDTO: CustomerReviewLiteDTO
+    {
+        public ShoesDTO Shoes { get; set; }
+
         public CustomerDTO Customer { get; set; }
     }
 }
