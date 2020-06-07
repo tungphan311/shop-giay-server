@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace shop_giay_server.Migrations
 {
-    public partial class auzreMigration : Migration
+    public partial class updateDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,6 +13,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -26,6 +27,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     Point = table.Column<float>(nullable: false)
@@ -41,6 +43,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -54,6 +57,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     PaymentType = table.Column<int>(nullable: false),
                     TransactionId = table.Column<string>(nullable: true),
                     Date = table.Column<DateTime>(nullable: false),
@@ -71,6 +75,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -84,6 +89,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -97,6 +103,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     SaleType = table.Column<int>(nullable: false),
                     Amount = table.Column<int>(nullable: false),
                     BeginDate = table.Column<DateTime>(nullable: false),
@@ -114,6 +121,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Country = table.Column<string>(nullable: true)
                 },
@@ -128,6 +136,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true)
                 },
@@ -142,6 +151,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -155,6 +165,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Username = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     DateOfBirth = table.Column<DateTime>(nullable: false),
@@ -183,6 +194,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     ImportDate = table.Column<DateTime>(nullable: false),
                     TotalQuantity = table.Column<int>(nullable: false),
                     TotalCost = table.Column<float>(nullable: false),
@@ -205,10 +217,10 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Username = table.Column<string>(nullable: true),
                     PasswordHash = table.Column<byte[]>(nullable: true),
                     PasswordSalt = table.Column<byte[]>(nullable: true),
-                    DeleteFlag = table.Column<bool>(nullable: false),
                     RoleId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -228,6 +240,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Code = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
@@ -268,6 +281,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     City = table.Column<string>(nullable: true),
                     District = table.Column<string>(nullable: true),
                     Ward = table.Column<string>(nullable: true),
@@ -291,6 +305,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     CustomerId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -310,6 +325,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     OrderDate = table.Column<DateTime>(nullable: false),
                     Total = table.Column<int>(nullable: false),
                     Status = table.Column<string>(nullable: true),
@@ -349,6 +365,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Date = table.Column<DateTime>(nullable: false),
                     Content = table.Column<string>(nullable: true),
                     Rate = table.Column<int>(nullable: false),
@@ -378,6 +395,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     ColorId = table.Column<int>(nullable: false),
                     ImagePath = table.Column<string>(nullable: true),
                     ShoesId = table.Column<int>(nullable: false)
@@ -399,6 +417,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Instock = table.Column<int>(nullable: false),
                     ShoesId = table.Column<int>(nullable: false),
                     SizeId = table.Column<int>(nullable: false),
@@ -433,6 +452,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Amount = table.Column<int>(nullable: false),
                     CartId = table.Column<int>(nullable: false),
                     StockId = table.Column<int>(nullable: false)
@@ -460,6 +480,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Quantity = table.Column<int>(nullable: false),
                     OriginalPrice = table.Column<int>(nullable: false),
                     StockId = table.Column<int>(nullable: false),
@@ -488,6 +509,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     Amount = table.Column<int>(nullable: false),
                     PricePerUnit = table.Column<float>(nullable: false),
                     Total = table.Column<float>(nullable: false),
@@ -517,6 +539,7 @@ namespace shop_giay_server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
                     SaleId = table.Column<int>(nullable: false),
                     StockId = table.Column<int>(nullable: false)
                 },

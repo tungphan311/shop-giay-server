@@ -52,7 +52,7 @@ namespace shop_giay_server._Controllers
             {
                 if (isNewShoes != "")
                 {
-                    dict["isNew"] = isNewShoes; 
+                    dict["isNew"] = isNewShoes;
                 }
             }
 
@@ -85,12 +85,12 @@ namespace shop_giay_server._Controllers
 
         public async Task<bool> isExist(string code)
         {
-            if (await _context.Shoes.AnyAsync(s => s.Code == code)) 
+            if (await _context.Shoes.AnyAsync(s => s.Code == code))
             {
                 return true;
             }
             return false;
-        } 
+        }
 
         [Route("admin/[controller]")]
         [HttpPost]
@@ -184,10 +184,11 @@ namespace shop_giay_server._Controllers
 
     }
 
-    
+
 
     public class CreateShoesBody
     {
+        public bool DeleteFlag { get; set; } = false;
         public string Code { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
