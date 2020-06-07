@@ -7,7 +7,5 @@ namespace shop_giay_server.Dtos
         public string Name { get; set; }
 
         public string Country { get; set; }
-
-        public List<ShoesDTO> ShoesList { get; set; }
     }
 }

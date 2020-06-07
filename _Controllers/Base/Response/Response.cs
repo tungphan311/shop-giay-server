@@ -71,6 +71,11 @@ namespace shop_giay_server._Controllers
             return new Response<ItemType>(data, "OK", "Success.");
         }
 
+        public static Response<ItemType> OkDeleted(ItemType data, string msg = "Deleted.")
+        {
+            return new Response<ItemType>(data, "OK", msg);
+        }
+
         public static Response<ItemType> BadRequest(string msg = "Invalid request.")
         {
             var empty = new List<ItemType>();
