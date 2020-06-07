@@ -21,10 +21,12 @@ namespace shop_giay_server.data
         {
             if (!context.Roles.Any())
             {
-                var arr = new string [] { "admin", "staff" };
-                foreach (var i in arr) {
+                var arr = new string[] { "admin", "staff" };
+                foreach (var i in arr)
+                {
                     var item = new Role();
-                    item.Name = i;  
+                    item.Name = i;
+                    item.DeleteFlag = false;
                     context.Add(item);
                 }
 
@@ -39,6 +41,7 @@ namespace shop_giay_server.data
 
                 foreach (var i in items)
                 {
+                    i.DeleteFlag = false;
                     context.Colors.Add(i);
                 }
 
@@ -53,6 +56,7 @@ namespace shop_giay_server.data
 
                 foreach (var i in items)
                 {
+                    i.DeleteFlag = false;
                     context.CustomerTypes.Add(i);
                 }
 
@@ -67,6 +71,7 @@ namespace shop_giay_server.data
 
                 foreach (var i in items)
                 {
+                    i.DeleteFlag = false;
                     context.Genders.Add(i);
                 }
 
@@ -81,6 +86,7 @@ namespace shop_giay_server.data
 
                 foreach (var i in items)
                 {
+                    i.DeleteFlag = false;
                     context.Providers.Add(i);
                 }
 
@@ -97,6 +103,7 @@ namespace shop_giay_server.data
                 {
                     foreach (var i in items)
                     {
+                        i.DeleteFlag = false;
                         context.Sales.Add(i);
                     }
 
@@ -112,6 +119,7 @@ namespace shop_giay_server.data
 
                 foreach (var i in items)
                 {
+                    i.DeleteFlag = false;
                     context.ShoesBrands.Add(i);
                 }
 
@@ -126,6 +134,7 @@ namespace shop_giay_server.data
 
                 foreach (var i in items)
                 {
+                    i.DeleteFlag = false;
                     context.ShoesTypes.Add(i);
                 }
 
@@ -140,6 +149,7 @@ namespace shop_giay_server.data
 
                 foreach (var i in items)
                 {
+                    i.DeleteFlag = false;
                     context.Sizes.Add(i);
                 }
 
@@ -180,6 +190,7 @@ namespace shop_giay_server.data
                     s.Rating = 0;
                     s.IsNew = true;
                     s.IsOnSale = false;
+                    s.DeleteFlag = false;
 
                     context.Shoes.Add(s);
                 }
@@ -205,6 +216,7 @@ namespace shop_giay_server.data
                     var shoesId = shoes[random.Next(0, shoes.Count - 1)].Id;
                     i.ColorId = colorId;
                     i.ShoesId = shoesId;
+                    i.DeleteFlag = false;
                     context.Add(i);
                 }
 
@@ -219,7 +231,7 @@ namespace shop_giay_server.data
 
                 var random = new Random();
 
-                for (int i = 0; i < 10; i++) 
+                for (int i = 0; i < 10; i++)
                 {
                     var stock = new Stock();
                     var colorId = colors[random.Next(0, colors.Count - 1)].Id;
@@ -230,6 +242,7 @@ namespace shop_giay_server.data
                     stock.ShoesId = shoesId;
                     stock.SizeId = sizeId;
                     stock.Instock = numb;
+                    stock.DeleteFlag = false;
                     context.Add(stock);
                 }
 
@@ -250,6 +263,7 @@ namespace shop_giay_server.data
                     s.Rating = 0;
                     s.IsNew = true;
                     s.IsOnSale = false;
+                    s.DeleteFlag = false;
 
                     context.Shoes.Add(s);
                 }

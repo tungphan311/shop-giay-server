@@ -36,6 +36,7 @@ namespace shop_giay_server._Controllers
 
     public class CreateCart
     {
+        public bool DeleteFlag { get; set; } = false;
         public int CustomerId { get; set; }
     }
 

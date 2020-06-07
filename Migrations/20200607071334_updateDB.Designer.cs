@@ -10,8 +10,8 @@ using shop_giay_server.data;
 namespace shop_giay_server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200527170140_auzreMigration")]
-    partial class auzreMigration
+    [Migration("20200607071334_updateDB")]
+    partial class updateDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -33,6 +33,9 @@ namespace shop_giay_server.Migrations
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
 
                     b.Property<string>("District")
                         .HasColumnType("nvarchar(max)");
@@ -60,6 +63,9 @@ namespace shop_giay_server.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId")
@@ -81,6 +87,9 @@ namespace shop_giay_server.Migrations
                     b.Property<int>("CartId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
+
                     b.Property<int>("StockId")
                         .HasColumnType("int");
 
@@ -99,6 +108,9 @@ namespace shop_giay_server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -120,6 +132,9 @@ namespace shop_giay_server.Migrations
 
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
@@ -168,6 +183,9 @@ namespace shop_giay_server.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Rate")
                         .HasColumnType("int");
 
@@ -190,6 +208,9 @@ namespace shop_giay_server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -211,6 +232,9 @@ namespace shop_giay_server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -225,6 +249,9 @@ namespace shop_giay_server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("ImportDate")
                         .HasColumnType("datetime2");
@@ -251,6 +278,9 @@ namespace shop_giay_server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
 
                     b.Property<int>("ImportId")
                         .HasColumnType("int");
@@ -285,6 +315,9 @@ namespace shop_giay_server.Migrations
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
 
                     b.Property<string>("DeliverAddress")
                         .HasColumnType("nvarchar(max)");
@@ -329,6 +362,9 @@ namespace shop_giay_server.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("int");
 
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
+
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
@@ -363,6 +399,9 @@ namespace shop_giay_server.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
+
                     b.Property<int>("PaymentType")
                         .HasColumnType("int");
 
@@ -384,6 +423,9 @@ namespace shop_giay_server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -398,6 +440,9 @@ namespace shop_giay_server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -420,6 +465,9 @@ namespace shop_giay_server.Migrations
                     b.Property<DateTime>("BeginDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("ExpiredDate")
                         .HasColumnType("datetime2");
 
@@ -440,6 +488,9 @@ namespace shop_giay_server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
 
                     b.Property<int>("SaleId")
                         .HasColumnType("int");
@@ -468,6 +519,9 @@ namespace shop_giay_server.Migrations
 
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -514,6 +568,9 @@ namespace shop_giay_server.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -531,6 +588,9 @@ namespace shop_giay_server.Migrations
 
                     b.Property<int>("ColorId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(max)");
@@ -552,6 +612,9 @@ namespace shop_giay_server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -570,6 +633,9 @@ namespace shop_giay_server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -587,6 +653,9 @@ namespace shop_giay_server.Migrations
 
                     b.Property<int>("ColorId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("DeleteFlag")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Instock")
                         .HasColumnType("int");

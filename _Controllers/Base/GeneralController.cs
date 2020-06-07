@@ -56,12 +56,13 @@ namespace shop_giay_server._Controllers
         private async Task<List<ResponseDTO>> GetModels<ResponseDTO>(Dictionary<string, StringValues> queries)
         {
             var items = await _repository.GetAll(queries);
+            items = items.Where(i => i.DeleteFlag == false);
             var source = new Source<List<Model>> { Value = items.ToList() };
             var result = _mapper.Map<Source<List<Model>>, Destination<List<ResponseDTO>>>(source);
             return result.Value;
         }
 
-        public async Task<IActionResult> _GetAllForClient<ResponseDTO>(Dictionary<string, StringValues> queries) where ResponseDTO: BaseDTO
+        public async Task<IActionResult> _GetAllForClient<ResponseDTO>(Dictionary<string, StringValues> queries) where ResponseDTO : BaseDTO
         {
             IActionResult actionResult = NotFound(Response<Model>.NotFound());
 

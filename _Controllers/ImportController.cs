@@ -35,7 +35,7 @@ namespace shop_giay_server._Controllers
                     return BadRequest(Response<Import>.BadRequest($"Not found stockId: {id}"));
                 }
             }
-            
+
             int totalCost = 0;
             int totalQuantity = 0;
 
@@ -77,6 +77,7 @@ namespace shop_giay_server._Controllers
 
     public class CreateImport
     {
+        public bool DeleteFlag { get; set; } = false;
         public int ProviderId { get; set; }
         public List<ImportDetailDTO> Details { get; set; } = new List<ImportDetailDTO>();
     }
