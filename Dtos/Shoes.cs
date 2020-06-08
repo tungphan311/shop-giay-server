@@ -20,16 +20,16 @@ namespace shop_giay_server.Dtos
         public bool IsOnSale { get; set; }
 
         public int StyleId { get; set; }
-        public ShoesTypeDTO ShoesType { get; set; }
+        public ShoesTypeLiteDTO ShoesType { get; set; }
 
         public int BrandId { get; set; }
-        public ShoesBrandDTO ShoesBrand { get; set; }
+        public ShoesBrandLiteDTO ShoesBrand { get; set; }
 
         public int GenderId { get; set; }
-        public GenderDTO Gender { get; set; }
+        public GenderLiteDTO Gender { get; set; }
 
-        public List<StockDTO> Stocks { get; set; }
-        public List<ShoesImageDTO> ShoesImages { get; set; }
-        public List<CustomerReviewDTO> CustomerReviews { get; set; }
+        public List<StockLiteDTO> Stocks { get; set; }
+        public List<ShoesImageLiteDTO> ShoesImages { get; set; }
+        public List<CustomerReviewLiteDTO> CustomerReviews { get; set; }
     }
 }

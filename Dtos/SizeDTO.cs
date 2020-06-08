@@ -2,10 +2,13 @@ using System.Collections.Generic;
 
 namespace shop_giay_server.Dtos
 {
-    public class SizeDTO : BaseDTO
+    public class SizeLiteDTO : BaseDTO
     {
         public string Name { get; set; }
+    }
 
-        // public List<StockDTO> Stocks { get; set; }
+    public class SizeDTO : SizeLiteDTO
+    {
+        public List<StockDTO> Stocks { get; set; }
     }
 }
