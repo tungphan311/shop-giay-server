@@ -86,7 +86,7 @@ namespace shop_giay_server._Repository
 
 
             // Paging
-            this.GetPageInfo(dict, ref pageNumber, ref pageSize);
+            GetPageInfo(dict, ref pageNumber, ref pageSize);
             if (pageSize != -1 || pageNumber != -1)
             {
                 if (pageSize == -1) pageSize = defaultPageSize;

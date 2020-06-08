@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace shop_giay_server.Dtos
 {
-    public class OrderDTO: BaseDTO 
+    public class OrderLiteDTO: BaseDTO 
     {
         public DateTime OrderDate { get; set; }
 
@@ -18,14 +18,20 @@ namespace shop_giay_server.Dtos
         public DateTime DeliveryDate { get; set; }
 
         public int SaleId { get; set; }
-        public SaleDTO Sale { get; set; }
-
+        
         public int PaymentId { get; set; }
-        public PaymentDTO Payment { get; set; }
-
+        
         public int CustomerId { get; set; }
-        public CustomerDTO Customer { get; set; }
+    }
 
-        public List<OrderItemDTO> OrderItems { get; set; } 
+    public class OrderDTO : OrderLiteDTO
+    {
+        public SaleLiteDTO Sale { get; set; }
+
+        public PaymentLiteDTO Payment { get; set; }
+
+        public CustomerLiteDTO Customer { get; set; }
+
+        public List<OrderItemLiteDTO> OrderItems { get; set; }
     }
 }

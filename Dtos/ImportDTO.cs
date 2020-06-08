@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace shop_giay_server.Dtos
 {
-    public class ImportDTO: BaseDTO
+    public class ImportLiteDTO : BaseDTO
     {
         public DateTime ImportDate { get; set; }
 
@@ -13,8 +13,12 @@ namespace shop_giay_server.Dtos
         public float TotalCost { get; set; }
 
         public int ProviderId { get; set; }
-        public ProviderDTO Provider { get; set; }
+    }
 
-        public List<ImportDetailDTO> ImportDetails { get; set; }
+    public class ImportDTO : ImportLiteDTO
+    {
+        public ProviderLiteDTO Provider { get; set; }
+
+        public List<ImportDetailLiteDTO> ImportDetails { get; set; }
     }
 }

@@ -125,15 +125,31 @@ namespace shop_giay_server
             CreateMap<User, UserDTO>().ReverseMap();
             CreateMap<Stock, StockDTO>().ReverseMap();
 
+            CreateMap<Size, SizeLiteDTO>().ReverseMap();
+            CreateMap<Address, AddressLiteDTO>().ReverseMap();
+            CreateMap<Cart, CartLiteDTO>().ReverseMap();
+            CreateMap<CartItem, CartItemLiteDTO>().ReverseMap();
+            CreateMap<Color, ColorLiteDTO>().ReverseMap();
+            CreateMap<Customer, CustomerLiteDTO>().ReverseMap();
+            CreateMap<CustomerReview, CustomerReviewLiteDTO>().ReverseMap();
+            CreateMap<CustomerType, CustomerTypeLiteDTO>().ReverseMap();
+            CreateMap<Gender, GenderLiteDTO>().ReverseMap();
+            CreateMap<Import, ImportLiteDTO>().ReverseMap();
+            CreateMap<ImportDetail, ImportDetailLiteDTO>().ReverseMap();
+            CreateMap<Order, OrderLiteDTO>().ReverseMap();
+            CreateMap<Stock, StockLiteDTO>().ReverseMap();
+            CreateMap<OrderItem, OrderItemLiteDTO>().ReverseMap();
+            CreateMap<Payment, PaymentLiteDTO>().ReverseMap();
+            CreateMap<Provider, ProviderLiteDTO>().ReverseMap();
+            CreateMap<Role, RoleLiteDTO>().ReverseMap();
+            CreateMap<Sale, SaleLiteDTO>().ReverseMap();
+            CreateMap<Shoes, ShoesLiteDTO>().ReverseMap();
+            CreateMap<ShoesBrand, ShoesBrandLiteDTO>().ReverseMap();
+            CreateMap<ShoesImage, ShoesImageLiteDTO>().ReverseMap();
             CreateMap<ShoesType, ShoesTypeLiteDTO>().ReverseMap();
             CreateMap<Size, SizeLiteDTO>().ReverseMap();
-            CreateMap<ShoesBrand, ShoesBrandLiteDTO>().ReverseMap();
-            CreateMap<Color, ColorLiteDTO>().ReverseMap();
+            CreateMap<User, UserLiteDTO>().ReverseMap();
             CreateMap<Stock, StockLiteDTO>().ReverseMap();
-            CreateMap<Gender, GenderLiteDTO>().ReverseMap();
-            CreateMap<Stock, StockLiteDTO>().ReverseMap();
-            CreateMap<CustomerReview, CustomerReviewLiteDTO>().ReverseMap();
-            CreateMap<ShoesImage, ShoesImageLiteDTO>().ReverseMap();
 
 
             // Shoes -> ResponseShoesDTO
