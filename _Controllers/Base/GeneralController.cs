@@ -51,26 +51,19 @@ namespace shop_giay_server._Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteForAdmin(int id, bool setFlag = true)
         {
-            var item = await _repository.GetById(id);
-            if (item == null)
+            return await DeleteItem(id, setFlag);
+        }
+
+        [Route("admin/[controller]")]
+        [HttpDelete]
+        public async Task<IActionResult> MultiDeleteForAdmin([FromQuery] List<int> ids, bool setFlag = true)
+        {
+            IActionResult response = BadRequest(Response<Model>.BadRequest());
+            foreach (var id in ids)
             {
-                return NotFound(Response<Model>.NotFound());
+                response = await DeleteItem(id, setFlag);
             }
 
-            IActionResult response = BadRequest(Response<Model>.BadRequest());
-            if (setFlag)
-            {
-                item.DeleteFlag = true;
-                item = await _repository.Update(item);
-                response = Ok(Response<Model>.OkDeleted(item));
-            }
-            else
-            {
-                var result = await _repository.Remove(id);
-                response = result
-                    ? Ok(Response<Model>.OkDeleted(item, "Removed from database."))
-                    : response;
-            }
             return response;
         }
 
@@ -87,7 +80,7 @@ namespace shop_giay_server._Controllers
             var item = await _repository.Update(model);
             if (item == null)
             {
-                return response; 
+                return response;
             }
 
             response = Ok(Response<Model>.Ok(item));
@@ -110,7 +103,7 @@ namespace shop_giay_server._Controllers
 
         private async Task<List<ResponseDTO>> GetModels<ResponseDTO>(Dictionary<string, StringValues> queries)
         {
-            
+
             var items = await _repository.GetAll(queries);
             items = items.Where(i => i.DeleteFlag == false);
             var source = new Source<List<Model>> { Value = items.ToList() };
@@ -185,6 +178,30 @@ namespace shop_giay_server._Controllers
             return result;
         }
 
+        protected async Task<IActionResult> DeleteItem(int id, bool setFlag)
+        {
+            var item = await _repository.GetById(id);
+            if (item == null)
+            {
+                return NotFound(Response<Model>.NotFound());
+            }
+
+            IActionResult response = BadRequest(Response<Model>.BadRequest());
+            if (setFlag)
+            {
+                item.DeleteFlag = true;
+                item = await _repository.Update(item);
+                response = Ok(Response<Model>.OkDeleted(item));
+            }
+            else
+            {
+                var result = await _repository.Remove(id);
+                response = result
+                    ? Ok(Response<Model>.OkDeleted(item, "Removed from database."))
+                    : response;
+            }
+            return response;
+        }
 
         #endregion
 
