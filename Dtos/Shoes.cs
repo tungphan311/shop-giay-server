@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace shop_giay_server.Dtos
 {
-    public class ShoesDTO: BaseDTO
+    public class ShoesLiteDTO: BaseDTO
     {
         public string Code { get; set; }
 
@@ -20,12 +20,18 @@ namespace shop_giay_server.Dtos
         public bool IsOnSale { get; set; }
 
         public int StyleId { get; set; }
-        public ShoesTypeLiteDTO ShoesType { get; set; }
 
         public int BrandId { get; set; }
+        
+        public int GenderId { get; set; }
+    }
+
+    public class ShoesDTO : ShoesLiteDTO
+    {
+        public ShoesTypeLiteDTO ShoesType { get; set; }
+
         public ShoesBrandLiteDTO ShoesBrand { get; set; }
 
-        public int GenderId { get; set; }
         public GenderLiteDTO Gender { get; set; }
 
         public List<StockLiteDTO> Stocks { get; set; }

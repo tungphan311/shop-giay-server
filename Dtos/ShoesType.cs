@@ -13,6 +13,6 @@ namespace shop_giay_server.Dtos
 
     public class ShoesTypeDTO: ShoesTypeLiteDTO
     { 
-        public List<ShoesDTO> ShoesList { get; set; }
+        public List<ShoesLiteDTO> ShoesList { get; set; }
     }
 }

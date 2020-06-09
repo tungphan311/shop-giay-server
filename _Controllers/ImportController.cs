@@ -68,7 +68,7 @@ namespace shop_giay_server._Controllers
             };
 
 
-            return await this.AddItem(import);
+            return await this._AddItem(import);
         }
     }
 

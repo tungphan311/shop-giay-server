@@ -8,14 +8,14 @@ using AutoMapper;
 
 namespace shop_giay_server._Controllers
 {
-    public class ColorController : GeneralController<Color, ColorLiteDTO>
+    public class ColorController : GeneralController<Color, ColorDTO>
     {
         public ColorController(IAsyncRepository<Color> repo, ILogger<ColorController> logger, IMapper mapper)
             : base(repo, logger, mapper)
         { }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] ColorLiteDTO model)
+        public async Task<IActionResult> Add([FromBody] ColorDTO model)
         {
             // Validate
             if (string.IsNullOrEmpty(model.Name))
@@ -28,7 +28,7 @@ namespace shop_giay_server._Controllers
                 Name = model.Name
             };
 
-            return await this.AddItem(color);
+            return await this._AddItem(color);
         }
     }
 }

@@ -9,6 +9,6 @@ namespace shop_giay_server.Dtos
 
     public class SizeDTO : SizeLiteDTO
     {
-        public List<StockDTO> Stocks { get; set; }
+        public List<StockLiteDTO> Stocks { get; set; }
     }
 }

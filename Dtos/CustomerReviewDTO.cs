@@ -17,8 +17,8 @@ namespace shop_giay_server.Dtos
 
     public class CustomerReviewDTO: CustomerReviewLiteDTO
     {
-        public ShoesDTO Shoes { get; set; }
+        public ShoesLiteDTO Shoes { get; set; }
 
-        public CustomerDTO Customer { get; set; }
+        public CustomerLiteDTO Customer { get; set; }
     }
 }

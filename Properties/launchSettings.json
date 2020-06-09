@@ -20,7 +20,7 @@
     "shop_giay_server": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/size",
+      "launchUrl": "api/admin/color",
       "applicationUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production"

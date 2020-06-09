@@ -30,7 +30,7 @@ namespace shop_giay_server._Controllers
                 CustomerId = model.CustomerId
             };
 
-            return await this.AddItem(item);
+            return await this._AddItem(item);
         }
     }
 

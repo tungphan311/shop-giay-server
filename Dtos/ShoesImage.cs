@@ -11,6 +11,6 @@ namespace shop_giay_server.Dtos
 
     public class ShoesImageDTO: ShoesImageLiteDTO
     {
-        public ShoesDTO Shoes { get; set; }
+        public ShoesLiteDTO Shoes { get; set; }
     }
 }

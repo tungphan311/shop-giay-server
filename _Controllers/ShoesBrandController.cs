@@ -24,7 +24,7 @@ namespace shop_giay_server._Controllers
             }
 
             var item = _mapper.Map<ShoesBrand>(model);
-            return await this.AddItem(item);
+            return await this._AddItem(item);
         }
     }
 }
