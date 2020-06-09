@@ -56,7 +56,7 @@ namespace shop_giay_server._Controllers
                 }
             }
 
-            return await _GetAllForClient<ResponseShoesDTO>(dict);
+            return await _GetAll<ResponseShoesDTO>(dict);
         }
 
         protected override async Task<IActionResult> _GetForClient<DTO>(int id)
@@ -152,7 +152,7 @@ namespace shop_giay_server._Controllers
             };
 
             if (shoes.IsNew) shoes.IsNew = true;
-            return await this.AddItem(shoes);
+            return await this._AddItem(shoes);
         }
 
         //[Route("admin/[controller]/stock")]

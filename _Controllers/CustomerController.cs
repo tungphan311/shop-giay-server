@@ -29,7 +29,7 @@ namespace shop_giay_server._Controllers
 
 
             var item = _mapper.Map<Customer>(model);
-            return await this.AddItem(item);
+            return await this._AddItem(item);
         }
 
         #region Helper Methods

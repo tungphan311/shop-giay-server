@@ -25,13 +25,13 @@ namespace shop_giay_server._Controllers
         public string Data { get; set; }
 
 
-        public Response(IEnumerable<ItemType> data, string code = "OK", string msg = "Success.")
-            : this(data.ToList(), code, msg)
+        public Response(IEnumerable<ItemType> data, string code = "OK", string msg = "Success.", int total = 0)
+            : this(data.ToList(), code, msg, total)
         {
 
         }
 
-        public Response(List<ItemType> data, string code = "OK", string msg = "Success.")
+        public Response(List<ItemType> data, string code = "OK", string msg = "Success.", int total = 0)
         {
             var convertSetting = new JsonSerializerSettings
             {
@@ -40,7 +40,7 @@ namespace shop_giay_server._Controllers
             };
 
             Data = JsonConvert.SerializeObject(data, Formatting.None, convertSetting);
-            Total = data.Count();
+            Total = total == 0 ? data.Count() : total;
             Code = code;
             Msg = msg;
         }
@@ -61,6 +61,11 @@ namespace shop_giay_server._Controllers
 
 
         // Convenience static methods
+        public static Response<ItemType> Ok(IEnumerable<ItemType> data, int total)
+        {
+            return new Response<ItemType>(data, "OK", "Success.", total);
+        }
+
         public static Response<ItemType> Ok(IEnumerable<ItemType> data)
         {
             return new Response<ItemType>(data, "OK", "Success.");

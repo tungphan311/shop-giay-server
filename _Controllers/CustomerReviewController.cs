@@ -27,7 +27,7 @@ namespace shop_giay_server._Controllers
 
             var item = _mapper.Map<CustomerReview>(model);
             item.Date = DateTime.Now;
-            return await this.AddItem(item);
+            return await this._AddItem(item);
         }
     }
 }

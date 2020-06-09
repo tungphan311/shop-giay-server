@@ -111,7 +111,7 @@ namespace shop_giay_server._Repository
                     dynamic vl = null;
                     if (type == typeof(bool))
                     {
-                        vl = rawVl == "0" ? false : true;
+                        vl = (rawVl == "1") || (rawVl == "true") ? true : false;
                     } else
                     {
                         vl = Convert.ChangeType(rawVl, type);

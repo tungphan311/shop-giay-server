@@ -29,7 +29,7 @@ namespace shop_giay_server._Controllers
                 Name = model.Name
             };
 
-            return await this.AddItem(provide);
+            return await this._AddItem(provide);
         }
     }
 }

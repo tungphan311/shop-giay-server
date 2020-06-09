@@ -43,7 +43,7 @@ namespace shop_giay_server._Controllers
             var dict = this.Request.Query.ToDictionary(
                 p => p.Key.ToLower(),
                 p => p.Value);
-            return await _GetAllForClient<DTO>(dict);
+            return await _GetAll<DTO>(dict);
         }
 
         // DELETE: api/admin/[resources]/5
@@ -101,28 +101,36 @@ namespace shop_giay_server._Controllers
             return Task.FromResult(actionResult);
         }
 
+        public async Task<IActionResult> _GetAll<ResponseDTO>(Dictionary<string, StringValues> queries) where ResponseDTO : BaseDTO
+        {
+            IActionResult actionResult = NotFound(Response<Model>.NotFound());
+
+            // Detect if need include items with delete flag
+            StringValues includeDeleted = "";
+            if (!(queries.TryGetValue("includedeleted", out includeDeleted) && includeDeleted[0] == "true"))
+            {
+                queries["DeleteFlag"] = "false";
+            }
+
+            var items = await GetModels<ResponseDTO>(queries);
+            var totalRecords = await _repository.CountWhere(c => c.DeleteFlag == false);
+
+            if (items.Count > 0)
+            {
+                actionResult = Ok(Response<ResponseDTO>.Ok(items, totalRecords));
+            }
+
+            return actionResult;
+        }
+
         private async Task<List<ResponseDTO>> GetModels<ResponseDTO>(Dictionary<string, StringValues> queries)
         {
-
             var items = await _repository.GetAll(queries);
-            items = items.Where(i => i.DeleteFlag == false);
             var source = new Source<List<Model>> { Value = items.ToList() };
             var result = _mapper.Map<Source<List<Model>>, Destination<List<ResponseDTO>>>(source);
             return result.Value;
         }
 
-        public async Task<IActionResult> _GetAllForClient<ResponseDTO>(Dictionary<string, StringValues> queries) where ResponseDTO : BaseDTO
-        {
-            IActionResult actionResult = NotFound(Response<Model>.NotFound());
-
-            var items = await GetModels<ResponseDTO>(queries);
-            if (items.Count > 0)
-            {
-                actionResult = Ok(Response<ResponseDTO>.Ok(items));
-            }
-
-            return actionResult;
-        }
 
         // GET: api/client/[resources]/5
         [Route("client/[controller]")]
@@ -160,7 +168,7 @@ namespace shop_giay_server._Controllers
         }
 
 
-        protected async Task<IActionResult> AddItem(Model item)
+        protected async Task<IActionResult> _AddItem(Model item)
         {
             IActionResult result = BadRequest(Response<Model>.BadRequest());
             try
