@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.data;
+using shop_giay_server.Handlers;
 
 namespace shop_giay_server
 {
@@ -30,6 +31,7 @@ namespace shop_giay_server
 
                     // Seed.SeedShoes(context);
                     Seed.SeedAll(context);
+                    AddPermissionPath();
                 }
                 catch (System.Exception ex)
                 {
@@ -40,6 +42,13 @@ namespace shop_giay_server
             }
 
             host.Run();
+        }
+
+        public static void AddPermissionPath()
+        {
+            PermissionPath.mapApi.Add(PermissionConstant.Shoes, "admin/shoes/GET");
+            PermissionPath.mapApi.Add(PermissionConstant.Create_Shoes, "admin/shoes/POST");
+            //PermissionPath.mapApi.Add(PermissionConstant.Shoes, "admin/shoes/get");
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
