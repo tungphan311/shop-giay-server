@@ -18,6 +18,7 @@ using shop_giay_server._Repository;
 using AutoMapper;
 using shop_giay_server.Dtos;
 using shop_giay_server._Controllers;
+using shop_giay_server.Handlers;
 
 namespace shop_giay_server
 {
@@ -61,7 +62,6 @@ namespace shop_giay_server
                 });
             });
             services.AddScoped<IAuthRepository, AuthRepository>();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,6 +81,9 @@ namespace shop_giay_server
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseMiddleware<SignInMiddleware>();
+            app.UseMiddleware<AuthenticationMiddleware>();
 
             app.UseDefaultFiles();
 

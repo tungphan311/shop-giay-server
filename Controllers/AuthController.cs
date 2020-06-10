@@ -1,9 +1,12 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using shop_giay_server.data;
@@ -18,8 +21,10 @@ namespace shop_giay_server.Controllers
     {
         private readonly IAuthRepository repo;
         private readonly IConfiguration config;
-        public AuthController(IAuthRepository repo, IConfiguration config)
+        private readonly DataContext context;
+        public AuthController(IAuthRepository repo, IConfiguration config, DataContext context)
         {
+            this.context = context;
             this.config = config;
             this.repo = repo;
         }
@@ -53,10 +58,13 @@ namespace shop_giay_server.Controllers
                 return Unauthorized();
             }
 
+            var role = await context.Roles.FirstOrDefaultAsync(x => x.Id == userFromRepo.RoleId);
+
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
-                new Claim(ClaimTypes.Name, userFromRepo.Username)
+                new Claim(ClaimTypes.Name, userFromRepo.Username),
+                new Claim(ClaimTypes.Role, role.Name)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetSection("AppSettings:Token").Value));
