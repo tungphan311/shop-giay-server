@@ -97,7 +97,18 @@ namespace shop_giay_server._Controllers
         
         #region ADMIN API
 
-        
+        [Route("admin/[controller]/{id:int}")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateShoes(int id, [FromBody] ShoesDTO dto) 
+        {
+            if (!(await _repository.ExistWhere(c => c.Id == id))) 
+            {
+                return BadRequest(Response<Shoes>.BadRequest("Item ID is not existed."));
+            }
+            var entity = _mapper.Map<Shoes>(dto);
+            var updatedItem = await _repository.Update(entity);
+            return Ok(Response<Shoes>.Ok(entity));
+        }
             
         #endregion
 
