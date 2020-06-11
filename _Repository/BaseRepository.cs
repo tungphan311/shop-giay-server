@@ -74,6 +74,14 @@ namespace shop_giay_server._Repository
             return false;
         }
 
+        public async Task<IEnumerable<T>> GetWithQuery(IQueryCollection query) {
+            var dict = query.ToDictionary(
+                p => p.Key.ToLower(),
+                p => p.Value);
+
+            return await GetAll(dict);
+        }
+
         public async Task<IEnumerable<T>> GetAll(Dictionary<string, StringValues> queries)
         {
             var query = _dataContext.Set<T>().AsQueryable();

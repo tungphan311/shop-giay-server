@@ -33,18 +33,158 @@ namespace shop_giay_server._Controllers
             _mapper = mapper;
         }
 
-        #region Admin
 
-        // GET: api/admin/[resources]
+        #region HELPER METHOD FOR HANDLE GET REQUEST
+
+        /*
+            Summary:
+            - Modify query from the request.
+            - If derived class override the method, it should call base method.
+        */
+        protected virtual Task<IQueryCollection> TransformQueryFromGetAll(IQueryCollection query)
+        {
+            // Detect if need include items with delete flag
+            var includeDeletedKey = "includeDeleted";
+            if (query.ContainsKey(includeDeletedKey)) {
+                if (query[includeDeletedKey].Count != 1) {
+                    throw new InvalidQueryParamsException();
+                }
+                if (query[includeDeletedKey][0] != "true") {
+                    var queryItem = new KeyValuePair<string, StringValues>("flagDelete", "false");
+                    query.Append(queryItem);
+                }
+            }
+            return Task.FromResult(query);
+        }
+
+
+        /*
+            Summary:
+            - Dynamic map from entites to specified response type 
+            using AutoMapper + Genetic parameter.
+        */
+        private IEnumerable<ResponseModel> MapToResponseModels<ResponseModel>(IEnumerable<Model> entites)
+            where ResponseModel : BaseDTO
+        {
+            var source = new Source<IEnumerable<Model>> { Value = entites };
+            var result = _mapper.Map<Source<IEnumerable<Model>>, Destination<IEnumerable<ResponseModel>>>(source);
+            return result.Value;
+        }
+
+
+        /*
+            Summary:
+            - Give a change to modify response models before return.
+        */
+        protected virtual async Task<IEnumerable<object>> FinishMapResponseModel(
+            IEnumerable<object> responseEntities,
+            IEnumerable<Model> entities)
+        {
+            return await Task.FromResult(responseEntities);
+        }
+
+
+        /*
+            Summary:
+            - Give a change to modify response models before return.
+        */
+        protected virtual async Task<object> FinishMapResponseModel(object responseEntity, Model entity)
+        {
+            return await Task.FromResult(responseEntity);
+        }
+
+
+        /*
+            Summary: Return resposne for get request.
+        */
+        public async Task<IActionResult> ResultForGetAll(IEnumerable<dynamic> items)
+        {
+            if (items.Count() == 0)
+            {
+                return NotFound(Response<Model>.NotFound());
+            }
+            var totalRecords = await _repository.CountWhere(c => c.DeleteFlag == false);
+            return Ok(Response<dynamic>.Ok(items, totalRecords));
+        }
+
+
+        /*
+            Summary: Return error response for exception.
+        */
+        public IActionResult HandleExceptionInRequest(Exception e)
+        {
+            if (e is InvalidQueryParamsException)
+            {
+                return BadRequest(Response<Model>.BadRequest("Invalid query params."));
+            } 
+            else if (e is Microsoft.Data.SqlClient.SqlException)
+            {
+                return BadRequest(Response<Model>.BadRequest("Cannot connect to database."));
+            }
+            else
+            {
+                return BadRequest(Response<Model>.BadRequest());
+            }
+        }
+
+
+        /*
+            Summary: - Support get models with dynamic ResponseModel type.
+        */
+        protected async Task<IActionResult> _GetAllModels<ResponseModel>()
+            where ResponseModel : BaseDTO
+        {
+            try
+            {
+                var query = this.Request.Query;
+
+                // 1: Transform query
+                query = await TransformQueryFromGetAll(query);
+
+                // 2: Get entities from query
+                var entities = await _repository.GetWithQuery(query);
+
+                // 3: Map to ResponseModel
+                dynamic responseItems = (object)MapToResponseModels<ResponseModel>(entities);
+
+                // 4: Further modify after finished mapping
+                responseItems = await FinishMapResponseModel(responseItems, entities);
+
+                return await ResultForGetAll(responseItems);
+            }
+            catch (Exception e)
+            {
+                return HandleExceptionInRequest(e);
+            }
+        }
+
+        #endregion
+
+
+        #region ADMIN API
+
+        /*
+            Usage:
+            - Overrided this method to customize ResponseModel Type
+            by invoke _GetAllModels<T> with T is the specified type.
+            - Because the ResponseModel type is mapped using AutoMapper,
+            you need define MappingProfile in Startup.cs.
+        */
         [Route("admin/[controller]")]
         [HttpGet]
-        public virtual async Task<IActionResult> GetAll()
+        public virtual async Task<IActionResult> GetAllForAdmin()
         {
-            var dict = this.Request.Query.ToDictionary(
-                p => p.Key.ToLower(),
-                p => p.Value);
-            return await _GetAll<DTO>(dict);
+            return await _GetAllModels<DTO>();
         }
+
+
+        [Route("admin/[controller]/{id:int}")]
+        [HttpGet]
+        public async virtual Task<IActionResult> GetByIdForAdmin(int id) 
+        {
+           return await _GetById<DTO>(id);
+        }
+
 
         // DELETE: api/admin/[resources]/5
         [Route("admin/[controller]/{id:int}")]
@@ -53,6 +193,7 @@ namespace shop_giay_server._Controllers
         {
             return await DeleteItem(id, setFlag);
         }
+
 
         [Route("admin/[controller]")]
         [HttpDelete]
@@ -90,81 +231,61 @@ namespace shop_giay_server._Controllers
         #endregion
 
 
-        #region Client
+        #region CLIENT API
 
-        // GET: api/client/[resources]
+        /*
+            Usage:
+            - Overrided this method to customize ResponseModel Type
+            by invoke _GetAllModels<T> with T is the specified type.
+            - Because the ResponseModel type is mapped using AutoMapper,
+            you need define MappingProfile in Startup.cs.
+        */
         [Route("client/[controller]")]
         [HttpGet]
-        public virtual Task<IActionResult> GetAllForClient()
+        public async virtual Task<IActionResult> GetAllForClient()
         {
-            IActionResult actionResult = BadRequest(Response<object>.BadRequest("This route has not been support"));
-            return Task.FromResult(actionResult);
-        }
-
-        public async Task<IActionResult> _GetAll<ResponseDTO>(Dictionary<string, StringValues> queries) where ResponseDTO : BaseDTO
-        {
-            IActionResult actionResult = NotFound(Response<Model>.NotFound());
-
-            // Detect if need include items with delete flag
-            StringValues includeDeleted = "";
-            if (!(queries.TryGetValue("includedeleted", out includeDeleted) && includeDeleted[0] == "true"))
-            {
-                queries["DeleteFlag"] = "false";
-            }
-
-            var items = await GetModels<ResponseDTO>(queries);
-            var totalRecords = await _repository.CountWhere(c => c.DeleteFlag == false);
-
-            if (items.Count > 0)
-            {
-                actionResult = Ok(Response<ResponseDTO>.Ok(items, totalRecords));
-            }
-
-            return actionResult;
-        }
-
-        private async Task<List<ResponseDTO>> GetModels<ResponseDTO>(Dictionary<string, StringValues> queries)
-        {
-            var items = await _repository.GetAll(queries);
-            var source = new Source<List<Model>> { Value = items.ToList() };
-            var result = _mapper.Map<Source<List<Model>>, Destination<List<ResponseDTO>>>(source);
-            return result.Value;
+            return await _GetAllModels<DTO>();
         }
 
 
-        // GET: api/client/[resources]/5
-        [Route("client/[controller]")]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        /*
+            Usage:
+            - Overrided this method to customize ResponseModel Type
+            by invoke _GetById<T> with T is the specified type.
+            - Because the ResponseModel type is mapped using AutoMapper,
+            you need define MappingProfile for the specified type in Startup.cs.
+        */
+        [Route("client/[controller]/{id:int}")]
+        [HttpGet]
+        public async virtual Task<IActionResult> GetByIdForClient(int id) 
         {
-            var item = await _repository.GetById(id);
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            var res = new Response<Model>(new List<Model>() { item });
-            return Ok(res);
+           return await _GetById<DTO>(id);
         }
 
         #endregion
 
 
-        #region Helper methods
+        #region HELPER METHODS
 
-        protected virtual async Task<IActionResult> _GetForClient<ResponseDTO>(int id) where ResponseDTO : BaseDTO
+        protected async Task<IActionResult> _GetById<ResponseModel>(int id) 
+            where ResponseModel: BaseDTO
         {
-            IActionResult actionResult = NotFound(Response<Model>.NotFound());
-            var item = await _repository.GetById(id);
-            var source = new Source<Model> { Value = item };
-            var result = _mapper.Map<Source<Model>, Destination<ResponseDTO>>(source);
-
-            if (item != null)
+            try 
             {
-                actionResult = Ok(Response<ResponseDTO>.Ok(result.Value));
-            }
+                var entity = await _repository.GetById(id);
+                if (entity == null) 
+                {
+                    return NotFound(Response<Model>.NotFound());
+                }
 
-            return actionResult;
+                dynamic model = MapToResponseModels<ResponseModel>(new List<Model>() { entity }).First();
+                model = await FinishMapResponseModel(model, entity);
+                return Ok(Response<ResponseModel>.Ok(model));
+            }
+            catch (Exception e)
+            {
+                return HandleExceptionInRequest(e);
+            }
         }
 
 
@@ -224,4 +345,9 @@ namespace shop_giay_server._Controllers
     {
         public T Value { get; set; }
     }
+}
+
+
+class InvalidQueryParamsException: Exception {
+
 }
