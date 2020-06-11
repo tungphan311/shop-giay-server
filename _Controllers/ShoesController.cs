@@ -31,57 +31,101 @@ namespace shop_giay_server._Controllers
         }
 
 
-        public override async Task<IActionResult> GetAllForClient()
+        protected override async Task<IQueryCollection> TransformQueryFromGetAll(IQueryCollection query) 
         {
-            var dict = this.Request.Query.ToDictionary(
-                p => p.Key.ToLower(),
-                p => p.Value);
-
-            StringValues gender = "";
-            if (dict.TryGetValue("gender", out gender))
+            var genderKey = "gender";
+            if (query[genderKey].Count == 1) 
             {
-                if (gender != "")
-                {
-                    var genderModel = await _context.Genders.FirstAsync(g => g.Name == gender.ToString());
-                    dict["genderId"] = genderModel.Id.ToString();
-                }
+                var paramItem = query[genderKey];
+                var genderEntity = await _context.Genders.FirstAsync(g => g.Name == paramItem.ToString());
+                var queryItem = new KeyValuePair<String, StringValues>("genderId", genderEntity.Id.ToString());
+                query.Append(queryItem);
             }
 
-            StringValues isNewShoes = "";
-            if (dict.TryGetValue("new", out isNewShoes))
+            var isNewKey = "new";
+            if (query[isNewKey].Count == 1) 
             {
-                if (isNewShoes != "")
-                {
-                    dict["isNew"] = isNewShoes;
-                }
+                var queryParam = query[isNewKey];
+                var queryItem = new KeyValuePair<String, StringValues>("isNew", queryParam[0]);
+                query.Append(queryItem);
             }
 
-            return await _GetAll<ResponseShoesDTO>(dict);
+            return await base.TransformQueryFromGetAll(query);
         }
 
-        protected override async Task<IActionResult> _GetForClient<DTO>(int id)
+
+        #region CLIENT API
+
+        public override async Task<IActionResult> GetAllForClient() 
         {
-
-            IActionResult actionResult = NotFound(Response<Shoes>.NotFound());
-            var item = await _repository.GetById(id);
-            var result = _mapper.Map<ResponseShoesDetailDTO>(item);
-
-            foreach (var stock in item.Stocks)
-            {
-                var size = await _context.Sizes.FindAsync(stock.SizeId);
-                if (size != null)
-                {
-                    result.sizes.Add(size.Name);
-                }
-            }
-
-            if (item != null)
-            {
-                actionResult = Ok(Response<ResponseShoesDetailDTO>.Ok(result));
-            }
-
-            return actionResult;
+            return await _GetAllModels<ResponseShoesDTO>();
         }
+
+
+        public override async Task<IActionResult> GetByIdForClient(int id) 
+        {
+            return await _GetById<ResponseShoesDetailDTO>(id);
+        }
+
+
+        protected override async Task<object> FinishMapResponseModel(object responseEntity, Shoes entity) 
+        {
+            try 
+            {
+                var dto = (ResponseShoesDetailDTO)responseEntity;
+                
+                foreach (var stock in entity.Stocks)
+                {
+                    var size = await _context.Sizes.FindAsync(stock.SizeId);
+                    if (size != null)
+                    {
+                        dto.sizes.Add(size.Name);
+                    }
+                }
+
+                return dto;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(0, e, "Cannot convert to ResponseShoesDetailDTO.");
+                return await base.FinishMapResponseModel(responseEntity, entity);
+            }
+        }
+            
+        #endregion
+        
+        
+        #region ADMIN API
+
+        
+            
+        #endregion
+
+
+        //protected async Task<IActionResult> _GetForClient<DTO>(int id)
+        //{
+
+        //    IActionResult actionResult = NotFound(Response<Shoes>.NotFound());
+        //    var item = await _repository.GetById(id);
+        //    var result = _mapper.Map<ResponseShoesDetailDTO>(item);
+
+        //    foreach (var stock in item.Stocks)
+        //    {
+        //        var size = await _context.Sizes.FindAsync(stock.SizeId);
+        //        if (size != null)
+        //        {
+        //            result.sizes.Add(size.Name);
+        //        }
+        //    }
+
+        //    if (item != null)
+        //    {
+        //        actionResult = Ok(Response<ResponseShoesDetailDTO>.Ok(result));
+        //    }
+
+        //    return actionResult;
+        //}
+
 
         public async Task<bool> isExist(string code)
         {
@@ -92,9 +136,10 @@ namespace shop_giay_server._Controllers
             return false;
         }
 
+
         [Route("admin/[controller]")]
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] CreateShoesBody model)
+        public async Task<IActionResult> AddShoesForAdmin([FromBody] CreateShoesBody model)
         {
             // Validate
             if (!model.IsValid())
@@ -154,33 +199,6 @@ namespace shop_giay_server._Controllers
             if (shoes.IsNew) shoes.IsNew = true;
             return await this._AddItem(shoes);
         }
-
-        //[Route("admin/[controller]/stock")]
-        //[HttpPost]
-        //public async Task<IActionResult> AddShoesStock([FromBody] UpdateShoesStockBody model)
-        //{
-        //    if (!(await _repository.ExistWhere(s => s.Id == model.ShoesId)))
-        //    {
-        //        return BadRequest(Response<Shoes>.BadRequest("ShoesId not exists."));
-        //    }
-
-        //    if ((await _context.Stocks.AnyAsync(o =>
-        //            o.ShoesId == model.ShoesId
-        //            && o.SizeId == model.SizeId
-        //            && o.ColorId == model.ColorId))
-        //        )
-        //    {
-        //        return BadRequest(Response<Shoes>.BadRequest("Stock has exists."));
-        //    }
-
-        //    var stockResult = await _context.Stocks.AddAsync(new Stock
-        //    {
-        //        ShoesId = model.ShoesId,
-        //        SizeId = model.SizeId,
-        //        ColorId = model.ColorId
-        //    });
-        //    return Ok(Response<Stock>.Ok(stockResult));
-        //}
 
     }
 
