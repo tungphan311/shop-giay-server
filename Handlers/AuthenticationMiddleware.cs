@@ -31,18 +31,19 @@ namespace shop_giay_server.Handlers
 
                 if (role == "admin")
                 {
-                    var allowed = RolePermission.admin.FirstOrDefault(x => x == permission);
+                    await next(context);
+                    // var allowed = RolePermission.admin.FirstOrDefault(x => x == permission);
 
-                    if (allowed == null)
-                    {
-                        context.Response.StatusCode = 400;
-                        await context.Response.WriteAsync("You don't have permission to complete this action");
-                        return;
-                    }
-                    else
-                    {
-                        await next(context);
-                    }
+                    // if (allowed == null)
+                    // {
+                    //     context.Response.StatusCode = 400;
+                    //     await context.Response.WriteAsync("You don't have permission to complete this action");
+                    //     return;
+                    // }
+                    // else
+                    // {
+                    //     await next(context);
+                    // }
                 }
                 else if (role == "staff")
                 {
@@ -50,8 +51,7 @@ namespace shop_giay_server.Handlers
 
                     if (allowed == null)
                     {
-                        context.Response.StatusCode = 400;
-                        await context.Response.WriteAsync("You don't have permission to complete this action");
+                        await MiddlewareHelper.AccessDenied(context);
                         return;
                     }
                     else
