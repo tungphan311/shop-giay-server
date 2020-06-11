@@ -18,9 +18,9 @@ namespace shop_giay_server.Handlers
 
     public static class AuthorizePath
     {
-        public static List<string> authorizes = new List<string>() {
-            "admin/shoes",
-            "auth/register"
+        public static List<string> authorizes = new List<string>()
+        {
+
         };
     }
 }

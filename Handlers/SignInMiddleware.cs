@@ -19,6 +19,22 @@ namespace shop_giay_server.Handlers
             this.next = next;
         }
 
+        public bool needAuthorize(string route)
+        {
+            if (route.StartsWith("admin/"))
+            {
+                if (route == "admin/auth/login") return false;
+                else return true;
+            }
+            else
+            {
+                var isAuthorize = AuthorizePath.authorizes.FirstOrDefault(x => x == route);
+
+                if (isAuthorize == null) return false;
+                else return true;
+            }
+        }
+
         public async Task Invoke(HttpContext context)
         {
             string authorize = context.Request.Headers["Authorization"];
@@ -26,9 +42,9 @@ namespace shop_giay_server.Handlers
 
             route = route.Substring("/api/".Length);
 
-            var isAuthorize = AuthorizePath.authorizes.FirstOrDefault(x => x == route);
+            var isAuthorize = needAuthorize(route);
 
-            if (isAuthorize == null)
+            if (isAuthorize == false)
             {
                 context.Session.SetInt32("NeedAuthorize", 0);
                 await next(context);
