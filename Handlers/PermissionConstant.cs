@@ -4,11 +4,11 @@ namespace shop_giay_server.Handlers
 {
     public static class PermissionConstant
     {
-        public const string Shoes = "Shoes";
-        public const string Create_Shoes = "Create_Shoes";
-        public const string Update_Shoes = "Update_Shoes";
-        public const string Delete_Shoes = "Delete_Shoes";
-        public const string Create_User = "Create_User";
+        public static string Shoes = "Shoes";
+        public static string Create_Shoes = "Create_Shoes";
+        public static string Update_Shoes = "Update_Shoes";
+        public static string Delete_Shoes = "Delete_Shoes";
+        public static string Create_User = "Create_User";
     }
 
     public static class PermissionPath
@@ -18,7 +18,7 @@ namespace shop_giay_server.Handlers
 
     public static class AuthorizePath
     {
-        public static readonly List<string> authorizes = new List<string>() {
+        public static List<string> authorizes = new List<string>() {
             "admin/shoes",
             "auth/register"
         };
