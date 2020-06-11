@@ -31,19 +31,17 @@ namespace shop_giay_server.Handlers
 
                 if (role == "admin")
                 {
-                    await next(context);
-                    // var allowed = RolePermission.admin.FirstOrDefault(x => x == permission);
+                    var allowed = RolePermission.admin.FirstOrDefault(x => x == permission);
 
-                    // if (allowed == null)
-                    // {
-                    //     context.Response.StatusCode = 400;
-                    //     await context.Response.WriteAsync("You don't have permission to complete this action");
-                    //     return;
-                    // }
-                    // else
-                    // {
-                    //     await next(context);
-                    // }
+                    if (allowed == null)
+                    {
+                        await MiddlewareHelper.AccessDenied(context);
+                        return;
+                    }
+                    else
+                    {
+                        await next(context);
+                    }
                 }
                 else if (role == "staff")
                 {
