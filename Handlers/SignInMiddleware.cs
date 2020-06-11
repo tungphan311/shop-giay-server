@@ -54,8 +54,7 @@ namespace shop_giay_server.Handlers
 
                         if (user == null || user.Username != username)
                         {
-                            context.Response.StatusCode = 401;
-                            await context.Response.WriteAsync("User is not defined");
+                            await MiddlewareHelper.AccessDenied(context);
                             return;
                         }
 
@@ -65,15 +64,13 @@ namespace shop_giay_server.Handlers
                     }
                     else
                     {
-                        context.Response.StatusCode = 400;
-                        await context.Response.WriteAsync("Cannot read token");
+                        await MiddlewareHelper.AccessDenied(context);
                         return;
                     }
                 }
                 else
                 {
-                    context.Response.StatusCode = 401;
-                    await context.Response.WriteAsync("Token is not defined");
+                    await MiddlewareHelper.AccessDenied(context);
                     return;
                 }
             }
