@@ -15,7 +15,7 @@ using shop_giay_server.models;
 
 namespace shop_giay_server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/admin/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
