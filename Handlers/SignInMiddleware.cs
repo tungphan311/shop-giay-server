@@ -1,3 +1,4 @@
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -29,10 +30,13 @@ namespace shop_giay_server.Handlers
 
             if (isAuthorize == null)
             {
+                context.Session.SetInt32("NeedAuthorize", 0);
                 await next(context);
             }
             else
             {
+                context.Session.SetInt32("NeedAuthorize", 1);
+
                 if (authorize != null && authorize.StartsWith("Bearer"))
                 {
                     string token = authorize.Substring("Bearer ".Length).Trim();
@@ -44,6 +48,7 @@ namespace shop_giay_server.Handlers
 
                         var userId = decodeToken.Claims.FirstOrDefault(c => c.Type == "nameid").Value;
                         var username = decodeToken.Claims.FirstOrDefault(c => c.Type == "unique_name").Value;
+                        var role = decodeToken.Claims.FirstOrDefault(c => c.Type == "role").Value;
 
                         var user = await dataContext.Users.FirstOrDefaultAsync(u => u.Id.ToString() == userId);
 
@@ -54,11 +59,9 @@ namespace shop_giay_server.Handlers
                             return;
                         }
 
-                        // context.Response.StatusCode = 200;
-                        // await context.Response.WriteAsync(userId);
-
+                        context.Session.SetString("route", route);
+                        context.Session.SetString("role", role);
                         await next(context);
-                        // return;
                     }
                     else
                     {

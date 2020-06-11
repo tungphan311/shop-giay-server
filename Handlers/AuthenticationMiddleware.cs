@@ -15,28 +15,17 @@ namespace shop_giay_server.Handlers
 
         public async Task Invoke(HttpContext context)
         {
-            string route = context.Request.Path;
+            var isAuthorize = context.Session.GetInt32("NeedAuthorize");
 
-            route = route.Substring("/api/".Length);
-
-            var isAuthorize = AuthorizePath.authorizes.FirstOrDefault(x => x == route);
-
-            if (isAuthorize == null)
+            if (isAuthorize == 0)
             {
                 await next(context);
             }
             else
             {
-                string authorize = context.Request.Headers["Authorization"];
-                string token = authorize.Substring("Bearer ".Length).Trim();
-                var handler = new JwtSecurityTokenHandler();
-                var decodeToken = handler.ReadJwtToken(token);
-                var role = decodeToken.Claims.FirstOrDefault(c => c.Type == "role").Value;
-
-
                 string method = context.Request.Method;
-
-                route += "/" + method;
+                var route = context.Session.GetString("route") + "/" + method;
+                var role = context.Session.GetString("role");
 
                 var permission = PermissionPath.mapApi.FirstOrDefault(x => x.Value == route).Key;
 
