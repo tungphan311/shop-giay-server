@@ -14,6 +14,47 @@ using Microsoft.Extensions.Primitives;
 
 namespace shop_giay_server._Controllers
 {
+    public struct RequestContext
+    {
+        public RequestContext(APIRoute route, object contextValue = null)
+        {
+            this.APIRoute = route;
+            this.ContextValue = contextValue;
+        }
+
+        public object ContextValue { get; set; }
+        public readonly APIRoute APIRoute { get; }
+
+        public static RequestContext AdminGetByID(int id)
+        {
+            return new RequestContext(APIRoute.AdminGetByID, id);
+        }
+
+        public static RequestContext AdminGetAll()
+        {
+            return new RequestContext(APIRoute.AdminGetAll);
+        }
+
+        public static RequestContext ClientGetByID()
+        {
+            return new RequestContext(APIRoute.ClientGetByID);
+        }
+
+        public static RequestContext ClientGetAll()
+        {
+            return new RequestContext(APIRoute.ClientGetAll);
+        }
+    }
+
+    public enum APIRoute
+    {
+        AdminGetAll,
+        AdminGetByID,
+        ClientGetAll,
+        ClientGetByID
+    }
+
+
     [Route("api")]
     [ApiController]
     public class GeneralController<Model, DTO> : ControllerBase
@@ -24,7 +65,17 @@ namespace shop_giay_server._Controllers
         protected readonly ILogger _logger;
         protected readonly IMapper _mapper;
 
+        public void ADASDf(RequestContext info)
+        {
+            switch (info.APIRoute)
+            {
+                case APIRoute.ClientGetAll:
 
+                    break;
+                default:
+                    break;
+            }
+        }
 
         public GeneralController(IAsyncRepository<Model> repository, ILogger logger, IMapper mapper)
         {
@@ -39,22 +90,35 @@ namespace shop_giay_server._Controllers
         /*
             Summary:
             - Modify query from the request.
-            - If derived class override the method, it should call base method.
+            - If derived class override the method for further modifying, it should call base method.
         */
-        protected virtual Task<IQueryCollection> TransformQueryFromGetAll(IQueryCollection query)
+        protected virtual Task<IQueryCollection> TransformQuery(IQueryCollection query, RequestContext requestContext)
         {
-            // Detect if need include items with delete flag
-            var includeDeletedKey = "includeDeleted";
-            if (query.ContainsKey(includeDeletedKey)) {
-                if (query[includeDeletedKey].Count != 1) {
-                    throw new InvalidQueryParamsException();
-                }
-                if (query[includeDeletedKey][0] != "true") {
-                    var queryItem = new KeyValuePair<string, StringValues>("flagDelete", "false");
-                    query.Append(queryItem);
-                }
+            switch (requestContext.APIRoute)
+            {
+                case APIRoute.AdminGetAll:
+                case APIRoute.ClientGetAll:
+                    // Detect if need include items with delete flag
+                    var includeDeletedKey = "includeDeleted";
+                    if (query.ContainsKey(includeDeletedKey))
+                    {
+                        if (query[includeDeletedKey].Count != 1)
+                        {
+                            throw new InvalidQueryParamsException();
+                        }
+                        if (query[includeDeletedKey][0] != "true")
+                        {
+                            var queryItem = new KeyValuePair<string, StringValues>("flagDelete", "false");
+                            query.Append(queryItem);
+                        }
+                    }
+                    return Task.FromResult(query);
+
+
+
+                default:
+                    return Task.FromResult(query);
             }
-            return Task.FromResult(query);
         }
 
 
@@ -76,9 +140,10 @@ namespace shop_giay_server._Controllers
             Summary:
             - Give a change to modify response models before return.
         */
-        protected virtual async Task<IEnumerable<object>> FinishMapResponseModel(
+        protected virtual async Task<IEnumerable<object>> FinishMappingResponseModels(
             IEnumerable<object> responseEntities,
-            IEnumerable<Model> entities)
+            IEnumerable<Model> entities,
+            RequestContext requestContext)
         {
             return await Task.FromResult(responseEntities);
         }
@@ -88,10 +153,10 @@ namespace shop_giay_server._Controllers
             Summary:
             - Give a change to modify response models before return.
         */
-        protected virtual async Task<object> FinishMapResponseModel(object responseEntity, Model entity)
-        {
-            return await Task.FromResult(responseEntity);
-        }
+        // protected virtual async Task<object> FinishMapResponseModel(object responseEntity, Model entity)
+        // {
+        //     return await Task.FromResult(responseEntity);
+        // }
 
 
         /*
@@ -115,11 +180,15 @@ namespace shop_giay_server._Controllers
         {
             if (e is InvalidQueryParamsException)
             {
-                return BadRequest(Response<Model>.BadRequest("Invalid query params."));
-            } 
+                return BadRequest(Response<Model>.BadRequest("Invalid query params.", e.ToString()));
+            }
             else if (e is Microsoft.Data.SqlClient.SqlException)
             {
-                return BadRequest(Response<Model>.BadRequest("Cannot connect to database."));
+                return BadRequest(Response<Model>.BadRequest("Cannot connect to database.", e.ToString()));
+            }
+            else if (e is NullReferenceException) 
+            {
+                return BadRequest(Response<Model>.BadRequest("Items not existed.", e.ToString()));
             }
             else
             {
@@ -131,7 +200,7 @@ namespace shop_giay_server._Controllers
         /*
             Summary: - Support get models with dynamic ResponseModel type.
         */
-        protected async Task<IActionResult> _GetAllModels<ResponseModel>()
+        protected async Task<IActionResult> _GetAllModels<ResponseModel>(RequestContext context)
             where ResponseModel : BaseDTO
         {
             try
@@ -139,7 +208,7 @@ namespace shop_giay_server._Controllers
                 var query = this.Request.Query;
 
                 // 1: Transform query
-                query = await TransformQueryFromGetAll(query);
+                query = await TransformQuery(query, context);  // await TransformQueryFromGetAll(query); 
 
                 // 2: Get entities from query
                 var entities = await _repository.GetWithQuery(query);
@@ -148,7 +217,7 @@ namespace shop_giay_server._Controllers
                 dynamic responseItems = (object)MapToResponseModels<ResponseModel>(entities);
 
                 // 4: Further modify after finished mapping
-                responseItems = await FinishMapResponseModel(responseItems, entities);
+                responseItems = await FinishMappingResponseModels(responseItems, entities, context);
 
                 return await ResultForGetAll(responseItems);
             }
@@ -174,15 +243,16 @@ namespace shop_giay_server._Controllers
         [HttpGet]
         public virtual async Task<IActionResult> GetAllForAdmin()
         {
-            return await _GetAllModels<DTO>();
+            var context = RequestContext.AdminGetAll();
+            return await _GetAllModels<DTO>(context);
         }
 
 
         [Route("admin/[controller]/{id:int}")]
         [HttpGet]
-        public async virtual Task<IActionResult> GetByIdForAdmin(int id) 
+        public async virtual Task<IActionResult> GetByIdForAdmin(int id)
         {
-           return await _GetById<DTO>(id);
+            return await _GetById<DTO>(id);
         }
 
 
@@ -244,7 +314,8 @@ namespace shop_giay_server._Controllers
         [HttpGet]
         public async virtual Task<IActionResult> GetAllForClient()
         {
-            return await _GetAllModels<DTO>();
+            var context = RequestContext.ClientGetAll();
+            return await _GetAllModels<DTO>(context);
         }
 
 
@@ -257,9 +328,9 @@ namespace shop_giay_server._Controllers
         */
         [Route("client/[controller]/{id:int}")]
         [HttpGet]
-        public async virtual Task<IActionResult> GetByIdForClient(int id) 
+        public async virtual Task<IActionResult> GetByIdForClient(int id)
         {
-           return await _GetById<DTO>(id);
+            return await _GetById<DTO>(id);
         }
 
         #endregion
@@ -267,20 +338,20 @@ namespace shop_giay_server._Controllers
 
         #region HELPER METHODS
 
-        protected async Task<IActionResult> _GetById<ResponseModel>(int id) 
-            where ResponseModel: BaseDTO
+        protected async Task<IActionResult> _GetById<ResponseModel>(int id, RequestContext context)
+            where ResponseModel : BaseDTO
         {
-            try 
+            try
             {
                 var entity = await _repository.GetById(id);
-                if (entity == null) 
+                if (entity == null)
                 {
                     return NotFound(Response<Model>.NotFound());
                 }
 
-                dynamic model = MapToResponseModels<ResponseModel>(new List<Model>() { entity }).First();
-                model = await FinishMapResponseModel(model, entity);
-                return Ok(Response<ResponseModel>.Ok(model));
+                var models = MapToResponseModels<ResponseModel>(new List<Model>() { entity });
+                var resultModel = await FinishMappingResponseModels(models, new List<Model>() { entity }, context);
+                return Ok(Response<ResponseModel>.Ok(resultModel.First()));
             }
             catch (Exception e)
             {
@@ -348,6 +419,7 @@ namespace shop_giay_server._Controllers
 }
 
 
-class InvalidQueryParamsException: Exception {
+class InvalidQueryParamsException : Exception
+{
 
 }

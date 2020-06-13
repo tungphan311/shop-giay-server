@@ -45,7 +45,7 @@ namespace shop_giay_server._Controllers
             Msg = msg;
         }
 
-        public Response(ItemType data, string code = "OK", string msg = "Success.")
+        public Response(object data, string code = "OK", string msg = "Success.")
         {
             var convertSetting = new JsonSerializerSettings
             {
@@ -81,10 +81,9 @@ namespace shop_giay_server._Controllers
             return new Response<ItemType>(data, "OK", msg);
         }
 
-        public static Response<ItemType> BadRequest(string msg = "Invalid request.")
+        public static Response<ItemType> BadRequest(string msg = "Invalid request.", string data = "")
         {
-            var empty = new List<ItemType>();
-            return new Response<ItemType>(empty, "ERROR", msg);
+            return new Response<ItemType>(data, "ERROR", msg);
         }
 
         public static Response<ItemType> NotFound()
