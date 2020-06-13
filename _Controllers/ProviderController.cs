@@ -21,7 +21,7 @@ namespace shop_giay_server._Controllers
             // Validate
             if (string.IsNullOrEmpty(model.Name))
             {
-                return BadRequest(Response<ShoesType>.BadRequest("Not enough information to create."));
+                return BadRequest(ResponseDTO.BadRequest("Not enough information to create."));
             }
 
             var provide = new Provider

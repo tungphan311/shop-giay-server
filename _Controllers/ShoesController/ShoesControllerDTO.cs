@@ -70,7 +70,7 @@ namespace shop_giay_server._Controllers
         public List<string> images { get; set; } = new List<string>();
 
         [IgnoreMap]
-        public List<string> sizes { get; set; } = new List<string>();
+        public List<dynamic> sizes { get; set; } = new List<dynamic>();
     }
 }
     

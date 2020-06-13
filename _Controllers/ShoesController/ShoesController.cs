@@ -30,6 +30,9 @@ namespace shop_giay_server._Controllers
             _context = context;
         }
 
+        #region HELPER METHODS
+
+
         protected override async Task<IQueryCollection> TransformQuery(IQueryCollection query, RequestContext requestContext)
         {
             switch (requestContext.APIRoute)
@@ -63,6 +66,50 @@ namespace shop_giay_server._Controllers
         }
 
 
+        protected override async Task<IEnumerable<object>> FinishMappingResponseModels(
+            IEnumerable<object> responseEntities,
+            IEnumerable<Shoes> entities,
+            RequestContext requestContext)
+        {
+
+            switch (requestContext.APIRoute)
+            {
+                case APIRoute.ClientGetByID:
+                    try
+                    {
+                        var dto = (ResponseShoesDetailDTO)responseEntities.FirstOrDefault();
+                        var entity = entities.FirstOrDefault();
+                        foreach (var stock in entity.Stocks)
+                        {
+                            var size = await _context.Sizes.FindAsync(stock.SizeId);
+                            if (size != null)
+                            {
+                                dto.sizes.Add(new
+                                {
+                                    sizeName = size.Name,
+                                    stockId = stock.Id
+                                });
+                            }
+                        }
+
+                        return await base.FinishMappingResponseModels(responseEntities, entities, requestContext);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(0, e, "Cannot convert to ResponseShoesDetailDTO.");
+                        return await base.FinishMappingResponseModels(responseEntities, entities, requestContext);
+                    }
+                default:
+                    break;
+            }
+
+            return await base.FinishMappingResponseModels(responseEntities, entities, requestContext);
+        }
+
+
+        #endregion
+
+
         #region CLIENT API
 
         public override async Task<IActionResult> GetAllForClient()
@@ -73,32 +120,8 @@ namespace shop_giay_server._Controllers
 
         public override async Task<IActionResult> GetByIdForClient(int id)
         {
-            return await _GetById<ResponseShoesDetailDTO>(id);
-        }
-
-
-        protected override async Task<object> FinishMapResponseModel(object responseEntity, Shoes entity)
-        {
-            try
-            {
-                var dto = (ResponseShoesDetailDTO)responseEntity;
-
-                foreach (var stock in entity.Stocks)
-                {
-                    var size = await _context.Sizes.FindAsync(stock.SizeId);
-                    if (size != null)
-                    {
-                        dto.sizes.Add(size.Name);
-                    }
-                }
-
-                return dto;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(0, e, "Cannot convert to ResponseShoesDetailDTO.");
-                return await base.FinishMapResponseModel(responseEntity, entity);
-            }
+            var context = RequestContext.ClientGetByID(id);
+            return await _GetById<ResponseShoesDetailDTO>(id, context);
         }
 
         #endregion
@@ -113,12 +136,12 @@ namespace shop_giay_server._Controllers
             // Validate
             if (!model.IsValid())
             {
-                return BadRequest(Response<Shoes>.BadRequest("Not enough information to create."));
+                return BadRequest(ResponseDTO.BadRequest("Not enough information to create."));
             }
 
             if (await isExist(model.Code))
             {
-                return BadRequest(Response<Shoes>.BadRequest("Shoes's code is already existed"));
+                return BadRequest(ResponseDTO.BadRequest("Shoes's code is already existed"));
             }
 
             var images = model.Images;
@@ -169,17 +192,18 @@ namespace shop_giay_server._Controllers
             return await this._AddItem(shoes);
         }
 
+
         [Route("admin/[controller]/{id:int}")]
         [HttpPut]
         public async Task<IActionResult> UpdateShoes(int id, [FromBody] ShoesDTO dto)
         {
             if (!(await _repository.ExistWhere(c => c.Id == id)))
             {
-                return BadRequest(Response<Shoes>.BadRequest("Item ID is not existed."));
+                return BadRequest(ResponseDTO.BadRequest("Item ID is not existed."));
             }
             var entity = _mapper.Map<Shoes>(dto);
             var updatedItem = await _repository.Update(entity);
-            return Ok(Response<Shoes>.Ok(entity));
+            return Ok(ResponseDTO.Ok(entity));
         }
 
         #endregion

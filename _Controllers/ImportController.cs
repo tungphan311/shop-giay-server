@@ -34,7 +34,7 @@ namespace shop_giay_server._Controllers
 
                 if (stock == null)
                 {
-                    return BadRequest(Response<Import>.BadRequest($"Not found stockId: {id}"));
+                    return BadRequest(ResponseDTO.BadRequest($"Not found stockId: {id}"));
                 }
                 else
                 {

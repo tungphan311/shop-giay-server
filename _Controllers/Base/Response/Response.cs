@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace shop_giay_server._Controllers
 {
-    interface IResponse<ItemType>
+    interface IResponse
     {
         public string Code { get; set; }
         public string Msg { get; set; }
@@ -17,7 +17,7 @@ namespace shop_giay_server._Controllers
         public string Data { get; set; }
     }
 
-    public class Response<ItemType>: IResponse<ItemType>
+    public class ResponseDTO: IResponse
     {
         public string Code { get; set; }
         public string Msg { get; set; }
@@ -25,13 +25,13 @@ namespace shop_giay_server._Controllers
         public string Data { get; set; }
 
 
-        public Response(IEnumerable<ItemType> data, string code = "OK", string msg = "Success.", int total = 0)
+        public ResponseDTO(IEnumerable<object> data, string code = "OK", string msg = "Success.", int total = 0)
             : this(data.ToList(), code, msg, total)
         {
 
         }
 
-        public Response(List<ItemType> data, string code = "OK", string msg = "Success.", int total = 0)
+        public ResponseDTO(List<object> data, string code = "OK", string msg = "Success.", int total = 0)
         {
             var convertSetting = new JsonSerializerSettings
             {
@@ -45,7 +45,7 @@ namespace shop_giay_server._Controllers
             Msg = msg;
         }
 
-        public Response(object data, string code = "OK", string msg = "Success.")
+        public ResponseDTO(object data, string code = "OK", string msg = "Success.")
         {
             var convertSetting = new JsonSerializerSettings
             {
@@ -61,35 +61,35 @@ namespace shop_giay_server._Controllers
 
 
         // Convenience static methods
-        public static Response<ItemType> Ok(IEnumerable<ItemType> data, int total)
+        public static ResponseDTO Ok(IEnumerable<object> data, int total)
         {
-            return new Response<ItemType>(data, "OK", "Success.", total);
+            return new ResponseDTO(data, "OK", "Success.", total);
         }
 
-        public static Response<ItemType> Ok(IEnumerable<ItemType> data)
+        public static ResponseDTO Ok(IEnumerable<object> data)
         {
-            return new Response<ItemType>(data, "OK", "Success.");
+            return new ResponseDTO(data, "OK", "Success.");
         }
 
-        public static Response<ItemType> Ok(ItemType data)
+        public static ResponseDTO Ok(object data)
         {
-            return new Response<ItemType>(data, "OK", "Success.");
+            return new ResponseDTO(data, "OK", "Success.");
         }
 
-        public static Response<ItemType> OkDeleted(ItemType data, string msg = "Deleted.")
+        public static ResponseDTO OkDeleted(object data, string msg = "Deleted.")
         {
-            return new Response<ItemType>(data, "OK", msg);
+            return new ResponseDTO(data, "OK", msg);
         }
 
-        public static Response<ItemType> BadRequest(string msg = "Invalid request.", string data = "")
+        public static ResponseDTO BadRequest(string msg = "Invalid request.", string data = "")
         {
-            return new Response<ItemType>(data, "ERROR", msg);
+            return new ResponseDTO(data, "ERROR", msg);
         }
 
-        public static Response<ItemType> NotFound()
+        public static ResponseDTO NotFound()
         {
-            var empty = new List<ItemType>();
-            return new Response<ItemType>(empty, "ERROR", "Not Found.");
+            var empty = new List<object>();
+            return new ResponseDTO(empty, "ERROR", "Not Found.");
         }
 
         internal static object Ok(EntityEntry<Stock> stockResult)

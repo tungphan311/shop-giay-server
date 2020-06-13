@@ -11,6 +11,7 @@ using shop_giay_server.Dtos;
 using AutoMapper;
 using System;
 using Microsoft.Extensions.Primitives;
+using shop_giay_server.Helpers;
 
 namespace shop_giay_server._Controllers
 {
@@ -35,9 +36,9 @@ namespace shop_giay_server._Controllers
             return new RequestContext(APIRoute.AdminGetAll);
         }
 
-        public static RequestContext ClientGetByID()
+        public static RequestContext ClientGetByID(int id)
         {
-            return new RequestContext(APIRoute.ClientGetByID);
+            return new RequestContext(APIRoute.ClientGetByID, id);
         }
 
         public static RequestContext ClientGetAll()
@@ -65,18 +66,6 @@ namespace shop_giay_server._Controllers
         protected readonly ILogger _logger;
         protected readonly IMapper _mapper;
 
-        public void ADASDf(RequestContext info)
-        {
-            switch (info.APIRoute)
-            {
-                case APIRoute.ClientGetAll:
-
-                    break;
-                default:
-                    break;
-            }
-        }
-
         public GeneralController(IAsyncRepository<Model> repository, ILogger logger, IMapper mapper)
         {
             _repository = repository;
@@ -94,31 +83,36 @@ namespace shop_giay_server._Controllers
         */
         protected virtual Task<IQueryCollection> TransformQuery(IQueryCollection query, RequestContext requestContext)
         {
+            // Dictionary<string, StringValues> dict = query.ToDictionary(c => c.Key, c => c);
             switch (requestContext.APIRoute)
             {
                 case APIRoute.AdminGetAll:
                 case APIRoute.ClientGetAll:
+
                     // Detect if need include items with delete flag
                     var includeDeletedKey = "includeDeleted";
+                    var defaultDeleteFlag = "false";
                     if (query.ContainsKey(includeDeletedKey))
                     {
                         if (query[includeDeletedKey].Count != 1)
                         {
                             throw new InvalidQueryParamsException();
                         }
-                        if (query[includeDeletedKey][0] != "true")
+
+                        if (query[includeDeletedKey][0] == "true")
                         {
-                            var queryItem = new KeyValuePair<string, StringValues>("flagDelete", "false");
-                            query.Append(queryItem);
+                            defaultDeleteFlag = "true";
                         }
                     }
-                    return Task.FromResult(query);
-
-
+                    var queryItem = new KeyValuePair<string, StringValues>("DeleteFlag", defaultDeleteFlag);
+                    query = query.AddQueryItem(queryItem);
+                    break;
 
                 default:
-                    return Task.FromResult(query);
+                    break;
             }
+
+            return Task.FromResult(query);
         }
 
 
@@ -166,10 +160,10 @@ namespace shop_giay_server._Controllers
         {
             if (items.Count() == 0)
             {
-                return NotFound(Response<Model>.NotFound());
+                return NotFound(ResponseDTO.NotFound());
             }
             var totalRecords = await _repository.CountWhere(c => c.DeleteFlag == false);
-            return Ok(Response<dynamic>.Ok(items, totalRecords));
+            return Ok(ResponseDTO.Ok(items, totalRecords));
         }
 
 
@@ -180,50 +174,19 @@ namespace shop_giay_server._Controllers
         {
             if (e is InvalidQueryParamsException)
             {
-                return BadRequest(Response<Model>.BadRequest("Invalid query params.", e.ToString()));
+                return BadRequest(ResponseDTO.BadRequest("Invalid query params.", e.ToString()));
             }
             else if (e is Microsoft.Data.SqlClient.SqlException)
             {
-                return BadRequest(Response<Model>.BadRequest("Cannot connect to database.", e.ToString()));
+                return BadRequest(ResponseDTO.BadRequest("Cannot connect to database.", e.ToString()));
             }
-            else if (e is NullReferenceException) 
+            else if (e is NullReferenceException)
             {
-                return BadRequest(Response<Model>.BadRequest("Items not existed.", e.ToString()));
+                return BadRequest(ResponseDTO.BadRequest("Items not existed.", e.ToString()));
             }
             else
             {
-                return BadRequest(Response<Model>.BadRequest());
-            }
-        }
-
-
-        /*
-            Summary: - Support get models with dynamic ResponseModel type.
-        */
-        protected async Task<IActionResult> _GetAllModels<ResponseModel>(RequestContext context)
-            where ResponseModel : BaseDTO
-        {
-            try
-            {
-                var query = this.Request.Query;
-
-                // 1: Transform query
-                query = await TransformQuery(query, context);  // await TransformQueryFromGetAll(query); 
-
-                // 2: Get entities from query
-                var entities = await _repository.GetWithQuery(query);
-
-                // 3: Map to ResponseModel
-                dynamic responseItems = (object)MapToResponseModels<ResponseModel>(entities);
-
-                // 4: Further modify after finished mapping
-                responseItems = await FinishMappingResponseModels(responseItems, entities, context);
-
-                return await ResultForGetAll(responseItems);
-            }
-            catch (Exception e)
-            {
-                return HandleExceptionInRequest(e);
+                return BadRequest(ResponseDTO.BadRequest());
             }
         }
 
@@ -252,7 +215,8 @@ namespace shop_giay_server._Controllers
         [HttpGet]
         public async virtual Task<IActionResult> GetByIdForAdmin(int id)
         {
-            return await _GetById<DTO>(id);
+            var context = RequestContext.AdminGetByID(id);
+            return await _GetById<DTO>(id, context);
         }
 
 
@@ -269,7 +233,7 @@ namespace shop_giay_server._Controllers
         [HttpDelete]
         public async Task<IActionResult> MultiDeleteForAdmin([FromQuery] List<int> ids, bool setFlag = true)
         {
-            IActionResult response = BadRequest(Response<Model>.BadRequest());
+            IActionResult response = BadRequest(ResponseDTO.BadRequest());
             foreach (var id in ids)
             {
                 response = await DeleteItem(id, setFlag);
@@ -282,7 +246,7 @@ namespace shop_giay_server._Controllers
         // Helper method
         protected async Task<IActionResult> _UpdateItemForAdminAsync(Model model)
         {
-            IActionResult response = BadRequest(Response<Model>.NotFound());
+            IActionResult response = BadRequest(ResponseDTO.NotFound());
             if (!(await _repository.ExistWhere(m => m.Id == model.Id)))
             {
                 return response;
@@ -294,7 +258,7 @@ namespace shop_giay_server._Controllers
                 return response;
             }
 
-            response = Ok(Response<Model>.Ok(item));
+            response = Ok(ResponseDTO.Ok(item));
             return response;
         }
 
@@ -330,13 +294,44 @@ namespace shop_giay_server._Controllers
         [HttpGet]
         public async virtual Task<IActionResult> GetByIdForClient(int id)
         {
-            return await _GetById<DTO>(id);
+            var context = RequestContext.ClientGetByID(id);
+            return await _GetById<DTO>(id, context);
         }
 
         #endregion
 
 
         #region HELPER METHODS
+
+        /*
+            Summary: - Support get models with dynamic ResponseModel type.
+        */
+        protected async Task<IActionResult> _GetAllModels<ResponseModel>(RequestContext context)
+            where ResponseModel : BaseDTO
+        {
+            try
+            {
+                var query = this.Request.Query;
+
+                // 1: Transform query
+                query = await TransformQuery(query, context);
+
+                // 2: Get entities from query
+                var entities = await _repository.GetWithQuery(query);
+
+                // 3: Map to ResponseModel
+                dynamic responseItems = (object)MapToResponseModels<ResponseModel>(entities);
+
+                // 4: Further modify after finished mapping
+                responseItems = await FinishMappingResponseModels(responseItems, entities, context);
+
+                return await ResultForGetAll(responseItems);
+            }
+            catch (Exception e)
+            {
+                return HandleExceptionInRequest(e);
+            }
+        }
 
         protected async Task<IActionResult> _GetById<ResponseModel>(int id, RequestContext context)
             where ResponseModel : BaseDTO
@@ -346,12 +341,12 @@ namespace shop_giay_server._Controllers
                 var entity = await _repository.GetById(id);
                 if (entity == null)
                 {
-                    return NotFound(Response<Model>.NotFound());
+                    return NotFound(ResponseDTO.NotFound());
                 }
 
                 var models = MapToResponseModels<ResponseModel>(new List<Model>() { entity });
                 var resultModel = await FinishMappingResponseModels(models, new List<Model>() { entity }, context);
-                return Ok(Response<ResponseModel>.Ok(resultModel.First()));
+                return Ok(ResponseDTO.Ok(resultModel.First()));
             }
             catch (Exception e)
             {
@@ -359,18 +354,17 @@ namespace shop_giay_server._Controllers
             }
         }
 
-
         protected async Task<IActionResult> _AddItem(Model item)
         {
-            IActionResult result = BadRequest(Response<Model>.BadRequest());
+            IActionResult result = BadRequest(ResponseDTO.BadRequest());
             try
             {
                 var insertedItem = await _repository.Add(item);
-                result = Ok(Response<Model>.Ok(insertedItem));
+                result = Ok(ResponseDTO.Ok(insertedItem));
             }
             catch (DbUpdateException ex)
             {
-                var res = Response<Model>.BadRequest($"Cannot add new { typeof(Model).Name }.");
+                var res = ResponseDTO.BadRequest($"Cannot add new { typeof(Model).Name }.");
                 result = BadRequest(res);
                 _logger.LogError(ex.ToString());
             }
@@ -383,21 +377,21 @@ namespace shop_giay_server._Controllers
             var item = await _repository.GetById(id);
             if (item == null)
             {
-                return NotFound(Response<Model>.NotFound());
+                return NotFound(ResponseDTO.NotFound());
             }
 
-            IActionResult response = BadRequest(Response<Model>.BadRequest());
+            IActionResult response = BadRequest(ResponseDTO.BadRequest());
             if (setFlag)
             {
                 item.DeleteFlag = true;
                 item = await _repository.Update(item);
-                response = Ok(Response<Model>.OkDeleted(item));
+                response = Ok(ResponseDTO.OkDeleted(item));
             }
             else
             {
                 var result = await _repository.Remove(id);
                 response = result
-                    ? Ok(Response<Model>.OkDeleted(item, "Removed from database."))
+                    ? Ok(ResponseDTO.OkDeleted(item, "Removed from database."))
                     : response;
             }
             return response;
