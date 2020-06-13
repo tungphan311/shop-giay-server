@@ -21,7 +21,7 @@ namespace shop_giay_server._Controllers
             // Validate
             if (model.Content.Length > 0 && model.Rate >= 0 && model.Rate <= 10)
             {
-                return BadRequest(Response<CustomerReview>.BadRequest("Invalid content or rating."));
+                return BadRequest(ResponseDTO.BadRequest("Invalid content or rating."));
             }
 
 
