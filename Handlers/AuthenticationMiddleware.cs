@@ -24,7 +24,7 @@ namespace shop_giay_server.Handlers
             else
             {
                 string method = context.Request.Method;
-                var route = method + "/" + context.Session.GetString("route");
+                var route = method + "/" + context.Session.GetString("route") + "/";
                 var role = context.Session.GetString("role");
 
                 var permission = PermissionPath.mapApi.FirstOrDefault(x => route.Contains(x.Value)).Key;
