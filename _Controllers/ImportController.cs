@@ -30,9 +30,16 @@ namespace shop_giay_server._Controllers
             for (int i = 0; i < details.Count; i++)
             {
                 var id = details[i].StockId;
-                if (!await _stockRepository.ExistWhere(c => c.Id == id))
+                var stock = await _stockRepository.FirstOrDefault(c => c.Id == id);
+
+                if (stock == null)
                 {
-                    return BadRequest(Response<Import>.BadRequest($"Not found stockId: {id}"));
+                    return BadRequest(ResponseDTO.BadRequest($"Not found stockId: {id}"));
+                }
+                else
+                {
+                    stock.Instock += details[i].Quantity;
+                    await _stockRepository.Update(stock);
                 }
             }
 

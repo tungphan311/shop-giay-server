@@ -15,7 +15,7 @@ namespace shop_giay_server.Handlers
 
         public async Task Invoke(HttpContext context)
         {
-            var isAuthorize = context.Session.GetInt32("NeedAuthorize");
+            var isAuthorize = context.Session.GetInt32(SessionConstant.NeedAuthorize);
 
             if (isAuthorize == 0)
             {

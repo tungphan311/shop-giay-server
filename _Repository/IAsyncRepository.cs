@@ -19,7 +19,8 @@ namespace shop_giay_server._Repository
         Task<T> Update(T entity);
         Task<bool> Remove(int id);
 
-        Task<IEnumerable<T>> GetAll(Dictionary<string, StringValues> queries);
+        Task<(IEnumerable<T> result, int totalRecords)> GetAllWithQuery(IQueryCollection query);
+        Task<(IEnumerable<T> result, int totalRecords)> GetAll(Dictionary<string, StringValues> queries);
         Task<IEnumerable<T>> GetWhere(Expression<Func<T, bool>> predicate);
 
         Task<int> CountAll();

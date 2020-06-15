@@ -93,6 +93,7 @@ namespace shop_giay_server
             app.UseSession();
 
             // custom middleware
+            // TODO: comment out for testing 
             app.UseMiddleware<SignInMiddleware>();          // check token if controller need authorize
             app.UseMiddleware<AuthenticationMiddleware>();  // check if user with request token has permission to complete action
 
@@ -190,7 +191,7 @@ namespace shop_giay_server
                 .ForMember(des => des.salePrice, opt => opt.MapFrom((s, d) =>
                 {
                     // todo
-                    return 1000000;
+                    return 0;
                 }))
                 .ForMember(des => des.description, opt => opt.MapFrom(s => s.ShoesType.Name));
 
@@ -205,7 +206,7 @@ namespace shop_giay_server
                 .ForMember(des => des.ratingCount, opt => opt.MapFrom((s, d) =>
                 {
                     // todo
-                    return 14;
+                    return 0;
                 }))
                 .ForMember(des => des.styleName, opt => opt.MapFrom(s => s.ShoesType.Name))
                 .ForMember(des => des.brandName, opt => opt.MapFrom(s => s.ShoesBrand.Name))

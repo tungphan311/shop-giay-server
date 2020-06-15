@@ -24,7 +24,7 @@ namespace shop_giay_server._Controllers
 
             if (existed)
             {
-                return BadRequest(Response<Customer>.BadRequest("Customer has been existed."));
+                return BadRequest(ResponseDTO.BadRequest("Customer has been existed."));
             }
 
 
