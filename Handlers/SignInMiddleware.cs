@@ -9,13 +9,15 @@ using shop_giay_server.data;
 
 namespace shop_giay_server.Handlers
 {
+
     public class SignInMiddleware
     {
+        // bug: https://stackoverflow.com/questions/48590579/cannot-resolve-scoped-service-from-root-provider-net-core-2
         private readonly RequestDelegate next;
-        private readonly DataContext dataContext;
-        public SignInMiddleware(RequestDelegate next, DataContext dataContext)
+        // private readonly DataContext dataContext;
+        public SignInMiddleware(RequestDelegate next)
         {
-            this.dataContext = dataContext;
+            // this.dataContext = dataContext;
             this.next = next;
         }
 
@@ -35,7 +37,7 @@ namespace shop_giay_server.Handlers
             }
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, DataContext dataContext)
         {
             string authorize = context.Request.Headers["Authorization"];
             string route = context.Request.Path;
@@ -46,12 +48,12 @@ namespace shop_giay_server.Handlers
 
             if (isAuthorize == false)
             {
-                context.Session.SetInt32("NeedAuthorize", 0);
+                context.Session.SetInt32(SessionConstant.NeedAuthorize, 0);
                 await next(context);
             }
             else
             {
-                context.Session.SetInt32("NeedAuthorize", 1);
+                context.Session.SetInt32(SessionConstant.NeedAuthorize, 1);
 
                 if (authorize != null && authorize.StartsWith("Bearer"))
                 {
@@ -74,8 +76,9 @@ namespace shop_giay_server.Handlers
                             return;
                         }
 
-                        context.Session.SetString("route", route);
-                        context.Session.SetString("role", role);
+                        context.Session.SetString(SessionConstant.Route, route);
+                        context.Session.SetString(SessionConstant.Role, role);
+                        context.Session.SetString(SessionConstant.Username, username);
                         await next(context);
                     }
                     else

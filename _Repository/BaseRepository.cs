@@ -57,9 +57,12 @@ namespace shop_giay_server._Repository
 
         public async Task<T> Update(T entity)
         {
-            _dataContext.Attach(entity);
+            var updateEntity = _dataContext.Entry(await _dataContext.Set<T>().FirstOrDefaultAsync(x => x.Id == entity.Id));
+            if (updateEntity == null) return null;
+            
+            updateEntity.CurrentValues.SetValues(entity);
             await _dataContext.SaveChangesAsync();
-            return entity;
+            return await _dataContext.Set<T>().FirstOrDefaultAsync(c => c.Id == entity.Id);
         }
 
         public async Task<bool> Remove(int id)

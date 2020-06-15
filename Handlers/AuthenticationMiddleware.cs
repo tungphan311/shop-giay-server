@@ -15,7 +15,7 @@ namespace shop_giay_server.Handlers
 
         public async Task Invoke(HttpContext context)
         {
-            var isAuthorize = context.Session.GetInt32("NeedAuthorize");
+            var isAuthorize = context.Session.GetInt32(SessionConstant.NeedAuthorize);
 
             if (isAuthorize == 0)
             {
@@ -24,8 +24,8 @@ namespace shop_giay_server.Handlers
             else
             {
                 string method = context.Request.Method;
-                var route = context.Session.GetString("route") + "/" + method;
-                var role = context.Session.GetString("role");
+                var route = context.Session.GetString(SessionConstant.Route) + "/" + method;
+                var role = context.Session.GetString(SessionConstant.Role);
 
                 var permission = PermissionPath.mapApi.FirstOrDefault(x => x.Value == route).Key;
 
