@@ -18,6 +18,8 @@ namespace shop_giay_server._Repository
 
         private int defaultPageSize = 20;
         private int defaultPageNumber = 1;
+        private string pageSizeKey = "page-size";
+        private string pageNumberKey = "page";
 
         public BaseRepository(DataContext context)
         {
@@ -36,7 +38,7 @@ namespace shop_giay_server._Repository
             foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
                 query = query.Include(p.Name);
 
-            return await query.FirstAsync(predicate);
+            return await query.FirstOrDefaultAsync(predicate);
         }
 
         public async Task<T> Add(T entity)
@@ -74,7 +76,7 @@ namespace shop_giay_server._Repository
             return false;
         }
 
-        public async Task<IEnumerable<T>> GetWithQuery(IQueryCollection query) {
+        public async Task<(IEnumerable<T> result, int totalRecords)> GetAllWithQuery(IQueryCollection query) {
             var dict = query.ToDictionary(
                 p => p.Key.ToLower(),
                 p => p.Value);
@@ -82,7 +84,7 @@ namespace shop_giay_server._Repository
             return await GetAll(dict);
         }
 
-        public async Task<IEnumerable<T>> GetAll(Dictionary<string, StringValues> queries)
+        public async Task<(IEnumerable<T> result, int totalRecords)> GetAll(Dictionary<string, StringValues> queries)
         {
             var query = _dataContext.Set<T>().AsQueryable();
             var dict = queries.ToDictionary(
@@ -92,19 +94,6 @@ namespace shop_giay_server._Repository
             var pageSize = -1;
             var pageNumber = -1;
 
-
-            // Paging
-            GetPageInfo(dict, ref pageNumber, ref pageSize);
-            if (pageSize != -1 || pageNumber != -1)
-            {
-                if (pageSize == -1) pageSize = defaultPageSize;
-                if (pageNumber == -1) pageNumber = defaultPageNumber;
-
-                query = query
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize);
-            }
-            
 
             // Filter by queries
             foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetProperties())
@@ -119,7 +108,7 @@ namespace shop_giay_server._Repository
                     dynamic vl = null;
                     if (type == typeof(bool))
                     {
-                        vl = (rawVl == "1") || (rawVl == "true") ? true : false;
+                        vl = (rawVl == "1") || (rawVl == "true");
                     } else
                     {
                         vl = Convert.ChangeType(rawVl, type);
@@ -133,13 +122,29 @@ namespace shop_giay_server._Repository
                 }
             }
 
+            // Get total records without paging
+            var totalRecords = await query.CountAsync();
+
+
+            // Add paging
+            GetPageInfo(dict, ref pageNumber, ref pageSize);
+            if (pageSize != -1 || pageNumber != -1)
+            {
+                if (pageSize == -1) pageSize = defaultPageSize;
+                if (pageNumber == -1) pageNumber = defaultPageNumber;
+
+                query = query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize);
+            }
+
 
             // Included all navigations properties
             foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
                 query = query.Include(p.Name);
 
-
-            return await query.ToListAsync();
+            var listResult = await query.ToListAsync();
+            return (result: listResult, totalRecords: totalRecords);
         }
 
         public async Task<IEnumerable<T>> GetWhere(Expression<Func<T, bool>> predicate)
@@ -165,12 +170,12 @@ namespace shop_giay_server._Repository
             string pNumb = null;
             string pSize = null;
 
-            if (queries.TryGetValue("pagesize", out pSize)) {
+            if (queries.TryGetValue(pageSizeKey, out pSize)) {
                 var value = -1;
                 Int32.TryParse(pSize, out value);
                 if (value > 0) pageSize = value;
             }
-            if (queries.TryGetValue("page", out pNumb)) {
+            if (queries.TryGetValue(pageNumberKey, out pNumb)) {
                 var value = -1;
                 Int32.TryParse(pNumb, out value);
                 if (value > 0) pageNumber = value;

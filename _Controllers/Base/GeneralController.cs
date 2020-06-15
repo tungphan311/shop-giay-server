@@ -105,7 +105,7 @@ namespace shop_giay_server._Controllers
                         }
                     }
                     var queryItem = new KeyValuePair<string, StringValues>("DeleteFlag", defaultDeleteFlag);
-                    query = query.AddQueryItem(queryItem);
+                    query = query.AppendQueryItem(queryItem);
                     break;
 
                 default:
@@ -156,13 +156,12 @@ namespace shop_giay_server._Controllers
         /*
             Summary: Return resposne for get request.
         */
-        public async Task<IActionResult> ResultForGetAll(IEnumerable<dynamic> items)
+        public async Task<IActionResult> ResultForGetAll(IEnumerable<dynamic> items, int totalRecords)
         {
             if (items.Count() == 0)
             {
                 return NotFound(ResponseDTO.NotFound());
             }
-            var totalRecords = await _repository.CountWhere(c => c.DeleteFlag == false);
             return Ok(ResponseDTO.Ok(items, totalRecords));
         }
 
@@ -317,15 +316,15 @@ namespace shop_giay_server._Controllers
                 query = await TransformQuery(query, context);
 
                 // 2: Get entities from query
-                var entities = await _repository.GetWithQuery(query);
+                var entities = await _repository.GetAllWithQuery(query);
 
                 // 3: Map to ResponseModel
-                dynamic responseItems = (object)MapToResponseModels<ResponseModel>(entities);
+                dynamic responseItems = (object)MapToResponseModels<ResponseModel>(entities.result);
 
                 // 4: Further modify after finished mapping
-                responseItems = await FinishMappingResponseModels(responseItems, entities, context);
+                responseItems = await FinishMappingResponseModels(responseItems, entities.result, context);
 
-                return await ResultForGetAll(responseItems);
+                return await ResultForGetAll(responseItems, entities.totalRecords);
             }
             catch (Exception e)
             {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace shop_giay_server._Controllers 
 {
-    public class CreateShoesBody
+    public class BodyCreateShoes
     {
         public bool DeleteFlag { get; set; } = false;
         public string Code { get; set; }
@@ -31,7 +31,7 @@ namespace shop_giay_server._Controllers
         }
     }
 
-    public class UpdateShoesStockBody
+    public class BodyUpdateShoesStock
     {
         public int ShoesId { get; set; }
         public int SizeId { get; set; }
@@ -71,6 +71,12 @@ namespace shop_giay_server._Controllers
 
         [IgnoreMap]
         public List<dynamic> sizes { get; set; } = new List<dynamic>();
+    }
+
+    public class BodyShoesRating 
+    {
+        public int shoesId { get; set; }
+        public int rating { get; set; }
     }
 }
     

@@ -176,7 +176,7 @@ namespace shop_giay_server
                 .ForMember(des => des.salePrice, opt => opt.MapFrom((s, d) =>
                 {
                     // todo
-                    return 1000000;
+                    return 0;
                 }))
                 .ForMember(des => des.description, opt => opt.MapFrom(s => s.ShoesType.Name));
 
@@ -191,7 +191,7 @@ namespace shop_giay_server
                 .ForMember(des => des.ratingCount, opt => opt.MapFrom((s, d) =>
                 {
                     // todo
-                    return 14;
+                    return 0;
                 }))
                 .ForMember(des => des.styleName, opt => opt.MapFrom(s => s.ShoesType.Name))
                 .ForMember(des => des.brandName, opt => opt.MapFrom(s => s.ShoesBrand.Name))
