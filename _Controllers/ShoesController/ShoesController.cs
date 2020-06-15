@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using shop_giay_server.data;
 using Microsoft.EntityFrameworkCore;
 using System;
+using shop_giay_server.Helpers;
 
 namespace shop_giay_server._Controllers
 {
@@ -30,7 +31,7 @@ namespace shop_giay_server._Controllers
             _context = context;
         }
 
-        #region HELPER METHODS
+        #region Helper Methods
 
 
         protected override async Task<IQueryCollection> TransformQuery(IQueryCollection query, RequestContext requestContext)
@@ -39,23 +40,8 @@ namespace shop_giay_server._Controllers
             {
                 case APIRoute.AdminGetAll:
                 case APIRoute.ClientGetAll:
-                    var genderKey = "gender";
-                    if (query[genderKey].Count == 1)
-                    {
-                        var paramItem = query[genderKey];
-                        var genderEntity = await _context.Genders.FirstAsync(g => g.Name == paramItem.ToString());
-                        var queryItem = new KeyValuePair<String, StringValues>("genderId", genderEntity.Id.ToString());
-                        query.Append(queryItem);
-                    }
-
-                    var isNewKey = "new";
-                    if (query[isNewKey].Count == 1)
-                    {
-                        var queryParam = query[isNewKey];
-                        var queryItem = new KeyValuePair<String, StringValues>("isNew", queryParam[0]);
-                        query.Append(queryItem);
-                    }
-
+                    query = await AppendGenderQueryIfNeeded(query);
+                    query = await AppendNewQueryIfNeeded(query);
                     break;
 
                 default:
@@ -71,12 +57,11 @@ namespace shop_giay_server._Controllers
             IEnumerable<Shoes> entities,
             RequestContext requestContext)
         {
-
-            switch (requestContext.APIRoute)
+            try
             {
-                case APIRoute.ClientGetByID:
-                    try
-                    {
+                switch (requestContext.APIRoute)
+                {
+                    case APIRoute.ClientGetByID:
                         var dto = (ResponseShoesDetailDTO)responseEntities.FirstOrDefault();
                         var entity = entities.FirstOrDefault();
                         foreach (var stock in entity.Stocks)
@@ -91,16 +76,20 @@ namespace shop_giay_server._Controllers
                                 });
                             }
                         }
+                        break;
 
-                        return await base.FinishMappingResponseModels(responseEntities, entities, requestContext);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(0, e, "Cannot convert to ResponseShoesDetailDTO.");
-                        return await base.FinishMappingResponseModels(responseEntities, entities, requestContext);
-                    }
-                default:
-                    break;
+                    case APIRoute.ClientGetAll:
+
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(0, e, "Cannot convert to ResponseShoesDetailDTO.");
+                return await base.FinishMappingResponseModels(responseEntities, entities, requestContext);
             }
 
             return await base.FinishMappingResponseModels(responseEntities, entities, requestContext);
@@ -110,7 +99,7 @@ namespace shop_giay_server._Controllers
         #endregion
 
 
-        #region CLIENT API
+        #region Client API
 
         public override async Task<IActionResult> GetAllForClient()
         {
@@ -124,14 +113,22 @@ namespace shop_giay_server._Controllers
             return await _GetById<ResponseShoesDetailDTO>(id, context);
         }
 
+        [Route("client/[controller]/rating")]
+        [HttpPost]
+        public IActionResult ClientRateShoes([FromBody] BodyShoesRating model)
+        {
+
+            return BadRequest();
+        }
+
         #endregion
 
 
-        #region ADMIN API
+        #region Admin API
 
         [Route("admin/[controller]")]
         [HttpPost]
-        public async Task<IActionResult> AddShoesForAdmin([FromBody] CreateShoesBody model)
+        public async Task<IActionResult> AddShoesForAdmin([FromBody] BodyCreateShoes model)
         {
             // Validate
             if (!model.IsValid())
@@ -209,7 +206,44 @@ namespace shop_giay_server._Controllers
         #endregion
 
 
-        public async Task<bool> isExist(string code)
+        #region Query Params Modifiers 
+
+        private async Task<IQueryCollection> AppendGenderQueryIfNeeded(IQueryCollection query)
+        {
+            var genderKey = "gender";
+            if (query[genderKey].Count == 1)
+            {
+                var paramValue = query[genderKey][0];
+                var genderEntity = await _context.Genders.FirstOrDefaultAsync(g => g.Name.ToLower() == paramValue.ToString().ToLower());
+
+                if (genderEntity != null)
+                {
+                    var queryItem = new KeyValuePair<String, StringValues>("genderId", genderEntity.Id.ToString());
+                    query = query.AppendQueryItem(queryItem);
+                }
+                
+            }
+            return query;
+        }
+
+        private async Task<IQueryCollection> AppendNewQueryIfNeeded(IQueryCollection query)
+        {
+            var isNewKey = "new";
+            if (query[isNewKey].Count == 1)
+            {
+                var queryParam = query[isNewKey];
+                var queryItem = new KeyValuePair<String, StringValues>("isNew", queryParam[0]);
+                query = query.AppendQueryItem(queryItem);
+            }
+            return await Task.FromResult(query);
+        }
+
+        #endregion
+
+
+        #region Private Methods
+
+        private async Task<bool> isExist(string code)
         {
             if (await _context.Shoes.AnyAsync(s => s.Code == code))
             {
@@ -218,7 +252,7 @@ namespace shop_giay_server._Controllers
             return false;
         }
 
-
+        #endregion
 
 
     }
