@@ -24,10 +24,10 @@ namespace shop_giay_server.Handlers
             else
             {
                 string method = context.Request.Method;
-                var route = context.Session.GetString("route") + "/" + method;
+                var route = method + "/" + context.Session.GetString("route");
                 var role = context.Session.GetString("role");
 
-                var permission = PermissionPath.mapApi.FirstOrDefault(x => x.Value == route).Key;
+                var permission = PermissionPath.mapApi.FirstOrDefault(x => route.Contains(x.Value)).Key;
 
                 if (role == "admin")
                 {
