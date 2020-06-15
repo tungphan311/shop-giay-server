@@ -93,6 +93,7 @@ namespace shop_giay_server
             app.UseSession();
 
             // custom middleware
+            // TODO: comment out for testing 
             app.UseMiddleware<SignInMiddleware>();          // check token if controller need authorize
             app.UseMiddleware<AuthenticationMiddleware>();  // check if user with request token has permission to complete action
 
