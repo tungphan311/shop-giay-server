@@ -23,7 +23,7 @@ namespace shop_giay_server._Repository
 
         public BaseRepository(DataContext context)
         {
-            _dataContext= context;
+            _dataContext = context;
         }
 
         public async Task<T> GetById(int id)
@@ -72,11 +72,12 @@ namespace shop_giay_server._Repository
                 await _dataContext.SaveChangesAsync();
                 return true;
             }
-            
+
             return false;
         }
 
-        public async Task<(IEnumerable<T> result, int totalRecords)> GetAllWithQuery(IQueryCollection query) {
+        public async Task<(IEnumerable<T> result, int totalRecords)> GetAllWithQuery(IQueryCollection query)
+        {
             var dict = query.ToDictionary(
                 p => p.Key.ToLower(),
                 p => p.Value);
@@ -84,50 +85,25 @@ namespace shop_giay_server._Repository
             return await GetAll(dict);
         }
 
-        public async Task<(IEnumerable<T> result, int totalRecords)> GetAll(Dictionary<string, StringValues> queries)
+        public async Task<(IEnumerable<T> result, int totalRecords)> GetAll(Dictionary<string, StringValues> dictQuery)
         {
             var query = _dataContext.Set<T>().AsQueryable();
-            var dict = queries.ToDictionary(
-                p => p.Key.ToLower(),
-                p => p.Value.ToString());
-
             var pageSize = -1;
             var pageNumber = -1;
 
 
             // Filter by queries
-            foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetProperties())
-            {
-                if (!dict.ContainsKey(p.Name.ToLower())) continue;
+            AddCompareQueries(ref query, dictQuery, "=");
+            AddCompareQueries(ref query, dictQuery, "<=");
+            AddCompareQueries(ref query, dictQuery, ">=");
 
-                var rawVl = dict[p.Name.ToLower()];
-                var type = p.PropertyInfo.PropertyType;
-
-                try
-                {
-                    dynamic vl = null;
-                    if (type == typeof(bool))
-                    {
-                        vl = (rawVl == "1") || (rawVl == "true");
-                    } else
-                    {
-                        vl = Convert.ChangeType(rawVl, type);
-                    }
-
-                    query = query.Where(String.Format($"{p.Name} = {vl}"));
-                }
-                catch
-                {
-                    Console.WriteLine($"[INFO] Cannot convert {rawVl} to type {type} while applying query: {p.Name}");
-                }
-            }
 
             // Get total records without paging
             var totalRecords = await query.CountAsync();
 
 
             // Add paging
-            GetPageInfo(dict, ref pageNumber, ref pageSize);
+            GetPageInfo(dictQuery, ref pageNumber, ref pageSize);
             if (pageSize != -1 || pageNumber != -1)
             {
                 if (pageSize == -1) pageSize = defaultPageSize;
@@ -147,6 +123,54 @@ namespace shop_giay_server._Repository
             return (result: listResult, totalRecords: totalRecords);
         }
 
+
+        private void AddCompareQueries(ref IQueryable<T> query, Dictionary<string, StringValues> dictQuery, string operatorString)
+        {
+            switch (operatorString)
+            {
+                case ">=":
+                case ">":
+                    dictQuery = dictQuery.Where(kv => kv.Key.StartsWith("min"))
+                            .ToDictionary(kv => kv.Key.Substring(3), kv => kv.Value);
+                    break;
+                case "<":
+                case "<=":
+                    dictQuery = dictQuery.Where(kv => kv.Key.StartsWith("max"))
+                            .ToDictionary(kv => kv.Key.Substring(3), kv => kv.Value);
+                    break;
+                default:
+                    break;
+            }
+
+            foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetProperties())
+            {
+                if (!dictQuery.ContainsKey(p.Name.ToLower())) continue;
+
+                var rawVl = dictQuery[p.Name.ToLower()][0];
+                var type = p.PropertyInfo.PropertyType;
+
+                try
+                {
+                    dynamic vl = null;
+                    if (type == typeof(bool))
+                    {
+                        vl = (rawVl == "1") || (rawVl == "true");
+                    }
+                    else
+                    {
+                        vl = Convert.ChangeType(rawVl, type);
+                    }
+
+                    query = query.Where(String.Format($"{p.Name} {operatorString} {vl}"));
+                }
+                catch
+                {
+                    Console.WriteLine($"[INFO] Cannot convert {rawVl} to type {type} while applying query: {p.Name}");
+                }
+            }
+        }
+
+
         public async Task<IEnumerable<T>> GetWhere(Expression<Func<T, bool>> predicate)
         {
             return await _dataContext.Set<T>().Where(predicate).ToListAsync();
@@ -165,23 +189,31 @@ namespace shop_giay_server._Repository
         //
         //  Helper class
         //
-        private void GetPageInfo(Dictionary<string, string> queries, ref int pageNumber, ref int pageSize)
+        private void GetPageInfo(Dictionary<string, StringValues> queries, ref int pageNumber, ref int pageSize)
         {
-            string pNumb = null;
-            string pSize = null;
+            StringValues pNumb;
+            StringValues pSize;
 
-            if (queries.TryGetValue(pageSizeKey, out pSize)) {
-                var value = -1;
-                Int32.TryParse(pSize, out value);
-                if (value > 0) pageSize = value;
+            if (queries.TryGetValue(pageSizeKey, out pSize))
+            {
+                if (pSize.Count == 1)
+                {
+                    var value = -1;
+                    Int32.TryParse(pSize[0], out value);
+                    if (value > 0) pageSize = value;
+                }
             }
-            if (queries.TryGetValue(pageNumberKey, out pNumb)) {
-                var value = -1;
-                Int32.TryParse(pNumb, out value);
-                if (value > 0) pageNumber = value;
+            if (queries.TryGetValue(pageNumberKey, out pNumb))
+            {
+                if (pNumb.Count == 1)
+                {
+                    var value = -1;
+                    Int32.TryParse(pNumb[0], out value);
+                    if (value > 0) pageNumber = value;
+                }
             }
 
         }
-        
+
     }
 }
