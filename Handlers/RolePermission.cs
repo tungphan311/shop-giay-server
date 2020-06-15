@@ -10,7 +10,7 @@ namespace shop_giay_server.Handlers
     {
         public static List<string> admin = getAllPermissions();
         public static List<string> staff = new List<string>() {
-            PermissionConstant.Create_Shoes, PermissionConstant.Shoes, PermissionConstant.Update_Shoes, PermissionConstant.Delete_Shoes
+            PermissionConstant.Get_Shoes_Admin, PermissionConstant.Create_Shoes_Admin, PermissionConstant.Update_Shoes_Admin, PermissionConstant.Delete_Shoes_Admin
         };
 
         public static List<string> getAllPermissions()

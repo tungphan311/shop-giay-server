@@ -46,9 +46,10 @@ namespace shop_giay_server
 
         public static void AddPermissionPath()
         {
-            PermissionPath.mapApi.Add(PermissionConstant.Shoes, "admin/shoes/GET");
-            PermissionPath.mapApi.Add(PermissionConstant.Create_Shoes, "admin/shoes/POST");
-            //PermissionPath.mapApi.Add(PermissionConstant.Shoes, "admin/shoes/get");
+            PermissionPath.mapApi.Add(PermissionConstant.Get_Shoes_Admin, "GET/admin/shoes");
+            PermissionPath.mapApi.Add(PermissionConstant.Create_Shoes_Admin, "POST/admin/shoes");
+            PermissionPath.mapApi.Add(PermissionConstant.Delete_Shoes_Admin, "DELETE/admin/shoes");
+            PermissionPath.mapApi.Add(PermissionConstant.Update_Shoes_Admin, "PUT/admin/shoes");
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

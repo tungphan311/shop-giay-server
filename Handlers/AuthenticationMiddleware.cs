@@ -27,7 +27,7 @@ namespace shop_giay_server.Handlers
                 var route = context.Session.GetString(SessionConstant.Route) + "/" + method;
                 var role = context.Session.GetString(SessionConstant.Role);
 
-                var permission = PermissionPath.mapApi.FirstOrDefault(x => x.Value == route).Key;
+                var permission = PermissionPath.mapApi.FirstOrDefault(x => route.Contains(x.Value)).Key;
 
                 if (role == "admin")
                 {
