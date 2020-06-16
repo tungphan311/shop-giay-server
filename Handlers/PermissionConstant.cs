@@ -96,7 +96,16 @@ namespace shop_giay_server.Handlers
     {
         public static List<string> authorizes = new List<string>()
         {
-
+            "client/cart/get",
+            "client/cart/update",
+            "client/cart/add",
+            "client/cart/sync",
+            "client/customer/getAddress",
+            "client/customer/add-address",
+            "client/customer/update-address",
+            "client/order",
+            "client/order/{id}",
+            "client/order/list",
         };
     }
 }

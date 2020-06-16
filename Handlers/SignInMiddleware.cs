@@ -21,6 +21,27 @@ namespace shop_giay_server.Handlers
             this.next = next;
         }
 
+        public bool compareRoute(string r, string route)
+        {
+            if (r == route) return true;
+
+            var rInd = r.LastIndexOf('/');
+            var routeInd = route.LastIndexOf('/');
+
+            var rPath = r.Substring(0, rInd + 1);
+            var routePath = route.Substring(0, routeInd + 1);
+
+            if (rPath != routePath) return false;
+
+            var rId = r.Substring(rInd + 1);
+            var routeId = route.Substring(routeInd + 1);
+
+
+            if (rId == "{id}" && int.TryParse(routeId, out _)) return true;
+
+            return false;
+        }
+
         public bool needAuthorize(string route)
         {
             if (route.StartsWith("admin/"))
@@ -30,7 +51,9 @@ namespace shop_giay_server.Handlers
             }
             else
             {
-                var isAuthorize = AuthorizePath.authorizes.FirstOrDefault(x => x == route);
+                var isAuthorize = AuthorizePath.authorizes.FirstOrDefault(x => compareRoute(x, route));
+
+                Console.WriteLine(isAuthorize);
 
                 if (isAuthorize == null) return false;
                 else return true;
@@ -64,21 +87,43 @@ namespace shop_giay_server.Handlers
                     {
                         var decodeToken = handler.ReadJwtToken(token);
 
-                        var userId = decodeToken.Claims.FirstOrDefault(c => c.Type == "nameid").Value;
-                        var username = decodeToken.Claims.FirstOrDefault(c => c.Type == "unique_name").Value;
-                        var role = decodeToken.Claims.FirstOrDefault(c => c.Type == "role").Value;
-
-                        var user = await dataContext.Users.FirstOrDefaultAsync(u => u.Id.ToString() == userId);
-
-                        if (user == null || user.Username != username)
+                        if (route.StartsWith("admin/"))
                         {
-                            await MiddlewareHelper.AccessDenied(context);
-                            return;
+                            context.Session.SetString(SessionConstant.Site, SessionConstant.Admin);
+
+                            var userId = decodeToken.Claims.FirstOrDefault(c => c.Type == "nameid").Value;
+                            var username = decodeToken.Claims.FirstOrDefault(c => c.Type == "unique_name").Value;
+                            var role = decodeToken.Claims.FirstOrDefault(c => c.Type == "role").Value;
+
+                            var user = await dataContext.Users.FirstOrDefaultAsync(u => u.Id.ToString() == userId);
+
+                            if (user == null || user.Username != username)
+                            {
+                                await MiddlewareHelper.AccessDenied(context);
+                                return;
+                            }
+
+                            context.Session.SetString(SessionConstant.Route, route);
+                            context.Session.SetString(SessionConstant.Role, role);
+                            context.Session.SetString(SessionConstant.Username, username);
+                        } 
+                        else if (route.StartsWith("client/"))
+                        {
+                            context.Session.SetString(SessionConstant.Site, SessionConstant.Client);
+
+                            var username = decodeToken.Claims.FirstOrDefault(c => c.Type == "unique_name").Value;
+
+                            var customer = await dataContext.Customers.FirstOrDefaultAsync(c => c.Username == username);
+
+                            if (customer == null)
+                            {
+                                await MiddlewareHelper.AccessDenied(context);
+                                return;
+                            }
+
+                            context.Session.SetString(SessionConstant.Username, username);
                         }
 
-                        context.Session.SetString(SessionConstant.Route, route);
-                        context.Session.SetString(SessionConstant.Role, role);
-                        context.Session.SetString(SessionConstant.Username, username);
                         await next(context);
                     }
                     else
