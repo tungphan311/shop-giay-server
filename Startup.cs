@@ -18,6 +18,7 @@ using shop_giay_server._Repository;
 using AutoMapper;
 using shop_giay_server.Dtos;
 using shop_giay_server._Controllers;
+using shop_giay_server.Handlers;
 
 namespace shop_giay_server
 {
@@ -62,6 +63,13 @@ namespace shop_giay_server
             });
             services.AddScoped<IAuthRepository, AuthRepository>();
 
+            // add session to store info through middleware
+            services.AddDistributedMemoryCache();
+            services.AddSession(config =>
+            {
+                config.Cookie.Name = "shopgiay";             // Đặt tên Session - tên này sử dụng ở Browser (Cookie)
+                config.IdleTimeout = new TimeSpan(0, 60, 0);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,6 +89,13 @@ namespace shop_giay_server
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseSession();
+
+            // custom middleware
+            // TODO: comment out for testing 
+            app.UseMiddleware<SignInMiddleware>();          // check token if controller need authorize
+            app.UseMiddleware<AuthenticationMiddleware>();  // check if user with request token has permission to complete action
 
             app.UseDefaultFiles();
 

@@ -194,12 +194,19 @@ namespace shop_giay_server._Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateShoes(int id, [FromBody] ShoesDTO dto)
         {
-            if (!(await _repository.ExistWhere(c => c.Id == id)))
+            if (id == dto.Id) 
+            {
+                return BadRequest(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
+            }
+            var entity = _mapper.Map<Shoes>(dto);
+            entity.Id = id;
+
+            var updatedItem = await _repository.Update(entity);
+            if (updatedItem == null) 
             {
                 return BadRequest(ResponseDTO.BadRequest("Item ID is not existed."));
             }
-            var entity = _mapper.Map<Shoes>(dto);
-            var updatedItem = await _repository.Update(entity);
+
             return Ok(ResponseDTO.Ok(entity));
         }
 
