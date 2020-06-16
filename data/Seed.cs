@@ -248,47 +248,26 @@ namespace shop_giay_server.data
 
                 context.SaveChanges();
             }
-        }
 
-        public static void SeedShoes(DataContext context)
-        {
-            if (!context.Shoes.Any())
+            if (!context.Customers.Any())
             {
-                var shoesData = System.IO.File.ReadAllText("data/seeds/Shoes.json");
+                var customerData = System.IO.File.ReadAllText("data/seeds/Customers.json");
 
-                var shoes = JsonConvert.DeserializeObject<List<Shoes>>(shoesData);
+                var customers = JsonConvert.DeserializeObject<List<Customer>>(customerData); 
 
-                foreach (var s in shoes)
-                {
-                    s.Rating = 0;
-                    s.IsNew = true;
-                    s.IsOnSale = false;
-                    s.DeleteFlag = false;
-
-                    context.Shoes.Add(s);
-                }
-
-                context.SaveChanges();
-            }
-
-            if (!context.Users.Any())
-            {
-                var userData = System.IO.File.ReadAllText("data/seeds/Users.json");
-
-                var users = JsonConvert.DeserializeObject<List<User>>(userData);
-
-                foreach (var u in users)
+                foreach (var c in customers)
                 {
                     byte[] passwordHash, passwordSalt;
 
                     CreatePasswordHash("password", out passwordHash, out passwordSalt);
 
-                    u.PasswordHash = passwordHash;
-                    u.PasswordSalt = passwordSalt;
-                    u.RoleId = 1;
-                    u.DeleteFlag = false;
+                    c.Point = 0;
+                    c.DateOfBirth = new DateTime(1998, 1, 31);
+                    c.PasswordHash = passwordHash;
+                    c.PasswordSalt = passwordSalt;
+                    c.CustomerTypeId = 2;
 
-                    context.Users.Add(u);
+                    context.Add(c);
                 }
 
                 context.SaveChanges();
