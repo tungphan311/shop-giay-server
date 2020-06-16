@@ -19,6 +19,7 @@ using AutoMapper;
 using shop_giay_server.Dtos;
 using shop_giay_server._Controllers;
 using shop_giay_server.Handlers;
+using shop_giay_server.data.Authentication;
 
 namespace shop_giay_server
 {
@@ -62,6 +63,7 @@ namespace shop_giay_server
                 });
             });
             services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
 
             // add session to store info through middleware
             services.AddDistributedMemoryCache();
