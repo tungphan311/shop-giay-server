@@ -65,6 +65,14 @@ namespace shop_giay_server.Handlers
             string authorize = context.Request.Headers["Authorization"];
             string route = context.Request.Path;
 
+            // Validate
+            if (!route.StartsWith("/api")) 
+            {
+                context.Session.SetInt32(SessionConstant.NeedAuthorize, 0);
+                await next(context);
+                return;
+            }
+
             route = route.Substring("/api/".Length);
 
             var isAuthorize = needAuthorize(route);

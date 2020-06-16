@@ -32,6 +32,13 @@ namespace shop_giay_server._Controllers
             return await this._AddItem(item);
         }
 
+        [HttpPost]
+        [Route("client/customer/getInfo")]
+        public async Task<IActionResult> GetInfo() 
+        {
+            return BadRequest();
+        }
+
         #region Helper Methods
 
         #endregion
