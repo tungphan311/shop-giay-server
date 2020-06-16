@@ -59,6 +59,20 @@ namespace shop_giay_server._Controllers
             Msg = msg;
         }
 
+        public ResponseDTO(string data, string code = "OK", string msg = "Success.")
+        {
+            var convertSetting = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                MaxDepth = 4,
+            };
+
+            Data = data;
+            Total = 1;
+            Code = code;
+            Msg = msg;
+        }
+
 
         // Convenience static methods
         public static ResponseDTO Ok(IEnumerable<object> data, int total)
@@ -90,6 +104,13 @@ namespace shop_giay_server._Controllers
         {
             var empty = new List<object>();
             return new ResponseDTO(empty, "ERROR", "Not Found.");
+        }
+
+        public static ResponseDTO Unauthorized()
+        {
+            var empty = new List<object>();
+
+            return new ResponseDTO(empty, "403", "Login failed");
         }
 
         internal static object Ok(EntityEntry<Stock> stockResult)

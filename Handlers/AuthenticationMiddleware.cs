@@ -16,18 +16,19 @@ namespace shop_giay_server.Handlers
         public async Task Invoke(HttpContext context)
         {
             var isAuthorize = context.Session.GetInt32(SessionConstant.NeedAuthorize);
+            var site = context.Session.GetString(SessionConstant.Site);
 
-            if (isAuthorize == 0)
+            if (isAuthorize == 0 || site == SessionConstant.Client)
             {
                 await next(context);
             }
             else
             {
                 string method = context.Request.Method;
-                var route = context.Session.GetString(SessionConstant.Route) + "/" + method;
-                var role = context.Session.GetString(SessionConstant.Role);
+                var route = method + "/" + context.Session.GetString("route") + "/";
+                var role = context.Session.GetString("role");
 
-                var permission = PermissionPath.mapApi.FirstOrDefault(x => x.Value == route).Key;
+                var permission = PermissionPath.mapApi.FirstOrDefault(x => route.Contains(x.Value)).Key;
 
                 if (role == "admin")
                 {
