@@ -8,9 +8,9 @@ using AutoMapper;
 
 namespace shop_giay_server._Controllers
 {
-    public class CustomController : GeneralController<Customer, CustomerDTO>
+    public class CustomerController : GeneralController<Customer, CustomerDTO>
     {
-        public CustomController(IAsyncRepository<Customer> repo, ILogger<CustomController> logger, IMapper mapper)
+        public CustomerController(IAsyncRepository<Customer> repo, ILogger<CustomerController> logger, IMapper mapper)
             : base(repo, logger, mapper)
         { }
 
@@ -30,6 +30,13 @@ namespace shop_giay_server._Controllers
 
             var item = _mapper.Map<Customer>(model);
             return await this._AddItem(item);
+        }
+
+        [HttpPost]
+        [Route("client/customer/getInfo")]
+        public async Task<IActionResult> GetInfo() 
+        {
+            return BadRequest();
         }
 
         #region Helper Methods
