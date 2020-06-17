@@ -8,9 +8,9 @@ using AutoMapper;
 
 namespace shop_giay_server._Controllers
 {
-    public class CustomController : GeneralController<Customer, CustomerDTO>
+    public class CustomerController : GeneralController<Customer, CustomerDTO>
     {
-        public CustomController(IAsyncRepository<Customer> repo, ILogger<CustomController> logger, IMapper mapper)
+        public CustomerController(IAsyncRepository<Customer> repo, ILogger<CustomerController> logger, IMapper mapper)
             : base(repo, logger, mapper)
         { }
 
