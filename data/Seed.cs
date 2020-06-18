@@ -272,6 +272,21 @@ namespace shop_giay_server.data
 
                 context.SaveChanges();
             }
+
+            if (!context.Addresses.Any())
+            {
+                var itemData = System.IO.File.ReadAllText("data/seeds/Addresses.json");
+
+                var items = JsonConvert.DeserializeObject<List<Address>>(itemData);
+
+                foreach (var item in items) 
+                {
+                    item.DeleteFlag = false;
+                    context.Addresses.Add(item);
+                }
+
+                context.SaveChanges();
+            }
         }
     }
 }

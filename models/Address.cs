@@ -3,10 +3,7 @@ namespace shop_giay_server.models
     public class Address: BaseEntity
     {
         public Customer Customer { get; set; }
-    }
 
-    public class LiteAddress: BaseEntity
-    {
         public string City { get; set; }
 
         public string District { get; set; }

@@ -1,11 +1,23 @@
 ﻿[
   {
-    "name": "White"
+    "City": "Hồ Chí Minh",
+    "District": "Quận 8",
+    "Ward": "Phường 2",
+    "Street": "144 Võ Văn Kiệt",
+    "CustomerId": 1
   },
   {
-    "name": "Black"
+    "City": "Hồ Chí Minh",
+    "District": "Quận 4",
+    "Ward": "Phường 14",
+    "Street": "12 Đường số 6",
+    "CustomerId": 1
   },
   {
-    "name": "Blue"
+    "City": "Hồ Chí Minh",
+    "District": "Quận 1",
+    "Ward": "Phường Bến nghé",
+    "Street": "2 Ngô Đức Kế",
+    "CustomerId": 1
   }
 ]
