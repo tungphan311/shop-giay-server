@@ -1,6 +1,6 @@
 namespace shop_giay_server.models
 {
-    public class Address: BaseEntity
+    public class Address: LiteAddress
     {
         public Customer Customer { get; set; }
     }

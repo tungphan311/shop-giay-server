@@ -106,6 +106,7 @@ namespace shop_giay_server.Handlers
             "client/order",
             "client/order/{id}",
             "client/order/list",
+            "client/customer/getInfo"
         };
     }
 }

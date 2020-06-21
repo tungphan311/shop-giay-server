@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using Microsoft.Extensions.Primitives;
 
-namespace shop_giay_server.Helpers
+namespace shop_giay_server
 {
 
     public static class IQueryCollectionModifyExtension
@@ -19,7 +19,7 @@ namespace shop_giay_server.Helpers
             var queryItem = new KeyValuePair<string, StringValues>(key, values);
             return queryCollection.AppendQueryItem(queryItem);
         }
-        
+
 
         public static IQueryCollection AppendQueryItem(
             this IQueryCollection queryCollection,
@@ -57,6 +57,23 @@ namespace shop_giay_server.Helpers
             }
         }
 
+    }
+
+
+    public static class DateTimeExtensions
+    {
+        public static int GetEpochSeconds(this DateTime date)
+        {
+            TimeSpan t = DateTime.UtcNow - new DateTime(1970, 1, 1);
+            return (int)t.TotalSeconds;
+        }
+
+        public static DateTime FromEpochSeconds(this DateTime date, long EpochSeconds)
+        {
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return epoch.AddSeconds(EpochSeconds);
+
+        }
     }
 
 

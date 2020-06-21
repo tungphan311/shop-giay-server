@@ -12,7 +12,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.data;
-using shop_giay_server._Services;
 using shop_giay_server.models;
 using shop_giay_server._Repository;
 using AutoMapper;
@@ -95,7 +94,6 @@ namespace shop_giay_server
             app.UseSession();
 
             // custom middleware
-            // TODO: comment out for testing 
             app.UseMiddleware<SignInMiddleware>();          // check token if controller need authorize
             app.UseMiddleware<AuthenticationMiddleware>();  // check if user with request token has permission to complete action
 

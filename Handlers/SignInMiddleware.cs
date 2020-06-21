@@ -121,9 +121,10 @@ namespace shop_giay_server.Handlers
 
                             var username = decodeToken.Claims.FirstOrDefault(c => c.Type == "unique_name").Value;
 
-                            var customer = await dataContext.Customers.FirstOrDefaultAsync(c => c.Username == username);
+                            // todo:
+                            // var customer = await dataContext.Customers.FirstOrDefaultAsync(c => c.Username == username);
 
-                            if (customer == null)
+                            if (username == null)
                             {
                                 await MiddlewareHelper.AccessDenied(context);
                                 return;
