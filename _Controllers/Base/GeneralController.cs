@@ -11,7 +11,6 @@ using shop_giay_server.Dtos;
 using AutoMapper;
 using System;
 using Microsoft.Extensions.Primitives;
-using shop_giay_server.Helpers;
 
 namespace shop_giay_server._Controllers
 {

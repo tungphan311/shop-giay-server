@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using shop_giay_server.data;
 using Microsoft.EntityFrameworkCore;
 using System;
-using shop_giay_server.Helpers;
 
 namespace shop_giay_server._Controllers
 {
