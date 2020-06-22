@@ -53,8 +53,6 @@ namespace shop_giay_server.Handlers
             {
                 var isAuthorize = AuthorizePath.authorizes.FirstOrDefault(x => compareRoute(x, route));
 
-                Console.WriteLine(isAuthorize);
-
                 if (isAuthorize == null) return false;
                 else return true;
             }
@@ -99,13 +97,16 @@ namespace shop_giay_server.Handlers
                         {
                             context.Session.SetString(SessionConstant.Site, SessionConstant.Admin);
 
-                            var userId = decodeToken.Claims.FirstOrDefault(c => c.Type == "nameid").Value;
-                            var username = decodeToken.Claims.FirstOrDefault(c => c.Type == "unique_name").Value;
-                            var role = decodeToken.Claims.FirstOrDefault(c => c.Type == "role").Value;
+                            var userId = decodeToken.Claims.FirstOrDefault(c => c.Type == "nameid") != null ?  
+                                decodeToken.Claims.FirstOrDefault(c => c.Type == "nameid").Value : null;
+                            var username = decodeToken.Claims.FirstOrDefault(c => c.Type == "unique_name") != null ?
+                                decodeToken.Claims.FirstOrDefault(c => c.Type == "unique_name").Value : null;
+                            var role = decodeToken.Claims.FirstOrDefault(c => c.Type == "role") != null ? 
+                                decodeToken.Claims.FirstOrDefault(c => c.Type == "role").Value : null;
 
                             var user = await dataContext.Users.FirstOrDefaultAsync(u => u.Id.ToString() == userId);
 
-                            if (user == null || user.Username != username)
+                            if (user == null || user.Username != username || userId == null)
                             {
                                 await MiddlewareHelper.AccessDenied(context);
                                 return;
@@ -119,7 +120,8 @@ namespace shop_giay_server.Handlers
                         {
                             context.Session.SetString(SessionConstant.Site, SessionConstant.Client);
 
-                            var username = decodeToken.Claims.FirstOrDefault(c => c.Type == "unique_name").Value;
+                            var username = decodeToken.Claims.FirstOrDefault(c => c.Type == "unique_name") != null ?
+                                decodeToken.Claims.FirstOrDefault(c => c.Type == "unique_name").Value : null;
 
                             // todo:
                             // var customer = await dataContext.Customers.FirstOrDefaultAsync(c => c.Username == username);
