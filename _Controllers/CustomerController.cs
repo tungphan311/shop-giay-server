@@ -110,34 +110,7 @@ namespace shop_giay_server._Controllers
             }));    
         }
 
-        [HttpGet]
-        [Route("client/customer/getAddresses")]
-        public async Task<IActionResult> ClientGetCustomerAddress() 
-        {
-            var sessionUsername = HttpContext.Session.GetString(SessionConstant.Username);
-            if (string.IsNullOrEmpty(sessionUsername)) {
-                return Ok(ResponseDTO.BadRequest());
-            }
-
-            var customer = await _repository.FirstOrDefault(c => c.Username == sessionUsername);
-            if (customer == null) {
-                return Ok(ResponseDTO.NotFound());
-            }
-
-            var listResult = new List<dynamic>();
-            foreach (var address in customer.Addresses) 
-            {
-                listResult.Add(new {
-                    Id = address.Id,
-                    CustomerId = customer.Id,
-                    City = address.City,
-                    address.District, 
-                    address.Ward, 
-                    address.Street
-                });
-            }
-            return Ok(ResponseDTO.Ok(listResult));
-        }
+        
 
         // Customer Update
         [Route("admin/[controller]/{id:int}")]
@@ -159,6 +132,24 @@ namespace shop_giay_server._Controllers
             return Ok(ResponseDTO.Ok(entity));
         }
         // address update
+        [Route("admin/[controller]/{id:int}")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateAddress(int id, [FromBody] AddressDTO dto)
+        {
+            if (id == dto.Id) 
+            {
+                return BadRequest(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
+            }
+            var entity = _mapper.Map<Customer>(dto);
+            entity.Id = id;
+
+            var updatedItem = await _repository.Update(entity);
+            if (updatedItem == null) 
+            {
+                return BadRequest(ResponseDTO.BadRequest("Item ID is not existed."));
+            }
+            return Ok(ResponseDTO.Ok(entity));
+        }
     }
 
 
