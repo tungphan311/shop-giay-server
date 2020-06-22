@@ -1,6 +1,6 @@
 namespace shop_giay_server.models
 {
-    public class Address: BaseEntity
+    public class Address : BaseEntity
     {
         public Customer Customer { get; set; }
 
@@ -13,5 +13,9 @@ namespace shop_giay_server.models
         public string Street { get; set; }
 
         public int CustomerId { get; set; }
+
+        public string RecipientName { get; set; }
+
+        public string RecipientPhoneNumber { get; set; }
     }
 }

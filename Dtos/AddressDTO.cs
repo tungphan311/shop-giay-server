@@ -1,6 +1,6 @@
 namespace shop_giay_server.Dtos
 {
-    public class AddressLiteDTO: BaseDTO
+    public class AddressLiteDTO : BaseDTO
     {
         public string City { get; set; }
 
@@ -11,6 +11,10 @@ namespace shop_giay_server.Dtos
         public string Street { get; set; }
 
         public int CustomerId { get; set; }
+
+        public string RecipientName { get; set; }
+
+        public string RecipientPhoneNumber { get; set; }
     }
 
     public class AddressDTO : AddressLiteDTO
