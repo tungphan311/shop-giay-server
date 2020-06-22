@@ -110,7 +110,34 @@ namespace shop_giay_server._Controllers
             }));    
         }
 
-        
+        [HttpGet]
+        [Route("client/customer/getAddresses")]
+        public async Task<IActionResult> ClientGetCustomerAddress() 
+        {
+            var sessionUsername = HttpContext.Session.GetString(SessionConstant.Username);
+            if (string.IsNullOrEmpty(sessionUsername)) {
+                return Ok(ResponseDTO.BadRequest());
+            }
+
+            var customer = await _repository.FirstOrDefault(c => c.Username == sessionUsername);
+            if (customer == null) {
+                return Ok(ResponseDTO.NotFound());
+            }
+
+            var listResult = new List<dynamic>();
+            foreach (var address in customer.Addresses) 
+            {
+                listResult.Add(new {
+                    Id = address.Id,
+                    CustomerId = customer.Id,
+                    City = address.City,
+                    address.District, 
+                    address.Ward, 
+                    address.Street
+                });
+            }
+            return Ok(ResponseDTO.Ok(listResult));
+        }
 
         // Customer Update
         [Route("admin/[controller]/{id:int}")]
