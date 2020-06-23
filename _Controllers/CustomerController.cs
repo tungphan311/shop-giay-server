@@ -24,24 +24,28 @@ namespace shop_giay_server._Controllers
             _authRepo = authRepo;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Add([FromBody] CustomerDTO model)
-        {
-            // Validate
-            var existed = await _repository.ExistWhere(c => c.Email == model.Email
-                    || c.PhoneNumber == model.PhoneNumber
-                    || c.Username == model.Username);
+        // [HttpPost]
+        // public async Task<IActionResult> Add([FromBody] CustomerDTO model)
+        // {
+        //     // Validate
+        //     var existed = await _repository.ExistWhere(c => c.Email == model.Email
+        //             || c.PhoneNumber == model.PhoneNumber
+        //             || c.Username == model.Username);
 
-            if (existed)
-            {
-                return BadRequest(ResponseDTO.BadRequest("Customer has been existed."));
-            }
+        //     if (existed)
+        //     {
+        //         return BadRequest(ResponseDTO.BadRequest("Customer has been existed."));
+        //     }
 
 
-            var item = _mapper.Map<Customer>(model);
-            return await this._AddItem(item);
-        }
+        //     var item = _mapper.Map<Customer>(model);
+        //     return await this._AddItem(item);
+        // }
 
+
+        //
+        //  CREATE CUSTOMER API
+        //
         [HttpPost]
         [Route("client/customer")]
         public async Task<IActionResult> ClientAddCustomer([FromBody] BodyCreateCustomer model) 
@@ -86,6 +90,10 @@ namespace shop_giay_server._Controllers
             return Ok(ResponseDTO.Ok(result));
         }
 
+
+        //
+        //  CUSTOMER GET INFO
+        //
         [HttpPost]
         [Route("client/customer/getInfo")]
         public async Task<IActionResult> ClientGetCustomerInfo() 
@@ -139,9 +147,26 @@ namespace shop_giay_server._Controllers
             return Ok(ResponseDTO.Ok(listResult));
         }
 
-        #region Helper Methods
+        // Customer Update
+        [Route("admin/[controller]/{id:int}")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateCustomer(int id, [FromBody] CustomerDTO dto)
+        {
+            if (id == dto.Id) 
+            {
+                return BadRequest(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
+            }
+            var entity = _mapper.Map<Customer>(dto);
+            entity.Id = id;
 
-        #endregion
+            var updatedItem = await _repository.Update(entity);
+            if (updatedItem == null) 
+            {
+                return BadRequest(ResponseDTO.BadRequest("Item ID is not existed."));
+            }
+            return Ok(ResponseDTO.Ok(entity));
+        }
+        // address update
     }
 
 

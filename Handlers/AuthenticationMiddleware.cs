@@ -58,6 +58,10 @@ namespace shop_giay_server.Handlers
                         await next(context);
                     }
                 }
+                else 
+                {
+                    await MiddlewareHelper.AccessDenied(context);
+                }
             }
         }
     }
