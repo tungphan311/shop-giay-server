@@ -24,24 +24,28 @@ namespace shop_giay_server._Controllers
             _authRepo = authRepo;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Add([FromBody] CustomerDTO model)
-        {
-            // Validate
-            var existed = await _repository.ExistWhere(c => c.Email == model.Email
-                    || c.PhoneNumber == model.PhoneNumber
-                    || c.Username == model.Username);
+        // [HttpPost]
+        // public async Task<IActionResult> Add([FromBody] CustomerDTO model)
+        // {
+        //     // Validate
+        //     var existed = await _repository.ExistWhere(c => c.Email == model.Email
+        //             || c.PhoneNumber == model.PhoneNumber
+        //             || c.Username == model.Username);
 
-            if (existed)
-            {
-                return BadRequest(ResponseDTO.BadRequest("Customer has been existed."));
-            }
+        //     if (existed)
+        //     {
+        //         return BadRequest(ResponseDTO.BadRequest("Customer has been existed."));
+        //     }
 
 
-            var item = _mapper.Map<Customer>(model);
-            return await this._AddItem(item);
-        }
+        //     var item = _mapper.Map<Customer>(model);
+        //     return await this._AddItem(item);
+        // }
 
+
+        //
+        //  CREATE CUSTOMER API
+        //
         [HttpPost]
         [Route("client/customer")]
         public async Task<IActionResult> ClientAddCustomer([FromBody] BodyCreateCustomer model) 
@@ -86,6 +90,10 @@ namespace shop_giay_server._Controllers
             return Ok(ResponseDTO.Ok(result));
         }
 
+
+        //
+        //  CUSTOMER GET INFO
+        //
         [HttpPost]
         [Route("client/customer/getInfo")]
         public async Task<IActionResult> ClientGetCustomerInfo() 
