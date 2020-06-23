@@ -99,6 +99,7 @@ namespace shop_giay_server._Repository
             AddCompareQueries(ref query, dictQuery, "=");
             AddCompareQueries(ref query, dictQuery, "<=");
             AddCompareQueries(ref query, dictQuery, ">=");
+            AddSearchQueries(ref query, dictQuery);
 
 
             // Get total records without paging
@@ -171,6 +172,20 @@ namespace shop_giay_server._Repository
                     Console.WriteLine($"[INFO] Cannot convert {rawVl} to type {type} while applying query: {p.Name}");
                 }
             }
+        }
+
+
+        private void AddSearchQueries(ref IQueryable<T> query, Dictionary<string, StringValues> dictQuery)
+        {
+            var searchKey = "search";
+            var isShoesType = typeof(T) == typeof(Shoes);
+            var hasKeyword = dictQuery.ContainsKey(searchKey);
+            if (!isShoesType || !hasKeyword) {
+                return;
+            }
+
+            var value = dictQuery[searchKey][0];
+            query = query.Where("Name.Contains(@0) OR Code.Contains(@1)", value, value);
         }
 
 
