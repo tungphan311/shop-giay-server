@@ -1,10 +1,10 @@
 namespace shop_giay_server.models
 {
-    public class ImportDetail: BaseEntity
+    public class ImportDetail : BaseEntity
     {
         public int Quantity { get; set; }
 
-        public int OriginalPrice { get; set; }
+        public float OriginalPrice { get; set; }
 
         public int StockId { get; set; }
         public Stock Stock { get; set; }

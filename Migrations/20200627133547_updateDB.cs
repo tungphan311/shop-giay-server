@@ -52,31 +52,17 @@ namespace shop_giay_server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Payments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DeleteFlag = table.Column<bool>(nullable: false),
-                    PaymentType = table.Column<int>(nullable: false),
-                    TransactionId = table.Column<string>(nullable: true),
-                    Date = table.Column<DateTime>(nullable: false),
-                    Status = table.Column<string>(nullable: true),
-                    Amount = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Payments", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Providers",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DeleteFlag = table.Column<bool>(nullable: false),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: true),
+                    Address = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true),
+                    TIN = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -108,7 +94,7 @@ namespace shop_giay_server.Migrations
                     Amount = table.Column<int>(nullable: false),
                     BeginDate = table.Column<DateTime>(nullable: false),
                     ExpiredDate = table.Column<DateTime>(nullable: false),
-                    Status = table.Column<string>(nullable: true)
+                    Status = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -286,7 +272,9 @@ namespace shop_giay_server.Migrations
                     District = table.Column<string>(nullable: true),
                     Ward = table.Column<string>(nullable: true),
                     Street = table.Column<string>(nullable: true),
-                    CustomerId = table.Column<int>(nullable: false)
+                    CustomerId = table.Column<int>(nullable: false),
+                    RecipientName = table.Column<string>(nullable: true),
+                    RecipientPhoneNumber = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -327,13 +315,14 @@ namespace shop_giay_server.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DeleteFlag = table.Column<bool>(nullable: false),
                     OrderDate = table.Column<DateTime>(nullable: false),
-                    Total = table.Column<int>(nullable: false),
-                    Status = table.Column<string>(nullable: true),
+                    Total = table.Column<float>(nullable: false),
+                    Status = table.Column<int>(nullable: false),
                     DeliverAddress = table.Column<string>(nullable: true),
-                    ConfirmDate = table.Column<DateTime>(nullable: false),
-                    DeliveryDate = table.Column<DateTime>(nullable: false),
-                    SaleId = table.Column<int>(nullable: false),
-                    PaymentId = table.Column<int>(nullable: false),
+                    ConfirmDate = table.Column<DateTime>(nullable: true),
+                    DeliveryDate = table.Column<DateTime>(nullable: true),
+                    Note = table.Column<string>(nullable: true),
+                    RecipientName = table.Column<string>(nullable: true),
+                    RecipientPhoneNumber = table.Column<string>(nullable: true),
                     CustomerId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -343,18 +332,6 @@ namespace shop_giay_server.Migrations
                         name: "FK_Orders_Customers_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Orders_Payments_PaymentId",
-                        column: x => x.PaymentId,
-                        principalTable: "Payments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Orders_Sales_SaleId",
-                        column: x => x.SaleId,
-                        principalTable: "Sales",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -390,13 +367,39 @@ namespace shop_giay_server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SaleProducts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
+                    SaleId = table.Column<int>(nullable: false),
+                    ShoesId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SaleProducts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SaleProducts_Sales_SaleId",
+                        column: x => x.SaleId,
+                        principalTable: "Sales",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SaleProducts_Shoes_ShoesId",
+                        column: x => x.ShoesId,
+                        principalTable: "Shoes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ShoesImages",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DeleteFlag = table.Column<bool>(nullable: false),
-                    ColorId = table.Column<int>(nullable: false),
                     ImagePath = table.Column<string>(nullable: true),
                     ShoesId = table.Column<int>(nullable: false)
                 },
@@ -447,6 +450,31 @@ namespace shop_giay_server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Payments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DeleteFlag = table.Column<bool>(nullable: false),
+                    PaymentType = table.Column<int>(nullable: false),
+                    TransactionId = table.Column<string>(nullable: true),
+                    Date = table.Column<DateTime>(nullable: false),
+                    Status = table.Column<string>(nullable: true),
+                    Amount = table.Column<int>(nullable: false),
+                    OrderId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Payments_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CartItems",
                 columns: table => new
                 {
@@ -482,7 +510,7 @@ namespace shop_giay_server.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DeleteFlag = table.Column<bool>(nullable: false),
                     Quantity = table.Column<int>(nullable: false),
-                    OriginalPrice = table.Column<int>(nullable: false),
+                    OriginalPrice = table.Column<float>(nullable: false),
                     StockId = table.Column<int>(nullable: false),
                     ImportId = table.Column<int>(nullable: false)
                 },
@@ -512,6 +540,7 @@ namespace shop_giay_server.Migrations
                     DeleteFlag = table.Column<bool>(nullable: false),
                     Amount = table.Column<int>(nullable: false),
                     PricePerUnit = table.Column<float>(nullable: false),
+                    SaleId = table.Column<int>(nullable: true),
                     Total = table.Column<float>(nullable: false),
                     OrderId = table.Column<int>(nullable: false),
                     StockId = table.Column<int>(nullable: false)
@@ -526,34 +555,13 @@ namespace shop_giay_server.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrderItems_Stocks_StockId",
-                        column: x => x.StockId,
-                        principalTable: "Stocks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SaleProducts",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DeleteFlag = table.Column<bool>(nullable: false),
-                    SaleId = table.Column<int>(nullable: false),
-                    StockId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SaleProducts", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SaleProducts_Sales_SaleId",
+                        name: "FK_OrderItems_Sales_SaleId",
                         column: x => x.SaleId,
                         principalTable: "Sales",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_SaleProducts_Stocks_StockId",
+                        name: "FK_OrderItems_Stocks_StockId",
                         column: x => x.StockId,
                         principalTable: "Stocks",
                         principalColumn: "Id",
@@ -617,6 +625,11 @@ namespace shop_giay_server.Migrations
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OrderItems_SaleId",
+                table: "OrderItems",
+                column: "SaleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_StockId",
                 table: "OrderItems",
                 column: "StockId");
@@ -627,15 +640,9 @@ namespace shop_giay_server.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_PaymentId",
-                table: "Orders",
-                column: "PaymentId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Orders_SaleId",
-                table: "Orders",
-                column: "SaleId");
+                name: "IX_Payments_OrderId",
+                table: "Payments",
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SaleProducts_SaleId",
@@ -643,9 +650,9 @@ namespace shop_giay_server.Migrations
                 column: "SaleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SaleProducts_StockId",
+                name: "IX_SaleProducts_ShoesId",
                 table: "SaleProducts",
-                column: "StockId");
+                column: "ShoesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Shoes_BrandId",
@@ -706,6 +713,9 @@ namespace shop_giay_server.Migrations
                 name: "OrderItems");
 
             migrationBuilder.DropTable(
+                name: "Payments");
+
+            migrationBuilder.DropTable(
                 name: "SaleProducts");
 
             migrationBuilder.DropTable(
@@ -721,25 +731,16 @@ namespace shop_giay_server.Migrations
                 name: "Imports");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "Stocks");
 
             migrationBuilder.DropTable(
-                name: "Stocks");
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Providers");
-
-            migrationBuilder.DropTable(
-                name: "Customers");
-
-            migrationBuilder.DropTable(
-                name: "Payments");
-
-            migrationBuilder.DropTable(
-                name: "Sales");
 
             migrationBuilder.DropTable(
                 name: "Colors");
@@ -751,7 +752,10 @@ namespace shop_giay_server.Migrations
                 name: "Sizes");
 
             migrationBuilder.DropTable(
-                name: "CustomerTypes");
+                name: "Customers");
+
+            migrationBuilder.DropTable(
+                name: "Sales");
 
             migrationBuilder.DropTable(
                 name: "ShoesBrands");
@@ -761,6 +765,9 @@ namespace shop_giay_server.Migrations
 
             migrationBuilder.DropTable(
                 name: "ShoesTypes");
+
+            migrationBuilder.DropTable(
+                name: "CustomerTypes");
         }
     }
 }

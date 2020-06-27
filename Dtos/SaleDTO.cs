@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace shop_giay_server.Dtos
 {
-    public class SaleLiteDTO: BaseDTO
+    public class SaleLiteDTO : BaseDTO
     {
         public int SaleType { get; set; }
 
@@ -13,7 +13,7 @@ namespace shop_giay_server.Dtos
 
         public DateTime ExpiredDate { get; set; }
 
-        public string Status { get; set; }
+        public int Status { get; set; }
     }
 
     public class SaleDTO : SaleLiteDTO

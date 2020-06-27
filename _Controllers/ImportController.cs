@@ -43,7 +43,7 @@ namespace shop_giay_server._Controllers
                 }
             }
 
-            int totalCost = 0;
+            float totalCost = 0;
             int totalQuantity = 0;
 
             foreach (var detail in details)
