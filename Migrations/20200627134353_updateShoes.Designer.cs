@@ -10,8 +10,8 @@ using shop_giay_server.data;
 namespace shop_giay_server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200627113853_updateOrder2")]
-    partial class updateOrder2
+    [Migration("20200627134353_updateShoes")]
+    partial class updateShoes
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -291,8 +291,8 @@ namespace shop_giay_server.Migrations
                     b.Property<int>("ImportId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OriginalPrice")
-                        .HasColumnType("int");
+                    b.Property<float>("OriginalPrice")
+                        .HasColumnType("real");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -316,7 +316,7 @@ namespace shop_giay_server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("ConfirmDate")
+                    b.Property<DateTime?>("ConfirmDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("CustomerId")
@@ -328,7 +328,7 @@ namespace shop_giay_server.Migrations
                     b.Property<string>("DeliverAddress")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DeliveryDate")
+                    b.Property<DateTime?>("DeliveryDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Note")
@@ -337,30 +337,24 @@ namespace shop_giay_server.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PaymentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("RecipientName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RecipientPhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SaleId")
+                    b.Property<int?>("SaleId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("Total")
-                        .HasColumnType("int");
+                    b.Property<float>("Total")
+                        .HasColumnType("real");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("PaymentId")
-                        .IsUnique();
 
                     b.HasIndex("SaleId");
 
@@ -386,6 +380,9 @@ namespace shop_giay_server.Migrations
                     b.Property<float>("PricePerUnit")
                         .HasColumnType("real");
 
+                    b.Property<int?>("SaleId")
+                        .HasColumnType("int");
+
                     b.Property<int>("StockId")
                         .HasColumnType("int");
 
@@ -395,6 +392,8 @@ namespace shop_giay_server.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
+
+                    b.HasIndex("SaleId");
 
                     b.HasIndex("StockId");
 
@@ -417,6 +416,9 @@ namespace shop_giay_server.Migrations
                     b.Property<bool>("DeleteFlag")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
                     b.Property<int>("PaymentType")
                         .HasColumnType("int");
 
@@ -427,6 +429,8 @@ namespace shop_giay_server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
 
                     b.ToTable("Payments");
                 });
@@ -501,8 +505,8 @@ namespace shop_giay_server.Migrations
                     b.Property<int>("SaleType")
                         .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -822,17 +826,9 @@ namespace shop_giay_server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("shop_giay_server.models.Payment", "Payment")
-                        .WithOne("Order")
-                        .HasForeignKey("shop_giay_server.models.Order", "PaymentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("shop_giay_server.models.Sale", "Sale")
+                    b.HasOne("shop_giay_server.models.Sale", null)
                         .WithMany("Orders")
-                        .HasForeignKey("SaleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SaleId");
                 });
 
             modelBuilder.Entity("shop_giay_server.models.OrderItem", b =>
@@ -843,11 +839,22 @@ namespace shop_giay_server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("shop_giay_server.models.Sale", "Sale")
+                        .WithMany()
+                        .HasForeignKey("SaleId");
+
                     b.HasOne("shop_giay_server.models.Stock", "Stock")
                         .WithMany()
                         .HasForeignKey("StockId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("shop_giay_server.models.Payment", b =>
+                {
+                    b.HasOne("shop_giay_server.models.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId");
                 });
 
             modelBuilder.Entity("shop_giay_server.models.SaleProduct", b =>

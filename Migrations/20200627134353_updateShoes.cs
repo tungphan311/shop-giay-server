@@ -2,21 +2,22 @@
 
 namespace shop_giay_server.Migrations
 {
-    public partial class updateOrder : Migration
+    public partial class updateShoes : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Note",
-                table: "Orders",
-                nullable: true);
+            migrationBuilder.AddColumn<int>(
+                name: "ColorId",
+                table: "ShoesImages",
+                nullable: false,
+                defaultValue: 0);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Note",
-                table: "Orders");
+                name: "ColorId",
+                table: "ShoesImages");
         }
     }
 }
