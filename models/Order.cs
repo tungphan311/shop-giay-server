@@ -17,6 +17,8 @@ namespace shop_giay_server.models
 
         public DateTime DeliveryDate { get; set; }
 
+        public string Note { get; set; }
+
         public int SaleId { get; set; }
         public Sale Sale { get; set; }
 
