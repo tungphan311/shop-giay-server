@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace shop_giay_server.models
 {
-    public class Order: BaseEntity 
+    public class Order : BaseEntity
     {
         public DateTime OrderDate { get; set; }
 
         public int Total { get; set; }
 
-        public string Status { get; set; }
+        public int Status { get; set; }
 
         public string DeliverAddress { get; set; }
 
@@ -26,6 +26,6 @@ namespace shop_giay_server.models
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
 
-        public List<OrderItem> OrderItems { get; set; } 
+        public List<OrderItem> OrderItems { get; set; }
     }
 }
