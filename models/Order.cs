@@ -19,6 +19,10 @@ namespace shop_giay_server.models
 
         public string Note { get; set; }
 
+        public string RecipientName { get; set; }
+
+        public string RecipientPhoneNumber { get; set; }
+
         public int SaleId { get; set; }
         public Sale Sale { get; set; }
 
