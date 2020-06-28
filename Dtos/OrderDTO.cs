@@ -15,6 +15,8 @@ namespace shop_giay_server.Dtos
 
         public DateTime? ConfirmDate { get; set; }
 
+        public DateTime? BeginDelivery { get; set; }
+
         public DateTime? DeliveryDate { get; set; }
 
         public string RecipientName { get; set; }

@@ -15,6 +15,8 @@ namespace shop_giay_server.models
 
         public DateTime? ConfirmDate { get; set; }
 
+        public DateTime? BeginDelivery { get; set; }
+
         public DateTime? DeliveryDate { get; set; }
 
         public string Note { get; set; }
