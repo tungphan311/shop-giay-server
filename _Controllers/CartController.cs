@@ -22,7 +22,7 @@ namespace shop_giay_server._Controllers
             var cartExisted = await _repository.ExistWhere((c) => c.CustomerId == model.CustomerId);
             if (cartExisted)
             {
-                return BadRequest(ResponseDTO.BadRequest("Cannot create more than one cart."));
+                return Ok(ResponseDTO.BadRequest("Cannot create more than one cart."));
             }
 
             var item = new Cart

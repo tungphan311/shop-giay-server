@@ -57,7 +57,7 @@ namespace shop_giay_server._Controllers
 
             if (existed)
             {
-                return BadRequest(ResponseDTO.BadRequest("Khách hàng đã tồn tại."));
+                return Ok(ResponseDTO.BadRequest("Khách hàng đã tồn tại."));
             }
 
             // Create user
@@ -154,7 +154,7 @@ namespace shop_giay_server._Controllers
         {
             if (id == dto.Id) 
             {
-                return BadRequest(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
+                return Ok(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
             }
             var entity = _mapper.Map<Customer>(dto);
             entity.Id = id;
@@ -162,7 +162,7 @@ namespace shop_giay_server._Controllers
             var updatedItem = await _repository.Update(entity);
             if (updatedItem == null) 
             {
-                return BadRequest(ResponseDTO.BadRequest("Item ID is not existed."));
+                return Ok(ResponseDTO.BadRequest("Item ID is not existed."));
             }
             return Ok(ResponseDTO.Ok(entity));
         }

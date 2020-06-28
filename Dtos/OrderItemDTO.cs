@@ -4,7 +4,7 @@ namespace shop_giay_server.Dtos
     {
         public int Amount { get; set; }
 
-        public float PriceOnSale { get; set; }
+        public float PricePerUnit { get; set; }
 
         public int SaleId { get; set; }
 

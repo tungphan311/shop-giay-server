@@ -172,19 +172,19 @@ namespace shop_giay_server._Controllers
         {
             if (e is InvalidQueryParamsException)
             {
-                return BadRequest(ResponseDTO.BadRequest("Invalid query params.", e.ToString()));
+                return Ok(ResponseDTO.BadRequest("Invalid query params.", e.ToString()));
             }
             else if (e is Microsoft.Data.SqlClient.SqlException)
             {
-                return BadRequest(ResponseDTO.BadRequest("Cannot connect to database.", e.ToString()));
+                return Ok(ResponseDTO.BadRequest("Cannot connect to database.", e.ToString()));
             }
             else if (e is NullReferenceException)
             {
-                return BadRequest(ResponseDTO.BadRequest("Items not existed.", e.ToString()));
+                return Ok(ResponseDTO.BadRequest("Items not existed.", e.ToString()));
             }
             else
             {
-                return BadRequest(ResponseDTO.BadRequest());
+                return Ok(ResponseDTO.BadRequest());
             }
         }
 
