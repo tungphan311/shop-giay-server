@@ -159,7 +159,7 @@ namespace shop_giay_server._Controllers
         {
             if (items.Count() == 0)
             {
-                return NotFound(ResponseDTO.NotFound());
+                return Ok(ResponseDTO.NotFound());
             }
             return Ok(ResponseDTO.Ok(items, totalRecords));
         }
@@ -339,7 +339,7 @@ namespace shop_giay_server._Controllers
                 var entity = await _repository.GetById(id);
                 if (entity == null)
                 {
-                    return NotFound(ResponseDTO.NotFound());
+                    return Ok(ResponseDTO.NotFound());
                 }
 
                 var models = MapToResponseModels<ResponseModel>(new List<Model>() { entity });
@@ -375,7 +375,7 @@ namespace shop_giay_server._Controllers
             var item = await _repository.GetById(id);
             if (item == null)
             {
-                return NotFound(ResponseDTO.NotFound());
+                return Ok(ResponseDTO.NotFound());
             }
 
             IActionResult response = BadRequest(ResponseDTO.BadRequest());

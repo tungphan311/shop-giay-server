@@ -1,3 +1,5 @@
+using AutoMapper;
+
 namespace shop_giay_server.Dtos
 {
     public class OrderItemLiteDTO : BaseDTO
@@ -13,6 +15,12 @@ namespace shop_giay_server.Dtos
         public int OrderId { get; set; }
 
         public int StockId { get; set; }
+
+        [IgnoreMap]
+        public string ShoesName { get; set; }
+
+        [IgnoreMap]
+        public string ImagePath { get; set; }
     }
 
     public class OrderItemDTO : OrderItemLiteDTO
