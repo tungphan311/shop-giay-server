@@ -132,12 +132,12 @@ namespace shop_giay_server._Controllers
             // Validate
             if (!model.IsValid())
             {
-                return BadRequest(ResponseDTO.BadRequest("Not enough information to create."));
+                return Ok(ResponseDTO.BadRequest("Not enough information to create."));
             }
 
             if (await isExist(model.Code))
             {
-                return BadRequest(ResponseDTO.BadRequest("Shoes's code is already existed"));
+                return Ok(ResponseDTO.BadRequest("Shoes's code is already existed"));
             }
 
             var images = model.Images;
@@ -195,7 +195,7 @@ namespace shop_giay_server._Controllers
         {
             if (id == dto.Id) 
             {
-                return BadRequest(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
+                return Ok(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
             }
             var entity = _mapper.Map<Shoes>(dto);
             entity.Id = id;
@@ -203,7 +203,7 @@ namespace shop_giay_server._Controllers
             var updatedItem = await _repository.Update(entity);
             if (updatedItem == null) 
             {
-                return BadRequest(ResponseDTO.BadRequest("Item ID is not existed."));
+                return Ok(ResponseDTO.BadRequest("Item ID is not existed."));
             }
 
             return Ok(ResponseDTO.Ok(entity));

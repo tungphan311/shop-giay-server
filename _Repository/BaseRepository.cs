@@ -165,7 +165,15 @@ namespace shop_giay_server._Repository
                         vl = Convert.ChangeType(rawVl, type);
                     }
 
-                    query = query.Where(String.Format($"{p.Name} {operatorString} {vl}"));
+                    // Handle equal comparing with float value.
+                    if (type == typeof(float) && operatorString == "=") {
+                        var odd = 0.001;
+                        var substractResult = String.Format($"{p.Name} - @0");
+                        var queryString = String.Format($"({substractResult} >= 0 && {substractResult} < {odd}) || ({substractResult} < 0 && {substractResult} > {odd * -1})");
+                        query = query.Where(queryString, (float)vl);
+                    } else {
+                        query = query.Where(String.Format($"{p.Name} {operatorString} {vl}"));
+                    }
                 }
                 catch
                 {
@@ -173,7 +181,6 @@ namespace shop_giay_server._Repository
                 }
             }
         }
-
 
         private void AddSearchQueries(ref IQueryable<T> query, Dictionary<string, StringValues> dictQuery)
         {

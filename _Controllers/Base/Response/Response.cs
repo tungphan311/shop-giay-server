@@ -25,13 +25,13 @@ namespace shop_giay_server._Controllers
         public string Data { get; set; }
 
 
-        public ResponseDTO(IEnumerable<object> data, string code = "OK", string msg = "Success.", int total = 0)
+        public ResponseDTO(IEnumerable<object> data, string code = "200", string msg = "Success.", int total = 0)
             : this(data.ToList(), code, msg, total)
         {
 
         }
 
-        public ResponseDTO(List<object> data, string code = "OK", string msg = "Success.", int total = 0)
+        public ResponseDTO(List<object> data, string code = "200", string msg = "Success.", int total = 0)
         {
             var convertSetting = new JsonSerializerSettings
             {
@@ -45,7 +45,7 @@ namespace shop_giay_server._Controllers
             Msg = msg;
         }
 
-        public ResponseDTO(object data, string code = "OK", string msg = "Success.")
+        public ResponseDTO(object data, string code = "200", string msg = "Success.")
         {
             var convertSetting = new JsonSerializerSettings
             {
@@ -59,7 +59,7 @@ namespace shop_giay_server._Controllers
             Msg = msg;
         }
 
-        public ResponseDTO(string data, string code = "OK", string msg = "Success.")
+        public ResponseDTO(string data, string code = "200", string msg = "Success.")
         {
             var convertSetting = new JsonSerializerSettings
             {
@@ -77,33 +77,33 @@ namespace shop_giay_server._Controllers
         // Convenience static methods
         public static ResponseDTO Ok(IEnumerable<object> data, int total)
         {
-            return new ResponseDTO(data, "OK", "Success.", total);
+            return new ResponseDTO(data, "200", "Success.", total);
         }
 
         public static ResponseDTO Ok(IEnumerable<object> data)
         {
-            return new ResponseDTO(data, "OK", "Success.");
+            return new ResponseDTO(data, "200", "Success.");
         }
 
         public static ResponseDTO Ok(object data)
         {
-            return new ResponseDTO(data, "OK", "Success.");
+            return new ResponseDTO(data, "200", "Success.");
         }
 
         public static ResponseDTO OkDeleted(object data, string msg = "Deleted.")
         {
-            return new ResponseDTO(data, "OK", msg);
+            return new ResponseDTO(data, "200", msg);
         }
 
         public static ResponseDTO BadRequest(string msg = "Invalid request.", string data = "")
         {
-            return new ResponseDTO(data, "ERROR", msg);
+            return new ResponseDTO(data, "400", msg);
         }
 
-        public static ResponseDTO NotFound()
+        public static ResponseDTO NotFound(string msg = "Not Found.")
         {
             var empty = new List<object>();
-            return new ResponseDTO(empty, "ERROR", "Not Found.");
+            return new ResponseDTO(empty, "404", msg);
         }
 
         public static ResponseDTO Unauthorized()
