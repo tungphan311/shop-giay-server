@@ -17,6 +17,9 @@ namespace shop_giay_server.Dtos
         public int StockId { get; set; }
 
         [IgnoreMap]
+        public int ShoesId { get; set; }
+
+        [IgnoreMap]
         public string ShoesName { get; set; }
 
         [IgnoreMap]
