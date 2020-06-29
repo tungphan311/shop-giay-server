@@ -61,26 +61,28 @@ namespace shop_giay_server._Controllers
                 var shoesInfo = GetShoesInfoByStockId(orderItem.StockId);
                 orderItem.ShoesName = shoesInfo.name;
                 orderItem.ImagePath = shoesInfo.imagePath;
+                orderItem.ShoesId = shoesInfo.id;
             }
         }
 
 
-        private (string name, string imagePath) GetShoesInfoByStockId(int stockId)
+        private (int id, string name, string imagePath) GetShoesInfoByStockId(int stockId)
         {
             var name = "";
             var imagePath = "";
+            var id = 0;
             var stock = _context.Stocks
                 .Include(c => c.Shoes)
                 .ThenInclude(c => c.ShoesImages)
                 .FirstOrDefault(o => o.Id == stockId);
             if (stock.Shoes != null)
             {
-                if (!String.IsNullOrEmpty(stock.Shoes.Name)) name = stock.Shoes.Name;
+                if (!String.IsNullOrEmpty(stock.Shoes.Name)) { name = stock.Shoes.Name; id = stock.Shoes.Id; };
 
                 var shoesImage = stock.Shoes.ShoesImages.FirstOrDefault();
                 if (!String.IsNullOrEmpty(shoesImage.ImagePath)) imagePath = shoesImage.ImagePath;
             }
-            return (name, imagePath);
+            return (id, name, imagePath);
         }
     }
 }
