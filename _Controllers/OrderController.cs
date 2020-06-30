@@ -84,5 +84,45 @@ namespace shop_giay_server._Controllers
             }
             return (id, name, imagePath);
         }
+
+        // Update Order
+        [Route("admin/[controller]/{id:int}")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateCustomer(int id, [FromBody] UpdateOrderDTO dto)
+        {
+            if (id != dto.Id)
+            {
+                return Ok(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
+            }
+
+            // Validate
+            var entity = await _repository.FirstOrDefault(x => x.Id == id);
+            if (entity == null)
+            {
+                return Ok(ResponseDTO.BadRequest("Item ID is not existed."));
+            }
+
+            entity.Status = dto.Status;
+            entity.ConfirmDate = dto.ConfirmDate;
+            entity.CancelDate = dto.CancelDate;
+            entity.BeginDelivery = dto.BeginDelivery;
+            entity.DeliveryDate = dto.DeliveryDate;
+            entity.Note = dto.Note;
+
+            await _repository.Update(entity);
+
+            return Ok(ResponseDTO.Ok(entity));
+        }
+    }
+
+    public class UpdateOrderDTO
+    {
+        public int Id { get; set; }
+        public int Status { get; set; }
+        public DateTime? DeliveryDate { get; set; }
+        public DateTime? BeginDelivery { get; set; }
+        public DateTime? CancelDate { get; set; }
+        public DateTime? ConfirmDate { get; set; }
+        public string Note { get; set; }
     }
 }
