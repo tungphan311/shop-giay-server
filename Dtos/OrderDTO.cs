@@ -25,6 +25,8 @@ namespace shop_giay_server.Dtos
 
         public string RecipientPhoneNumber { get; set; }
 
+        public string Note { get; set; }
+
         public int CustomerId { get; set; }
     }
 

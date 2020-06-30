@@ -20,7 +20,7 @@ namespace shop_giay_server._Controllers
 
         public CustomerController(IAsyncRepository<Customer> repo, ILogger<CustomerController> logger, IMapper mapper, IAuthRepository authRepo)
             : base(repo, logger, mapper)
-        { 
+        {
             _authRepo = authRepo;
         }
 
@@ -48,7 +48,7 @@ namespace shop_giay_server._Controllers
         //
         [HttpPost]
         [Route("client/customer")]
-        public async Task<IActionResult> ClientAddCustomer([FromBody] BodyCreateCustomer model) 
+        public async Task<IActionResult> ClientAddCustomer([FromBody] BodyCreateCustomer model)
         {
             // Validate
             var existed = await _repository.ExistWhere(c => c.Email == model.Email
@@ -61,17 +61,19 @@ namespace shop_giay_server._Controllers
             }
 
             // Create user
-            if (await _authRepo.UserExists(model.Username)) 
+            if (await _authRepo.UserExists(model.Username))
             {
                 return Ok(ResponseDTO.BadRequest("Tên đăng nhập đã tồn tại."));
             }
-            var user = new User {
+            var user = new User
+            {
                 Username = model.Username,
                 RoleId = 3 // todo: hardcode client role id 
             };
             var createdUser = await _authRepo.Register(user, model.Password);
-            
-            var customer = new Customer {
+
+            var customer = new Customer
+            {
                 DeleteFlag = false,
                 Username = createdUser.Username,
                 PasswordHash = createdUser.PasswordHash,
@@ -84,7 +86,7 @@ namespace shop_giay_server._Controllers
                 DateOfBirth = new DateTime().FromEpochSeconds(model.DateOfBirth),
                 CustomerTypeId = model.CustomerTypeId
             };
-            
+
             // Create customer 
             var result = await _repository.Add(customer);
             return Ok(ResponseDTO.Ok(result));
@@ -96,51 +98,57 @@ namespace shop_giay_server._Controllers
         //
         [HttpPost]
         [Route("client/customer/getInfo")]
-        public async Task<IActionResult> ClientGetCustomerInfo() 
+        public async Task<IActionResult> ClientGetCustomerInfo()
         {
             var sessionUsername = HttpContext.Session.GetString(SessionConstant.Username);
-            if (string.IsNullOrEmpty(sessionUsername)) {
+            if (string.IsNullOrEmpty(sessionUsername))
+            {
                 return Ok(ResponseDTO.BadRequest());
             }
 
             var customer = await _repository.FirstOrDefault(c => c.Username == sessionUsername);
-            if (customer == null) {
+            if (customer == null)
+            {
                 return Ok(ResponseDTO.NotFound());
             }
 
-            return Ok(ResponseDTO.Ok(new {
+            return Ok(ResponseDTO.Ok(new
+            {
                 Id = customer.Id,
-                customer.Name, 
+                customer.Name,
                 DateOfBirth = customer.DateOfBirth.GetEpochSeconds(),
-                Email = customer.Email, 
+                Email = customer.Email,
                 PhoneNumber = customer.PhoneNumber,
                 Gender = customer.Gender
-            }));    
+            }));
         }
 
         [HttpGet]
         [Route("client/customer/getAddresses")]
-        public async Task<IActionResult> ClientGetCustomerAddress() 
+        public async Task<IActionResult> ClientGetCustomerAddress()
         {
             var sessionUsername = HttpContext.Session.GetString(SessionConstant.Username);
-            if (string.IsNullOrEmpty(sessionUsername)) {
+            if (string.IsNullOrEmpty(sessionUsername))
+            {
                 return Ok(ResponseDTO.BadRequest());
             }
 
             var customer = await _repository.FirstOrDefault(c => c.Username == sessionUsername);
-            if (customer == null) {
+            if (customer == null)
+            {
                 return Ok(ResponseDTO.NotFound());
             }
 
             var listResult = new List<dynamic>();
-            foreach (var address in customer.Addresses) 
+            foreach (var address in customer.Addresses)
             {
-                listResult.Add(new {
+                listResult.Add(new
+                {
                     Id = address.Id,
                     CustomerId = customer.Id,
                     City = address.City,
-                    address.District, 
-                    address.Ward, 
+                    address.District,
+                    address.Ward,
                     address.Street
                 });
             }
@@ -152,7 +160,7 @@ namespace shop_giay_server._Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateCustomer(int id, [FromBody] CustomerDTO dto)
         {
-            if (id == dto.Id) 
+            if (id != dto.Id)
             {
                 return Ok(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
             }
@@ -160,7 +168,7 @@ namespace shop_giay_server._Controllers
             entity.Id = id;
 
             var updatedItem = await _repository.Update(entity);
-            if (updatedItem == null) 
+            if (updatedItem == null)
             {
                 return Ok(ResponseDTO.BadRequest("Item ID is not existed."));
             }
@@ -170,7 +178,7 @@ namespace shop_giay_server._Controllers
     }
 
 
-    public class BodyCreateCustomer 
+    public class BodyCreateCustomer
     {
         public string Name { get; set; }
         public string Email { get; set; }
