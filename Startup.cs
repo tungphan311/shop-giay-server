@@ -56,7 +56,7 @@ namespace shop_giay_server
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:3000", "https://shoess.azurewebsites.net/")
+                    builder.WithOrigins("http://localhost:3000", "https://ssneaker.azurewebsites.net/")
                     .AllowAnyHeader()
                     .AllowAnyMethod();
                 });
