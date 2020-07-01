@@ -78,7 +78,7 @@ namespace shop_giay_server
             services.AddCronJob<DailyCron>(config =>
             {
                 config.TimeZoneInfo = TimeZoneInfo.Local;
-                config.CronExpression = @"00***";  // cron start at 00:00 every day
+                config.CronExpression = @"0 0 * * *";  // cron start at 00:00 every day
             });
         }
 
