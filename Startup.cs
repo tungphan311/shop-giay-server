@@ -19,6 +19,7 @@ using shop_giay_server.Dtos;
 using shop_giay_server._Controllers;
 using shop_giay_server.Handlers;
 using shop_giay_server.data.Authentication;
+using shop_giay_server.Crons;
 
 namespace shop_giay_server
 {
@@ -70,6 +71,14 @@ namespace shop_giay_server
             {
                 config.Cookie.Name = "shopgiay";             // Đặt tên Session - tên này sử dụng ở Browser (Cookie)
                 config.IdleTimeout = new TimeSpan(0, 60, 0);
+            });
+
+
+            // add cron job services
+            services.AddCronJob<DailyCron>(config =>
+            {
+                config.TimeZoneInfo = TimeZoneInfo.Local;
+                config.CronExpression = @"0 0 0 * * ?";  // cron start at 00:00 every day
             });
         }
 
