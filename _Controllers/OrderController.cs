@@ -61,26 +61,68 @@ namespace shop_giay_server._Controllers
                 var shoesInfo = GetShoesInfoByStockId(orderItem.StockId);
                 orderItem.ShoesName = shoesInfo.name;
                 orderItem.ImagePath = shoesInfo.imagePath;
+                orderItem.ShoesId = shoesInfo.id;
             }
         }
 
 
-        private (string name, string imagePath) GetShoesInfoByStockId(int stockId)
+        private (int id, string name, string imagePath) GetShoesInfoByStockId(int stockId)
         {
             var name = "";
             var imagePath = "";
+            var id = 0;
             var stock = _context.Stocks
                 .Include(c => c.Shoes)
                 .ThenInclude(c => c.ShoesImages)
                 .FirstOrDefault(o => o.Id == stockId);
             if (stock.Shoes != null)
             {
-                if (!String.IsNullOrEmpty(stock.Shoes.Name)) name = stock.Shoes.Name;
+                if (!String.IsNullOrEmpty(stock.Shoes.Name)) { name = stock.Shoes.Name; id = stock.Shoes.Id; };
 
                 var shoesImage = stock.Shoes.ShoesImages.FirstOrDefault();
                 if (!String.IsNullOrEmpty(shoesImage.ImagePath)) imagePath = shoesImage.ImagePath;
             }
-            return (name, imagePath);
+            return (id, name, imagePath);
         }
+
+        // Update Order
+        [Route("admin/[controller]/{id:int}")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateCustomer(int id, [FromBody] UpdateOrderDTO dto)
+        {
+            if (id != dto.Id)
+            {
+                return Ok(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
+            }
+
+            // Validate
+            var entity = await _repository.FirstOrDefault(x => x.Id == id);
+            if (entity == null)
+            {
+                return Ok(ResponseDTO.BadRequest("Item ID is not existed."));
+            }
+
+            entity.Status = dto.Status;
+            entity.ConfirmDate = dto.ConfirmDate;
+            entity.CancelDate = dto.CancelDate;
+            entity.BeginDelivery = dto.BeginDelivery;
+            entity.DeliveryDate = dto.DeliveryDate;
+            entity.Note = dto.Note;
+
+            await _repository.Update(entity);
+
+            return Ok(ResponseDTO.Ok(entity));
+        }
+    }
+
+    public class UpdateOrderDTO
+    {
+        public int Id { get; set; }
+        public int Status { get; set; }
+        public DateTime? DeliveryDate { get; set; }
+        public DateTime? BeginDelivery { get; set; }
+        public DateTime? CancelDate { get; set; }
+        public DateTime? ConfirmDate { get; set; }
+        public string Note { get; set; }
     }
 }
