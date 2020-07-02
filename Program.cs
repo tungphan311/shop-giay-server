@@ -32,7 +32,7 @@ namespace shop_giay_server
                     // Seed.SeedShoes(context);
                     AddPermissionPath();
                     Seed.SeedAll(context);
-                    
+
                 }
                 catch (System.Exception ex)
                 {
@@ -126,6 +126,9 @@ namespace shop_giay_server
             PermissionPath.mapApi.Add(PermissionConstant.Create_Stock_Admin, "POST/admin/stock/");
             PermissionPath.mapApi.Add(PermissionConstant.Delete_Stock_Admin, "DELETE/admin/stock/");
             PermissionPath.mapApi.Add(PermissionConstant.Update_Stock_Admin, "PUT/admin/stock/");
+
+            PermissionPath.mapApi.Add(PermissionConstant.Create_User_Admin, "POST/admin/auth/register");
+            PermissionPath.mapApi.Add(PermissionConstant.Get_User_Admin, "GET/admin/auth");
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

@@ -34,7 +34,9 @@ namespace shop_giay_server.Crons
             // update sales which were expired
             foreach (var sale in sales)
             {
-                if (sale.ExpiredDate <= now)
+                int result = DateTime.Compare(now, sale.ExpiredDate);
+                Console.WriteLine(result);
+                if (result >= 0)
                 {
                     sale.Status = 0;
 
