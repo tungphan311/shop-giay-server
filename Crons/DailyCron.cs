@@ -4,17 +4,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.data;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace shop_giay_server.Crons
 {
     public class DailyCron : CronJobService
     {
         private readonly ILogger<DailyCron> _logger;
-        private readonly DataContext _context;
-        public DailyCron(IScheduleConfig<DailyCron> config, ILogger<DailyCron> logger, DataContext context)
+        public IServiceScopeFactory _serviceScopeFactory;
+        public DailyCron(IScheduleConfig<DailyCron> config, ILogger<DailyCron> logger, IServiceScopeFactory serviceScopeFactory)
             : base(config.CronExpression, config.TimeZoneInfo)
         {
-            _context = context;
+            _serviceScopeFactory = serviceScopeFactory;
             _logger = logger;
         }
 
@@ -26,25 +27,29 @@ namespace shop_giay_server.Crons
 
         public override Task DoWork(CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"{DateTime.Now:hh:mm:ss} Daily cron job is working.");
-
-            var now = DateTime.Now;
-            var sales = _context.Sales.ToList();
-
-            // update sales which were expired
-            foreach (var sale in sales)
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
-                int result = DateTime.Compare(now, sale.ExpiredDate);
-                Console.WriteLine(result);
-                if (result >= 0)
+                DataContext _context = (DataContext)scope.ServiceProvider.GetRequiredService(typeof(DataContext));
+                _logger.LogInformation($"{DateTime.Now:hh:mm:ss} Daily cron job is working.");
+
+                var now = DateTime.Now;
+                var sales = _context.Sales.ToList();
+
+                // update sales which were expired
+                foreach (var sale in sales)
                 {
-                    sale.Status = 0;
+                    int result = DateTime.Compare(now, sale.ExpiredDate);
+                    Console.WriteLine(result);
+                    if (result >= 0)
+                    {
+                        sale.Status = 0;
 
-                    _context.Sales.Update(sale);
+                        _context.Sales.Update(sale);
+                    }
                 }
-            }
 
-            _context.SaveChangesAsync();
+                _context.SaveChangesAsync();
+            }
 
             return Task.CompletedTask;
         }
