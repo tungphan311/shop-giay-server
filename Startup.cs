@@ -20,6 +20,7 @@ using shop_giay_server._Controllers;
 using shop_giay_server.Handlers;
 using shop_giay_server.data.Authentication;
 using shop_giay_server.Crons;
+using shop_giay_server.Controllers;
 
 namespace shop_giay_server
 {
@@ -174,6 +175,7 @@ namespace shop_giay_server
             CreateMap<Size, SizeLiteDTO>().ReverseMap();
             CreateMap<User, UserLiteDTO>().ReverseMap();
             CreateMap<Stock, StockLiteDTO>().ReverseMap();
+            CreateMap<User, ResponseUserDto>().ReverseMap();
 
 
             // Shoes -> ResponseShoesDTO
