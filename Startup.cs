@@ -42,7 +42,9 @@ namespace shop_giay_server
             services.AddScoped(typeof(IAsyncRepository<>), typeof(BaseRepository<>));
 
             // DB
-            services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<DataContext>(x => x
+                .UseLazyLoadingProxies()
+                .UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             // AutoMapper
             var mappingConfig = new MapperConfiguration(mc =>

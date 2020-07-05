@@ -64,7 +64,7 @@ namespace shop_giay_server.Handlers
             string route = context.Request.Path;
 
             // Validate
-            if (!route.StartsWith("/api")) 
+            if (!route.StartsWith("/api"))
             {
                 context.Session.SetInt32(SessionConstant.NeedAuthorize, 0);
                 await next(context);
@@ -97,11 +97,11 @@ namespace shop_giay_server.Handlers
                         {
                             context.Session.SetString(SessionConstant.Site, SessionConstant.Admin);
 
-                            var userId = decodeToken.Claims.FirstOrDefault(c => c.Type == "nameid") != null ?  
+                            var userId = decodeToken.Claims.FirstOrDefault(c => c.Type == "nameid") != null ?
                                 decodeToken.Claims.FirstOrDefault(c => c.Type == "nameid").Value : null;
                             var username = decodeToken.Claims.FirstOrDefault(c => c.Type == "unique_name") != null ?
                                 decodeToken.Claims.FirstOrDefault(c => c.Type == "unique_name").Value : null;
-                            var role = decodeToken.Claims.FirstOrDefault(c => c.Type == "role") != null ? 
+                            var role = decodeToken.Claims.FirstOrDefault(c => c.Type == "role") != null ?
                                 decodeToken.Claims.FirstOrDefault(c => c.Type == "role").Value : null;
 
                             var user = await dataContext.Users.FirstOrDefaultAsync(u => u.Id.ToString() == userId);
@@ -115,7 +115,7 @@ namespace shop_giay_server.Handlers
                             context.Session.SetString(SessionConstant.Route, route);
                             context.Session.SetString(SessionConstant.Role, role);
                             context.Session.SetString(SessionConstant.Username, username);
-                        } 
+                        }
                         else if (route.StartsWith("client/"))
                         {
                             context.Session.SetString(SessionConstant.Site, SessionConstant.Client);

@@ -18,12 +18,9 @@ namespace shop_giay_server._Controllers
     public class OrderController : GeneralController<Order, OrderDTO>
     {
 
-        private DataContext _context;
-
         public OrderController(IAsyncRepository<Order> repo, ILogger<OrderController> logger, IMapper mapper, DataContext context)
-            : base(repo, logger, mapper)
+            : base(repo, logger, mapper, context)
         {
-            _context = context;
         }
 
 

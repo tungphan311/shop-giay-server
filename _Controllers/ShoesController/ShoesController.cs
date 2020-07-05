@@ -17,18 +17,14 @@ namespace shop_giay_server._Controllers
 {
     public class ShoesController : GeneralController<Shoes, ShoesDTO>
     {
-        private DataContext _context;
-
 
         public ShoesController(
             IAsyncRepository<Shoes> repo,
             DataContext context,
             ILogger<ShoesController> logger,
             IMapper mapper)
-            : base(repo, logger, mapper)
-        {
-            _context = context;
-        }
+            : base(repo, logger, mapper, context)
+        { }
 
         #region Helper Methods
 

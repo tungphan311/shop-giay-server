@@ -18,8 +18,8 @@ namespace shop_giay_server._Controllers
     {
         private readonly IAuthRepository _authRepo;
 
-        public CustomerController(IAsyncRepository<Customer> repo, ILogger<CustomerController> logger, IMapper mapper, IAuthRepository authRepo)
-            : base(repo, logger, mapper)
+        public CustomerController(IAsyncRepository<Customer> repo, ILogger<CustomerController> logger, IMapper mapper, IAuthRepository authRepo, DataContext context)
+            : base(repo, logger, mapper, context)
         {
             _authRepo = authRepo;
         }

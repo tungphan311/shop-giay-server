@@ -31,7 +31,7 @@ namespace shop_giay_server
 
                     // Seed.SeedShoes(context);
                     AddPermissionPath();
-                    Seed.SeedAll(context);
+                    // Seed.SeedAll(context);
 
                 }
                 catch (System.Exception ex)

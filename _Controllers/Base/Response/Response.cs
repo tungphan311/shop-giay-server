@@ -80,6 +80,11 @@ namespace shop_giay_server._Controllers
             return new ResponseDTO(data, "200", "Success.", total);
         }
 
+        public static ResponseDTO OkEmpty()
+        {
+            return new ResponseDTO(new List<object>(), "200", "Success.", 0);
+        }
+
         public static ResponseDTO Ok(IEnumerable<object> data)
         {
             return new ResponseDTO(data, "200", "Success.");
