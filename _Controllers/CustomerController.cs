@@ -167,15 +167,20 @@ namespace shop_giay_server._Controllers
             {
                 return BadRequest(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
             }
-            var entity = _mapper.Map<Customer>(dto);
+            var entity = _mapper.Map<Address>(dto);
             entity.Id = id;
 
-            var updatedItem = await _repository.Update(entity);
-            if (updatedItem == null) 
-            {
-                return BadRequest(ResponseDTO.BadRequest("Item ID is not existed."));
-            }
-            return Ok(ResponseDTO.Ok(entity));
+            
+
+            
+
+            // var updatedItem = await _repository.Update(entity);
+            // if (updatedItem == null) 
+            // {
+            //     return BadRequest(ResponseDTO.BadRequest("Item ID is not existed."));
+            // }
+            // return Ok(ResponseDTO.Ok(entity));
+            return null;
         }
     }
 

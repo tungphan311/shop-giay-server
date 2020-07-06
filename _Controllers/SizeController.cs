@@ -33,24 +33,5 @@ namespace shop_giay_server._Controllers
 
             return await this._AddItem(size);
         }
-        // Customer Update
-        [Route("admin/[controller]/{id:int}")]
-        [HttpPut]
-        public async Task<IActionResult> UpdateCustomer(int id, [FromBody] CustomerDTO dto)
-        {
-            if (id == dto.Id) 
-            {
-                return BadRequest(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
-            }
-            var entity = _mapper.Map<Customer>(dto);
-            entity.Id = id;
-
-            var updatedItem = await _repository.Update(entity);
-            if (updatedItem == null) 
-            {
-                return BadRequest(ResponseDTO.BadRequest("Item ID is not existed."));
-            }
-            return Ok(ResponseDTO.Ok(entity));
-        }
     }
 }

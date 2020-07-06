@@ -187,10 +187,12 @@ namespace shop_giay_server._Controllers
             if (shoes.IsNew) shoes.IsNew = true;
             return await this._AddItem(shoes);
         }
-
-
+        
+        
         [Route("admin/[controller]/{id:int}")]
         [HttpPut]
+
+        // Customer update + Address Update clone cai nay
         public async Task<IActionResult> UpdateShoes(int id, [FromBody] ShoesDTO dto)
         {
             if (id == dto.Id) 
@@ -205,7 +207,6 @@ namespace shop_giay_server._Controllers
             {
                 return BadRequest(ResponseDTO.BadRequest("Item ID is not existed."));
             }
-
             return Ok(ResponseDTO.Ok(entity));
         }
 
