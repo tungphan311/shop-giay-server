@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using shop_giay_server._Repository;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.Dtos;
+using shop_giay_server.data;
 using AutoMapper;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,8 @@ namespace shop_giay_server._Controllers
     {
         private IAsyncRepository<Stock> _stockRepository;
 
-        public ImportController(IAsyncRepository<Import> repo, IAsyncRepository<Stock> stockRepo, ILogger<ImportController> logger, IMapper mapper)
-            : base(repo, logger, mapper)
+        public ImportController(IAsyncRepository<Import> repo, IAsyncRepository<Stock> stockRepo, ILogger<ImportController> logger, IMapper mapper, DataContext context)
+            : base(repo, logger, mapper, context)
         {
             _stockRepository = stockRepo;
         }
@@ -34,7 +35,7 @@ namespace shop_giay_server._Controllers
 
                 if (stock == null)
                 {
-                    return BadRequest(ResponseDTO.BadRequest($"Not found stockId: {id}"));
+                    return Ok(ResponseDTO.BadRequest($"Not found stockId: {id}"));
                 }
                 else
                 {
@@ -43,7 +44,7 @@ namespace shop_giay_server._Controllers
                 }
             }
 
-            int totalCost = 0;
+            float totalCost = 0;
             int totalQuantity = 0;
 
             foreach (var detail in details)

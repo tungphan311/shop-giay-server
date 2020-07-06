@@ -253,7 +253,7 @@ namespace shop_giay_server.data
             {
                 var customerData = System.IO.File.ReadAllText("data/seeds/Customers.json");
 
-                var customers = JsonConvert.DeserializeObject<List<Customer>>(customerData); 
+                var customers = JsonConvert.DeserializeObject<List<Customer>>(customerData);
 
                 foreach (var c in customers)
                 {
@@ -279,10 +279,46 @@ namespace shop_giay_server.data
 
                 var items = JsonConvert.DeserializeObject<List<Address>>(itemData);
 
-                foreach (var item in items) 
+                foreach (var item in items)
                 {
                     item.DeleteFlag = false;
                     context.Addresses.Add(item);
+                }
+
+                context.SaveChanges();
+            }
+
+            if (!context.Orders.Any())
+            {
+                var orderData = System.IO.File.ReadAllText("data/seeds/Orders.json");
+
+                var orders = JsonConvert.DeserializeObject<List<Order>>(orderData);
+
+                foreach (var order in orders)
+                {
+                    order.DeleteFlag = false;
+                    order.OrderDate = new DateTime(2020, 6, 20, 10, 20, 15);
+                    order.Status = 1;
+                    order.ConfirmDate = null;
+                    order.DeliveryDate = null;
+
+                    context.Orders.Add(order);
+                }
+
+                context.SaveChanges();
+            }
+
+            if (!context.OrderItems.Any())
+            {
+                var itemData = System.IO.File.ReadAllText("data/seeds/OrderItems.json");
+
+                var items = JsonConvert.DeserializeObject<List<OrderItem>>(itemData);
+
+                foreach (var item in items)
+                {
+                    item.DeleteFlag = false;
+
+                    context.OrderItems.Add(item);
                 }
 
                 context.SaveChanges();

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace shop_giay_server.models
 {
-    public class Sale: BaseEntity
+    public class Sale : BaseEntity
     {
         public int SaleType { get; set; }
 
@@ -13,9 +13,9 @@ namespace shop_giay_server.models
 
         public DateTime ExpiredDate { get; set; }
 
-        public string Status { get; set; }
+        public int Status { get; set; }
 
         public List<SaleProduct> SaleProducts { get; set; }
-        public List<Order> Orders{ get; set; }
+        public List<Order> Orders { get; set; }
     }
 }

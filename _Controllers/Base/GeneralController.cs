@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using shop_giay_server.models;
+using shop_giay_server.data;
 using shop_giay_server._Repository;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.Dtos;
@@ -64,9 +65,11 @@ namespace shop_giay_server._Controllers
         protected readonly IAsyncRepository<Model> _repository;
         protected readonly ILogger _logger;
         protected readonly IMapper _mapper;
+        protected readonly DataContext _context;
 
-        public GeneralController(IAsyncRepository<Model> repository, ILogger logger, IMapper mapper)
+        public GeneralController(IAsyncRepository<Model> repository, ILogger logger, IMapper mapper, DataContext dataContext)
         {
+            _context = dataContext;
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
@@ -159,7 +162,7 @@ namespace shop_giay_server._Controllers
         {
             if (items.Count() == 0)
             {
-                return NotFound(ResponseDTO.NotFound());
+                return Ok(ResponseDTO.NotFound());
             }
             return Ok(ResponseDTO.Ok(items, totalRecords));
         }
@@ -172,19 +175,19 @@ namespace shop_giay_server._Controllers
         {
             if (e is InvalidQueryParamsException)
             {
-                return BadRequest(ResponseDTO.BadRequest("Invalid query params.", e.ToString()));
+                return Ok(ResponseDTO.BadRequest("Invalid query params.", e.ToString()));
             }
             else if (e is Microsoft.Data.SqlClient.SqlException)
             {
-                return BadRequest(ResponseDTO.BadRequest("Cannot connect to database.", e.ToString()));
+                return Ok(ResponseDTO.BadRequest("Cannot connect to database.", e.ToString()));
             }
             else if (e is NullReferenceException)
             {
-                return BadRequest(ResponseDTO.BadRequest("Items not existed.", e.ToString()));
+                return Ok(ResponseDTO.BadRequest("Items not existed.", e.ToString()));
             }
             else
             {
-                return BadRequest(ResponseDTO.BadRequest());
+                return Ok(ResponseDTO.BadRequest());
             }
         }
 
@@ -339,7 +342,7 @@ namespace shop_giay_server._Controllers
                 var entity = await _repository.GetById(id);
                 if (entity == null)
                 {
-                    return NotFound(ResponseDTO.NotFound());
+                    return Ok(ResponseDTO.NotFound());
                 }
 
                 var models = MapToResponseModels<ResponseModel>(new List<Model>() { entity });
@@ -375,7 +378,7 @@ namespace shop_giay_server._Controllers
             var item = await _repository.GetById(id);
             if (item == null)
             {
-                return NotFound(ResponseDTO.NotFound());
+                return Ok(ResponseDTO.NotFound());
             }
 
             IActionResult response = BadRequest(ResponseDTO.BadRequest());
@@ -393,6 +396,17 @@ namespace shop_giay_server._Controllers
                     : response;
             }
             return response;
+        }
+
+
+        protected async Task<Customer> GetCustomerFromSession() {
+            var sessionUsername = HttpContext.Session.GetString(SessionConstant.Username);
+            if (string.IsNullOrEmpty(sessionUsername))
+            {
+                return null;
+            }
+
+            return await _context.Customers.FirstOrDefaultAsync(c => c.Username == sessionUsername);
         }
 
         #endregion

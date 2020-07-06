@@ -17,18 +17,14 @@ namespace shop_giay_server._Controllers
 {
     public class ShoesController : GeneralController<Shoes, ShoesDTO>
     {
-        private DataContext _context;
-
 
         public ShoesController(
             IAsyncRepository<Shoes> repo,
             DataContext context,
             ILogger<ShoesController> logger,
             IMapper mapper)
-            : base(repo, logger, mapper)
-        {
-            _context = context;
-        }
+            : base(repo, logger, mapper, context)
+        { }
 
         #region Helper Methods
 
@@ -132,12 +128,12 @@ namespace shop_giay_server._Controllers
             // Validate
             if (!model.IsValid())
             {
-                return BadRequest(ResponseDTO.BadRequest("Not enough information to create."));
+                return Ok(ResponseDTO.BadRequest("Not enough information to create."));
             }
 
             if (await isExist(model.Code))
             {
-                return BadRequest(ResponseDTO.BadRequest("Shoes's code is already existed"));
+                return Ok(ResponseDTO.BadRequest("Shoes's code is already existed"));
             }
 
             var images = model.Images;
@@ -195,17 +191,17 @@ namespace shop_giay_server._Controllers
         // Customer update + Address Update clone cai nay
         public async Task<IActionResult> UpdateShoes(int id, [FromBody] ShoesDTO dto)
         {
-            if (id == dto.Id) 
+            if (id == dto.Id)
             {
-                return BadRequest(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
+                return Ok(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
             }
             var entity = _mapper.Map<Shoes>(dto);
             entity.Id = id;
 
             var updatedItem = await _repository.Update(entity);
-            if (updatedItem == null) 
+            if (updatedItem == null)
             {
-                return BadRequest(ResponseDTO.BadRequest("Item ID is not existed."));
+                return Ok(ResponseDTO.BadRequest("Item ID is not existed."));
             }
             return Ok(ResponseDTO.Ok(entity));
         }
@@ -228,7 +224,7 @@ namespace shop_giay_server._Controllers
                     var queryItem = new KeyValuePair<String, StringValues>("genderId", genderEntity.Id.ToString());
                     query = query.AppendQueryItem(queryItem);
                 }
-                
+
             }
             return query;
         }

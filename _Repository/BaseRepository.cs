@@ -26,17 +26,20 @@ namespace shop_giay_server._Repository
             _dataContext = context;
         }
 
-        public async Task<T> GetById(int id)
+        public async Task<T> GetById(int id, bool loadAllNavProperties = true)
         {
-            return await FirstOrDefault(o => o.Id == id);
+            return await FirstOrDefault(o => o.Id == id, loadAllNavProperties);
         }
 
-        public async Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate)
+        public async Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate, bool loadAllNavProperties = true)
         {
             var query = _dataContext.Set<T>().AsQueryable(); //.FirstOrDefaultAsync(predicate);
 
-            foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
-                query = query.Include(p.Name);
+            if (loadAllNavProperties)
+            {
+                foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
+                    query = query.Include(p.Name);
+            }
 
             return await query.FirstOrDefaultAsync(predicate);
         }
@@ -59,7 +62,7 @@ namespace shop_giay_server._Repository
         {
             var updateEntity = _dataContext.Entry(await _dataContext.Set<T>().FirstOrDefaultAsync(x => x.Id == entity.Id));
             if (updateEntity == null) return null;
-            
+
             updateEntity.CurrentValues.SetValues(entity);
             await _dataContext.SaveChangesAsync();
             return await _dataContext.Set<T>().FirstOrDefaultAsync(c => c.Id == entity.Id);
@@ -79,16 +82,16 @@ namespace shop_giay_server._Repository
             return false;
         }
 
-        public async Task<(IEnumerable<T> result, int totalRecords)> GetAllWithQuery(IQueryCollection query)
+        public async Task<(IEnumerable<T> result, int totalRecords)> GetAllWithQuery(IQueryCollection query, bool loadAllNavProperties = true)
         {
             var dict = query.ToDictionary(
                 p => p.Key.ToLower(),
                 p => p.Value);
 
-            return await GetAll(dict);
+            return await GetAll(dict, loadAllNavProperties);
         }
 
-        public async Task<(IEnumerable<T> result, int totalRecords)> GetAll(Dictionary<string, StringValues> dictQuery)
+        public async Task<(IEnumerable<T> result, int totalRecords)> GetAll(Dictionary<string, StringValues> dictQuery, bool loadAllNavProperties = true)
         {
             var query = _dataContext.Set<T>().AsQueryable();
             var pageSize = -1;
@@ -99,6 +102,7 @@ namespace shop_giay_server._Repository
             AddCompareQueries(ref query, dictQuery, "=");
             AddCompareQueries(ref query, dictQuery, "<=");
             AddCompareQueries(ref query, dictQuery, ">=");
+            AddSearchQueries(ref query, dictQuery);
 
 
             // Get total records without paging
@@ -119,8 +123,11 @@ namespace shop_giay_server._Repository
 
 
             // Included all navigations properties
-            foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
-                query = query.Include(p.Name);
+            if (loadAllNavProperties)
+            {
+                foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
+                    query = query.Include(p.Name);
+            }
 
             var listResult = await query.ToListAsync();
             return (result: listResult, totalRecords: totalRecords);
@@ -164,7 +171,18 @@ namespace shop_giay_server._Repository
                         vl = Convert.ChangeType(rawVl, type);
                     }
 
-                    query = query.Where(String.Format($"{p.Name} {operatorString} {vl}"));
+                    // Handle equal comparing with float value.
+                    if (type == typeof(float) && operatorString == "=")
+                    {
+                        var odd = 0.001;
+                        var substractResult = String.Format($"{p.Name} - @0");
+                        var queryString = String.Format($"({substractResult} >= 0 && {substractResult} < {odd}) || ({substractResult} < 0 && {substractResult} > {odd * -1})");
+                        query = query.Where(queryString, (float)vl);
+                    }
+                    else
+                    {
+                        query = query.Where(String.Format($"{p.Name} {operatorString} {vl}"));
+                    }
                 }
                 catch
                 {
@@ -173,10 +191,18 @@ namespace shop_giay_server._Repository
             }
         }
 
-
-        public async Task<IEnumerable<T>> GetWhere(Expression<Func<T, bool>> predicate)
+        private void AddSearchQueries(ref IQueryable<T> query, Dictionary<string, StringValues> dictQuery)
         {
-            return await _dataContext.Set<T>().Where(predicate).ToListAsync();
+            var searchKey = "search";
+            var isShoesType = typeof(T) == typeof(Shoes);
+            var hasKeyword = dictQuery.ContainsKey(searchKey);
+            if (!isShoesType || !hasKeyword)
+            {
+                return;
+            }
+
+            var value = dictQuery[searchKey][0];
+            query = query.Where("Name.Contains(@0) OR Code.Contains(@1)", value, value);
         }
 
         public async Task<int> CountAll() => await _dataContext.Set<T>().CountAsync();

@@ -3,29 +3,33 @@ using System.Collections.Generic;
 
 namespace shop_giay_server.models
 {
-    public class Order: BaseEntity 
+    public class Order : BaseEntity
     {
         public DateTime OrderDate { get; set; }
 
-        public int Total { get; set; }
+        public float Total { get; set; }
 
-        public string Status { get; set; }
+        public int Status { get; set; }     // 1 - Waiting for confirmation | 2 - Confirmed | 3 - Canceled
 
         public string DeliverAddress { get; set; }
 
-        public DateTime ConfirmDate { get; set; }
+        public DateTime? ConfirmDate { get; set; }
 
-        public DateTime DeliveryDate { get; set; }
+        public DateTime? CancelDate { get; set; }
 
-        public int SaleId { get; set; }
-        public Sale Sale { get; set; }
+        public DateTime? BeginDelivery { get; set; }
 
-        public int PaymentId { get; set; }
-        public Payment Payment { get; set; }
+        public DateTime? DeliveryDate { get; set; }
+
+        public string Note { get; set; }
+
+        public string RecipientName { get; set; }
+
+        public string RecipientPhoneNumber { get; set; }
 
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
 
-        public List<OrderItem> OrderItems { get; set; } 
+        public List<OrderItem> OrderItems { get; set; }
     }
 }

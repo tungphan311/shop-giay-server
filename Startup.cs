@@ -19,6 +19,8 @@ using shop_giay_server.Dtos;
 using shop_giay_server._Controllers;
 using shop_giay_server.Handlers;
 using shop_giay_server.data.Authentication;
+using shop_giay_server.Crons;
+using shop_giay_server.Controllers;
 
 namespace shop_giay_server
 {
@@ -40,7 +42,8 @@ namespace shop_giay_server
             services.AddScoped(typeof(IAsyncRepository<>), typeof(BaseRepository<>));
 
             // DB
-            services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<DataContext>(x => x
+                .UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             // AutoMapper
             var mappingConfig = new MapperConfiguration(mc =>
@@ -56,7 +59,7 @@ namespace shop_giay_server
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:3000", "https://shoess.azurewebsites.net/")
+                    builder.WithOrigins("http://localhost:3000", "https://ssneaker.azurewebsites.net/")
                     .AllowAnyHeader()
                     .AllowAnyMethod();
                 });
@@ -70,6 +73,14 @@ namespace shop_giay_server
             {
                 config.Cookie.Name = "shopgiay";             // Đặt tên Session - tên này sử dụng ở Browser (Cookie)
                 config.IdleTimeout = new TimeSpan(0, 60, 0);
+            });
+
+
+            // add cron job services
+            services.AddCronJob<DailyCron>(config =>
+            {
+                config.TimeZoneInfo = TimeZoneInfo.Local;
+                config.CronExpression = @"0 0 * * *";  // cron start at 00:00 every day
             });
         }
 
@@ -165,6 +176,7 @@ namespace shop_giay_server
             CreateMap<Size, SizeLiteDTO>().ReverseMap();
             CreateMap<User, UserLiteDTO>().ReverseMap();
             CreateMap<Stock, StockLiteDTO>().ReverseMap();
+            CreateMap<User, ResponseUserDto>().ReverseMap();
 
 
             // Shoes -> ResponseShoesDTO

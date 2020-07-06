@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using shop_giay_server._Repository;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.Dtos;
+using shop_giay_server.data;
 using AutoMapper;
 using System.Linq;
 
@@ -11,8 +12,8 @@ namespace shop_giay_server._Controllers
 {
     public class SizeController : GeneralController<Size, SizeDTO>
     {
-        public SizeController(IAsyncRepository<Size> repo, ILogger<SizeController> logger, IMapper mapper)
-            : base(repo, logger, mapper)
+        public SizeController(IAsyncRepository<Size> repo, ILogger<SizeController> logger, IMapper mapper, DataContext context)
+            : base(repo, logger, mapper, context)
         {
             
         }
@@ -23,7 +24,7 @@ namespace shop_giay_server._Controllers
             // Validate
             if (string.IsNullOrEmpty(model.Name))
             {
-                return BadRequest(ResponseDTO.BadRequest("Not enough information to create."));
+                return Ok(ResponseDTO.BadRequest("Not enough information to create."));
             }
 
             var size = new Size

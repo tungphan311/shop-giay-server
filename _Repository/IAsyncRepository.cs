@@ -11,17 +11,16 @@ namespace shop_giay_server._Repository
     public interface IAsyncRepository<T> where T : BaseEntity
     {
 
-        Task<T> GetById(int id);
-        Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate);
+        Task<T> GetById(int id, bool loadAllNavProperties = true);
+        Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate, bool loadAllNavProperties = true);
 
         Task<T> Add(T entity);
         Task<IEnumerable<T>> Add(IEnumerable<T> entities);
         Task<T> Update(T entity);
         Task<bool> Remove(int id);
 
-        Task<(IEnumerable<T> result, int totalRecords)> GetAllWithQuery(IQueryCollection query);
-        Task<(IEnumerable<T> result, int totalRecords)> GetAll(Dictionary<string, StringValues> queries);
-        Task<IEnumerable<T>> GetWhere(Expression<Func<T, bool>> predicate);
+        Task<(IEnumerable<T> result, int totalRecords)> GetAllWithQuery(IQueryCollection query, bool loadAllNavProperties = true);
+        Task<(IEnumerable<T> result, int totalRecords)> GetAll(Dictionary<string, StringValues> queries, bool loadAllNavProperties = true);
 
         // lambda
 

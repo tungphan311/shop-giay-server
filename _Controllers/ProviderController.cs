@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using shop_giay_server._Repository;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.Dtos;
+using shop_giay_server.data;
 using AutoMapper;
 using System;
 
@@ -11,8 +12,8 @@ namespace shop_giay_server._Controllers
 {
     public class ProviderController : GeneralController<Provider, ProviderDTO>
     {
-        public ProviderController(IAsyncRepository<Provider> repo, ILogger<ProviderController> logger, IMapper mapper)
-            : base(repo, logger, mapper)
+        public ProviderController(IAsyncRepository<Provider> repo, ILogger<ProviderController> logger, IMapper mapper, DataContext dataContext)
+            : base(repo, logger, mapper, dataContext)
         { }
 
         [HttpPost]
@@ -21,7 +22,7 @@ namespace shop_giay_server._Controllers
             // Validate
             if (string.IsNullOrEmpty(model.Name))
             {
-                return BadRequest(ResponseDTO.BadRequest("Not enough information to create."));
+                return Ok(ResponseDTO.BadRequest("Not enough information to create."));
             }
 
             var provide = new Provider

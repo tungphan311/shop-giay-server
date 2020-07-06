@@ -1,14 +1,17 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using shop_giay_server._Controllers;
 using shop_giay_server.data;
 using shop_giay_server.Dtos;
 using shop_giay_server.models;
@@ -22,8 +25,10 @@ namespace shop_giay_server.Controllers
         private readonly IAuthRepository repo;
         private readonly IConfiguration config;
         private readonly DataContext context;
-        public AuthController(IAuthRepository repo, IConfiguration config, DataContext context)
+        private readonly IMapper mapper;
+        public AuthController(IAuthRepository repo, IConfiguration config, DataContext context, IMapper mapper)
         {
+            this.mapper = mapper;
             this.context = context;
             this.config = config;
             this.repo = repo;
@@ -34,18 +39,22 @@ namespace shop_giay_server.Controllers
         {
             if (await repo.UserExists(userForRegisterDto.Username))
             {
-                return BadRequest("Tên đăng nhập này đã tồn tại.");
+                return BadRequest(ResponseDTO.BadRequest("Tên đăng nhập này đã tồn tại."));
             }
 
             var userToCreate = new User
             {
-                Username = userForRegisterDto.Username
+                Username = userForRegisterDto.Username,
+                RoleId = userForRegisterDto.RoleId,
+                Name = userForRegisterDto.Name,
+                Email = userForRegisterDto.Email,
+                PhoneNumber = userForRegisterDto.PhoneNumber
             };
 
 
             var createdUser = await repo.Register(userToCreate, userForRegisterDto.Password);
 
-            return StatusCode(201);
+            return Ok(new ResponseDTO(null, "200", "Thêm tài khoản thành công", 1));
         }
 
         [HttpPost("login")]
@@ -93,8 +102,22 @@ namespace shop_giay_server.Controllers
         public async Task<IActionResult> GetUser()
         {
             var users = await repo.GetUser();
+            var items = mapper.Map<List<ResponseUserDto>>(users);
 
-            return Ok(users);
+            return Ok(ResponseDTO.Ok(items, items.Count()));
         }
+    }
+
+    public class ResponseUserDto : BaseDTO
+    {
+        public string Username { get; set; }
+
+        public int RoleId { get; set; }
+
+        public string Name { get; set; }
+
+        public string PhoneNumber { get; set; }
+
+        public string Email { get; set; }
     }
 }

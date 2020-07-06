@@ -1,4 +1,6 @@
 {
     "appService.defaultWebAppToDeploy": "",
-    "appService.deploySubpath": "bin\\Release\\netcoreapp3.1\\publish"
+    "appService.deploySubpath": "bin\\Release\\netcoreapp3.1\\publish",
+    "editor.formatOnSave": true
+    // "editor.autoIndent": true
 }
