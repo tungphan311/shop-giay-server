@@ -43,7 +43,6 @@ namespace shop_giay_server
 
             // DB
             services.AddDbContext<DataContext>(x => x
-                .UseLazyLoadingProxies()
                 .UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             // AutoMapper

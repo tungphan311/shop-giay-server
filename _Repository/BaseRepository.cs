@@ -26,17 +26,20 @@ namespace shop_giay_server._Repository
             _dataContext = context;
         }
 
-        public async Task<T> GetById(int id)
+        public async Task<T> GetById(int id, bool loadAllNavProperties = true)
         {
-            return await FirstOrDefault(o => o.Id == id);
+            return await FirstOrDefault(o => o.Id == id, loadAllNavProperties);
         }
 
-        public async Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate)
+        public async Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate, bool loadAllNavProperties = true)
         {
             var query = _dataContext.Set<T>().AsQueryable(); //.FirstOrDefaultAsync(predicate);
 
-            // foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
-            //     query = query.Include(p.Name);
+            if (loadAllNavProperties)
+            {
+                foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
+                    query = query.Include(p.Name);
+            }
 
             return await query.FirstOrDefaultAsync(predicate);
         }
@@ -79,16 +82,16 @@ namespace shop_giay_server._Repository
             return false;
         }
 
-        public async Task<(IEnumerable<T> result, int totalRecords)> GetAllWithQuery(IQueryCollection query)
+        public async Task<(IEnumerable<T> result, int totalRecords)> GetAllWithQuery(IQueryCollection query, bool loadAllNavProperties = true)
         {
             var dict = query.ToDictionary(
                 p => p.Key.ToLower(),
                 p => p.Value);
 
-            return await GetAll(dict);
+            return await GetAll(dict, loadAllNavProperties);
         }
 
-        public async Task<(IEnumerable<T> result, int totalRecords)> GetAll(Dictionary<string, StringValues> dictQuery)
+        public async Task<(IEnumerable<T> result, int totalRecords)> GetAll(Dictionary<string, StringValues> dictQuery, bool loadAllNavProperties = true)
         {
             var query = _dataContext.Set<T>().AsQueryable();
             var pageSize = -1;
@@ -120,8 +123,11 @@ namespace shop_giay_server._Repository
 
 
             // Included all navigations properties
-            // foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
-            //     query = query.Include(p.Name);
+            if (loadAllNavProperties)
+            {
+                foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
+                    query = query.Include(p.Name);
+            }
 
             var listResult = await query.ToListAsync();
             return (result: listResult, totalRecords: totalRecords);
@@ -197,12 +203,6 @@ namespace shop_giay_server._Repository
 
             var value = dictQuery[searchKey][0];
             query = query.Where("Name.Contains(@0) OR Code.Contains(@1)", value, value);
-        }
-
-
-        public async Task<IEnumerable<T>> GetWhere(Expression<Func<T, bool>> predicate)
-        {
-            return await _dataContext.Set<T>().Where(predicate).ToListAsync();
         }
 
         public async Task<int> CountAll() => await _dataContext.Set<T>().CountAsync();

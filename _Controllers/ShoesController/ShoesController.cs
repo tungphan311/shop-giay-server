@@ -189,7 +189,7 @@ namespace shop_giay_server._Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateShoes(int id, [FromBody] ShoesDTO dto)
         {
-            if (id == dto.Id) 
+            if (id == dto.Id)
             {
                 return Ok(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
             }
@@ -197,7 +197,7 @@ namespace shop_giay_server._Controllers
             entity.Id = id;
 
             var updatedItem = await _repository.Update(entity);
-            if (updatedItem == null) 
+            if (updatedItem == null)
             {
                 return Ok(ResponseDTO.BadRequest("Item ID is not existed."));
             }
@@ -223,7 +223,7 @@ namespace shop_giay_server._Controllers
                     var queryItem = new KeyValuePair<String, StringValues>("genderId", genderEntity.Id.ToString());
                     query = query.AppendQueryItem(queryItem);
                 }
-                
+
             }
             return query;
         }

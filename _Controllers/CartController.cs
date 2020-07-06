@@ -76,7 +76,7 @@ namespace shop_giay_server._Controllers
                     sizeName = item.Stock.Size.Name,
                     quantity = item.Amount,
                     price = item.Stock.Shoes.Price,
-                    image = item.Stock.Shoes.ShoesImages.FirstOrDefault()
+                    image = item.Stock.Shoes.ShoesImages.FirstOrDefault().ImagePath
                 });
             }
 
@@ -115,7 +115,14 @@ namespace shop_giay_server._Controllers
                 var updateItem = cartItems.FirstOrDefault(c => c.Stock.Id == detail.stockId);
                 if (updateItem != null)
                 {
-                    updateItem.Amount = detail.quantity;
+                    if (detail.quantity > 0)
+                    {
+                        updateItem.Amount = detail.quantity;
+                    }
+                    else
+                    {
+                        _context.CartItems.Remove(updateItem);
+                    }
                 }
             }
             _context.SaveChanges();
@@ -133,7 +140,7 @@ namespace shop_giay_server._Controllers
                     sizeName = item.Stock.Size.Name,
                     quantity = item.Amount,
                     price = item.Stock.Shoes.Price,
-                    image = item.Stock.Shoes.ShoesImages.FirstOrDefault()
+                    image = item.Stock.Shoes.ShoesImages.FirstOrDefault().ImagePath
                 });
             }
 
@@ -150,7 +157,7 @@ namespace shop_giay_server._Controllers
         public async Task<IActionResult> ClientCartAddNewItem([FromBody] BodyCartDTO itemAdded)
         {
             var customer = await GetCustomerFromSession();
-            if (customer == null)
+            if (customer == null || itemAdded.quantity <= 0)
             {
                 return Ok(ResponseDTO.BadRequest());
             }
@@ -173,6 +180,7 @@ namespace shop_giay_server._Controllers
                 .Include(s => s.Shoes).ThenInclude(s => s.ShoesImages)
                 .Include(s => s.Size)
                 .FirstOrDefault(s => s.Id == itemAdded.stockId);
+
             if (stock == null)
             {
                 return Ok(ResponseDTO.BadRequest("StockId is invalid."));
@@ -208,7 +216,7 @@ namespace shop_giay_server._Controllers
                 sizeName = stock.Size.Name,
                 quantity = existedItem.Amount,
                 price = stock.Shoes.Price,
-                image = stock.Shoes.ShoesImages.FirstOrDefault()
+                image = stock.Shoes.ShoesImages.FirstOrDefault().ImagePath
             };
             return Ok(ResponseDTO.Ok(responseItem));
         }
@@ -217,6 +225,8 @@ namespace shop_giay_server._Controllers
         //
         //  SYNC CART ITEMS 
         //
+        [HttpPost]
+        [Route("client/[controller]/sync")]
         public async Task<IActionResult> ClientCartSync([FromBody] List<BodyCartDTO> syncList)
         {
             var customer = await GetCustomerFromSession();
@@ -241,31 +251,33 @@ namespace shop_giay_server._Controllers
             var cartItems = _context.CartItems.Where(o => o.CartId == cart.Id);
             _context.CartItems.RemoveRange(cartItems);
 
+            // Filter syncList
+            syncList = syncList.Where(o => o.quantity > 0).ToList();
+
             // New list
             var newItems = new List<CartItem>();
             foreach (var detail in syncList)
             {
-                // var updateItem = cartItems.FirstOrDefault(c => c.Stock.Id == detail.stockId);
-                // if (updateItem != null)
-                // {
-                //     updateItem.Amount = detail.quantity;
-                // }
-                var item = new CartItem
+                if (await _context.Stocks.AnyAsync(s => s.Id == detail.stockId))
                 {
-                    CartId = cart.Id,
-                    Amount = detail.quantity,
-                    StockId = detail.stockId
-                };
-                newItems.Add(item);
+                    var item = new CartItem
+                    {
+                        CartId = cart.Id,
+                        Amount = detail.quantity,
+                        StockId = detail.stockId
+                    };
+                    newItems.Add(item);
+                }
             }
             _context.CartItems.AddRange(newItems);
             await _context.SaveChangesAsync();
 
             // Load references
-            // foreach (var item in newItems) {
-            //     _context.Entry(item)
-            //         .Reference(c => c.Stock).Load();
-            // };
+            newItems = _context.CartItems
+                .Include(c => c.Stock).ThenInclude(o => o.Shoes).ThenInclude(o => o.ShoesImages)
+                .Include(c => c.Stock).ThenInclude(o => o.Size)
+                .Where(c => c.CartId == cart.Id)
+                .ToList();
 
             // Parse responses
             var items = new List<dynamic>();
@@ -279,7 +291,7 @@ namespace shop_giay_server._Controllers
                     sizeName = item.Stock.Size.Name,
                     quantity = item.Amount,
                     price = item.Stock.Shoes.Price,
-                    image = item.Stock.Shoes.ShoesImages.FirstOrDefault()
+                    image = item.Stock.Shoes.ShoesImages.FirstOrDefault().ImagePath
                 });
             }
 
