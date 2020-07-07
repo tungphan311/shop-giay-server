@@ -17,7 +17,7 @@ namespace shop_giay_server._Controllers
         public string Data { get; set; }
     }
 
-    public class ResponseDTO: IResponse
+    public class ResponseDTO : IResponse
     {
         public string Code { get; set; }
         public string Msg { get; set; }
@@ -80,6 +80,11 @@ namespace shop_giay_server._Controllers
             return new ResponseDTO(data, "200", "Success.", total);
         }
 
+        public static ResponseDTO OkEmpty()
+        {
+            return new ResponseDTO(new List<object>(), "200", "Success.", 0);
+        }
+
         public static ResponseDTO Ok(IEnumerable<object> data)
         {
             return new ResponseDTO(data, "200", "Success.");
@@ -119,5 +124,5 @@ namespace shop_giay_server._Controllers
         }
     }
 
-    
+
 }

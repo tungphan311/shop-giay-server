@@ -42,7 +42,8 @@ namespace shop_giay_server
             services.AddScoped(typeof(IAsyncRepository<>), typeof(BaseRepository<>));
 
             // DB
-            services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<DataContext>(x => x
+                .UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             // AutoMapper
             var mappingConfig = new MapperConfiguration(mc =>
@@ -201,7 +202,6 @@ namespace shop_giay_server
                 }))
                 .ForMember(des => des.salePrice, opt => opt.MapFrom((s, d) =>
                 {
-                    // todo
                     return 0;
                 }))
                 .ForMember(des => des.description, opt => opt.MapFrom(s => s.ShoesType.Name));

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using shop_giay_server.models;
+using shop_giay_server.data;
 using shop_giay_server._Repository;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.Dtos;
@@ -64,9 +65,11 @@ namespace shop_giay_server._Controllers
         protected readonly IAsyncRepository<Model> _repository;
         protected readonly ILogger _logger;
         protected readonly IMapper _mapper;
+        protected readonly DataContext _context;
 
-        public GeneralController(IAsyncRepository<Model> repository, ILogger logger, IMapper mapper)
+        public GeneralController(IAsyncRepository<Model> repository, ILogger logger, IMapper mapper, DataContext dataContext)
         {
+            _context = dataContext;
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
@@ -393,6 +396,17 @@ namespace shop_giay_server._Controllers
                     : response;
             }
             return response;
+        }
+
+
+        protected async Task<Customer> GetCustomerFromSession() {
+            var sessionUsername = HttpContext.Session.GetString(SessionConstant.Username);
+            if (string.IsNullOrEmpty(sessionUsername))
+            {
+                return null;
+            }
+
+            return await _context.Customers.FirstOrDefaultAsync(c => c.Username == sessionUsername);
         }
 
         #endregion

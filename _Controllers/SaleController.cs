@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using shop_giay_server._Repository;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.Dtos;
+using shop_giay_server.data;
 using AutoMapper;
 
 namespace shop_giay_server._Controllers
@@ -11,8 +12,8 @@ namespace shop_giay_server._Controllers
     public class SaleController : GeneralController<Sale, SaleDTO>
     {
         private readonly IAsyncRepository<Shoes> _shoesRepo;
-        public SaleController(IAsyncRepository<Sale> repo, IAsyncRepository<Shoes> shoesRepo, ILogger<SaleController> logger, IMapper mapper)
-            : base(repo, logger, mapper)
+        public SaleController(IAsyncRepository<Sale> repo, IAsyncRepository<Shoes> shoesRepo, ILogger<SaleController> logger, IMapper mapper, DataContext context)
+            : base(repo, logger, mapper, context)
         {
             _shoesRepo = shoesRepo;
         }

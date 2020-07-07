@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using shop_giay_server.models;
+using System;
+using System.Linq;
+
 
 namespace shop_giay_server.data
 {

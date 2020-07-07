@@ -101,13 +101,14 @@ namespace shop_giay_server.Handlers
             "client/cart/update",
             "client/cart/add",
             "client/cart/sync",
-            "client/customer/getAddress",
+            "client/customer/getAddresses",
             "client/customer/add-address",
             "client/customer/update-address",
             "client/order",
             "client/order/{id}",
             "client/order/list",
-            "client/customer/getInfo"
+            "client/customer/getInfo",
+            "client/customer/changePassword"
         };
     }
 }

@@ -11,27 +11,23 @@ using System.Linq;
 using System.Collections.Generic;
 using shop_giay_server.data;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
 using System;
 
 namespace shop_giay_server._Controllers
 {
     public class ShoesController : GeneralController<Shoes, ShoesDTO>
     {
-        private DataContext _context;
-
 
         public ShoesController(
             IAsyncRepository<Shoes> repo,
             DataContext context,
             ILogger<ShoesController> logger,
             IMapper mapper)
-            : base(repo, logger, mapper)
-        {
-            _context = context;
-        }
+            : base(repo, logger, mapper, context)
+        { }
 
         #region Helper Methods
-
 
         protected override async Task<IQueryCollection> TransformQuery(IQueryCollection query, RequestContext requestContext)
         {
@@ -39,8 +35,10 @@ namespace shop_giay_server._Controllers
             {
                 case APIRoute.AdminGetAll:
                 case APIRoute.ClientGetAll:
-                    query = await AppendGenderQueryIfNeeded(query);
-                    query = await AppendNewQueryIfNeeded(query);
+                    query = AppendPriceQueryIfNeeded(query);
+                    query = AppendQueryByNameIfNeeded(query);
+                    query = AppendQueryByMappKeysIfNeeded(query);
+
                     break;
 
                 default:
@@ -78,7 +76,8 @@ namespace shop_giay_server._Controllers
                         break;
 
                     case APIRoute.ClientGetAll:
-
+                        // todo: Add sale price for shoes
+                        // _context.Sales
                         break;
 
                     default:
@@ -187,13 +186,15 @@ namespace shop_giay_server._Controllers
             if (shoes.IsNew) shoes.IsNew = true;
             return await this._AddItem(shoes);
         }
-
-
+        
+        
         [Route("admin/[controller]/{id:int}")]
         [HttpPut]
+
+        // Customer update + Address Update clone cai nay
         public async Task<IActionResult> UpdateShoes(int id, [FromBody] ShoesDTO dto)
         {
-            if (id == dto.Id) 
+            if (id == dto.Id)
             {
                 return Ok(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
             }
@@ -201,11 +202,10 @@ namespace shop_giay_server._Controllers
             entity.Id = id;
 
             var updatedItem = await _repository.Update(entity);
-            if (updatedItem == null) 
+            if (updatedItem == null)
             {
                 return Ok(ResponseDTO.BadRequest("Item ID is not existed."));
             }
-
             return Ok(ResponseDTO.Ok(entity));
         }
 
@@ -214,20 +214,34 @@ namespace shop_giay_server._Controllers
 
         #region Query Params Modifiers 
 
-        private async Task<IQueryCollection> AppendGenderQueryIfNeeded(IQueryCollection query)
+        private IQueryCollection AppendPriceQueryIfNeeded(IQueryCollection query)
         {
-            var genderKey = "gender";
-            if (query[genderKey].Count == 1)
+            var key = "price-range";
+            if (query[key].Count == 1)
             {
-                var paramValue = query[genderKey][0];
-                var genderEntity = await _context.Genders.FirstOrDefaultAsync(g => g.Name.ToLower() == paramValue.ToString().ToLower());
+                var value = query[key][0].Replace(" ", "");
 
-                if (genderEntity != null)
+                if (value.Contains("-"))
                 {
-                    var queryItem = new KeyValuePair<String, StringValues>("genderId", genderEntity.Id.ToString());
-                    query = query.AppendQueryItem(queryItem);
+                    var values = value.Split("-");
+                    if (values.Count() != 2) return query;
+                    var minPrice = new KeyValuePair<String, StringValues>("minprice", values[0].ToString());
+                    var maxPrice = new KeyValuePair<String, StringValues>("maxprice", values[1].ToString());
+                    query = query.AppendQueryItem(minPrice);
+                    query = query.AppendQueryItem(maxPrice);
                 }
-                
+                else if (value.Contains("<"))
+                {
+                    var maxValue = value.Replace("<", "");
+                    var maxPrice = new KeyValuePair<String, StringValues>("maxprice", maxValue);
+                    query = query.AppendQueryItem(maxPrice);
+                }
+                else if (value.Contains(">"))
+                {
+                    var minValue = value.Replace(">", "");
+                    var minPrice = new KeyValuePair<String, StringValues>("minprice", minValue);
+                    query = query.AppendQueryItem(minPrice);
+                }
             }
             return query;
         }
@@ -242,6 +256,53 @@ namespace shop_giay_server._Controllers
                 query = query.AppendQueryItem(queryItem);
             }
             return await Task.FromResult(query);
+        }
+
+        private IQueryCollection AppendQueryByNameIfNeeded(IQueryCollection query)
+        {
+            var queryKeyInfos = new List<(string queryKey, string internalKey, Type type)>() {
+                        (queryKey: "brand", internalKey: "brandId", type: typeof(ShoesBrand)),
+                        (queryKey: "size", internalKey: "sizeId", type: typeof(Size)),
+                        (queryKey: "style", internalKey: "styleId", type: typeof(ShoesType)),
+                        (queryKey: "gender", internalKey: "genderId", type: typeof(Gender))
+                    };
+            foreach (var info in queryKeyInfos)
+            {
+                if (query[info.queryKey].Count == 1)
+                {
+                    var paramValue = query[info.queryKey][0];
+                    // var entity = await _context.Genders.FirstOrDefaultAsync(g => g.Name.ToLower() == paramValue.ToString().ToLower());
+                    // var type = typeof(Gender);
+                    //dynamic entity = _context.Query(info.type).Where("o => o.Name == @0", paramValue);
+                    dynamic entity = _context.Query(info.type).FirstOrDefault("c => c.Name == @0", paramValue);
+
+                    if (entity != null)
+                    {
+                        var queryItem = new KeyValuePair<String, StringValues>(info.internalKey, entity.Id.ToString());
+                        query = query.AppendQueryItem(queryItem);
+                    }
+
+                }
+            }
+            return query;
+        }
+
+        public IQueryCollection AppendQueryByMappKeysIfNeeded(IQueryCollection query)
+        {
+            var plainMaps = new Dictionary<String, String>() {
+                        { "new", "isNew" },
+                        { "sale", "isOnSale" },
+                    };
+            foreach (var kv in plainMaps)
+            {
+                if (query[kv.Key].Count == 1)
+                {
+                    var queryParam = query[kv.Key];
+                    var queryItem = new KeyValuePair<String, StringValues>(kv.Value, queryParam[0]);
+                    query = query.AppendQueryItem(queryItem);
+                }
+            }
+            return query;
         }
 
         #endregion
