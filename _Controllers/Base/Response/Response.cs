@@ -17,7 +17,7 @@ namespace shop_giay_server._Controllers
         public string Data { get; set; }
     }
 
-    public class ResponseDTO: IResponse
+    public class ResponseDTO : IResponse
     {
         public string Code { get; set; }
         public string Msg { get; set; }
@@ -124,5 +124,5 @@ namespace shop_giay_server._Controllers
         }
     }
 
-    
+
 }

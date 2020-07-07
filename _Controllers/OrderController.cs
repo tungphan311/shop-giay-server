@@ -23,11 +23,12 @@ namespace shop_giay_server._Controllers
         {
         }
 
+        #region Admin's API
 
         protected override async Task<IEnumerable<object>> FinishMappingResponseModels(
-            IEnumerable<object> responseEntities,
-            IEnumerable<Order> entities,
-            RequestContext requestContext)
+                    IEnumerable<object> responseEntities,
+                    IEnumerable<Order> entities,
+                    RequestContext requestContext)
         {
             switch (requestContext.APIRoute)
             {
@@ -110,6 +111,21 @@ namespace shop_giay_server._Controllers
 
             return Ok(ResponseDTO.Ok(entity));
         }
+
+        #endregion
+
+        #region Client's API
+
+        [HttpPost]
+        [Route("client/[controller]/{addressId:int}")]
+        public async Task<IActionResult> ClientCreateOrder(int addressId)
+        {
+
+            return Ok();
+        }
+
+        #endregion
+
     }
 
     public class UpdateOrderDTO
@@ -121,5 +137,34 @@ namespace shop_giay_server._Controllers
         public DateTime? CancelDate { get; set; }
         public DateTime? ConfirmDate { get; set; }
         public string Note { get; set; }
+    }
+
+    public class ClientOrderResponseDTO
+    {
+        public int id { get; set; }
+        public int customerID { get; set; }
+        public int saleID { get; set; }
+        public string city { get; set; }
+        public DateTime orderDate { get; set; }
+        public DateTime confirmDate { get; set; }
+        public DateTime deliveryDate { get; set; }
+        public float total { get; set; }
+        public int status { get; set; }
+        public int paymentStatus { get; set; }
+        public int deliveryAddress { get; set; }
+        public int recipientName { get; set; }
+        public int recipientPhoneNumber { get; set; }
+        public List<ClientOrder_CartItemDTO> cartItemDTOList { get; set; } = new List<ClientOrder_CartItemDTO>();
+    }
+
+    public class ClientOrder_CartItemDTO
+    {
+        public int stockId { get; set; }
+        public int shoesId { get; set; }
+        public string name { get; set; }
+        public string sizeName { get; set; }
+        public string quantity { get; set; }
+        public float price { get; set; }
+        public string image { get; set; }
     }
 }
