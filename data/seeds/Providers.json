@@ -1,11 +1,23 @@
 ﻿[
-    {
-      "name": "Nike Provider"
-    },
-    {
-      "name": "Adidas Provider"
-    },
-    {
-      "name": "Puma Provider"
-    }
+  {
+    "Name": "Nike Provider",
+    "Email": "nike_provider",
+    "Address": "KP6, P. Linh Trung, Q. Thủ Đức, HCM",
+    "PhoneNumber": "0322367633",
+    "TIN": "8081521323"
+  },
+  {
+    "name": "Adidas Provider",
+    "Email": "adidas_provider",
+    "Address": "KP6, P. Linh Trung, Q. Thủ Đức, HCM",
+    "PhoneNumber": "0322456733",
+    "TIN": "3702709642"
+  },
+  {
+    "name": "Puma Provider",
+    "Email": "puma_provider",
+    "Address": "KP6, P. Linh Trung, Q. Thủ Đức, HCM",
+    "PhoneNumber": "0322456733",
+    "TIN": "8442326588"
+  }
 ]

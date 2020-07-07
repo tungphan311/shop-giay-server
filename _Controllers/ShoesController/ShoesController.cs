@@ -194,7 +194,7 @@ namespace shop_giay_server._Controllers
         // Customer update + Address Update clone cai nay
         public async Task<IActionResult> UpdateShoes(int id, [FromBody] ShoesDTO dto)
         {
-            if (id == dto.Id)
+            if (id != dto.Id)
             {
                 return Ok(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
             }

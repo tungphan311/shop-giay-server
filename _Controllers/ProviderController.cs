@@ -16,6 +16,7 @@ namespace shop_giay_server._Controllers
             : base(repo, logger, mapper, dataContext)
         { }
 
+        [Route("admin/[controller]")]
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] ProviderDTO model)
         {
@@ -27,10 +28,30 @@ namespace shop_giay_server._Controllers
 
             var provide = new Provider
             {
-                Name = model.Name
+                Name = model.Name,
+                Email = model.Email,
+                Address = model.Address,
+                PhoneNumber = model.PhoneNumber,
+                TIN = model.TIN
             };
 
             return await this._AddItem(provide);
+        }
+
+        [Route("admin/[controller]/{id:int}")]
+        [HttpPut]
+        public async Task<IActionResult> Update(int id, [FromBody] ProviderDTO dto)
+        {
+            var entity = _mapper.Map<Provider>(dto);
+            entity.Id = id;
+
+            var updatedItem = await _repository.Update(entity);
+            if (updatedItem == null)
+            {
+                return Ok(ResponseDTO.BadRequest("Item ID is not existed."));
+            }
+
+            return Ok(ResponseDTO.Ok(entity));
         }
     }
 }
