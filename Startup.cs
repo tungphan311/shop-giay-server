@@ -202,7 +202,6 @@ namespace shop_giay_server
                 }))
                 .ForMember(des => des.salePrice, opt => opt.MapFrom((s, d) =>
                 {
-                    // todo
                     return 0;
                 }))
                 .ForMember(des => des.description, opt => opt.MapFrom(s => s.ShoesType.Name));

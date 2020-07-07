@@ -2,7 +2,7 @@ using shop_giay_server.Dtos;
 using AutoMapper;
 using System.Collections.Generic;
 
-namespace shop_giay_server._Controllers 
+namespace shop_giay_server._Controllers
 {
     public class BodyCreateShoes
     {
@@ -43,7 +43,7 @@ namespace shop_giay_server._Controllers
         public int id { get; set; }
         public string name { get; set; }
         public string description { get; set; }
-        public int price { get; set; }
+        public float price { get; set; }
         public int isNew { get; set; }
         public int isOnSale { get; set; }
         public string imagePath { get; set; }
@@ -63,7 +63,7 @@ namespace shop_giay_server._Controllers
         public string styleName { get; set; }
         public string brandName { get; set; }
         public string genderName { get; set; }
-        public int price { get; set; }
+        public float price { get; set; }
         public int isNew { get; set; }
         public int isOnSale { get; set; }
         public int salePrice { get; set; }
@@ -73,10 +73,9 @@ namespace shop_giay_server._Controllers
         public List<dynamic> sizes { get; set; } = new List<dynamic>();
     }
 
-    public class BodyShoesRating 
+    public class BodyShoesRating
     {
         public int shoesId { get; set; }
         public int rating { get; set; }
     }
 }
-    

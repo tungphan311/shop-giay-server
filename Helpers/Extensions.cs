@@ -4,9 +4,19 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using Microsoft.Extensions.Primitives;
+using System.Reflection;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace shop_giay_server
 {
+
+    public static class EntityFrameCoreExtension
+    {
+        static readonly MethodInfo SetMethod = typeof(DbContext).GetMethod(nameof(DbContext.Set));
+
+        public static IQueryable Query(this DbContext context, Type entityType) =>
+            (IQueryable)SetMethod.MakeGenericMethod(entityType).Invoke(context, null);
+    }
 
     public static class IQueryCollectionModifyExtension
     {
