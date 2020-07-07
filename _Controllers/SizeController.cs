@@ -15,7 +15,7 @@ namespace shop_giay_server._Controllers
         public SizeController(IAsyncRepository<Size> repo, ILogger<SizeController> logger, IMapper mapper, DataContext context)
             : base(repo, logger, mapper, context)
         {
-            
+
         }
 
         [HttpPost]
@@ -33,6 +33,26 @@ namespace shop_giay_server._Controllers
             };
 
             return await this._AddItem(size);
+        }
+
+        // Size Update
+        [Route("admin/[controller]/{id:int}")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateSize(int id, [FromBody] SizeDTO dto)
+        {
+            if (id != dto.Id)
+            {
+                return Ok(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
+            }
+            var entity = _mapper.Map<Size>(dto);
+            entity.Id = id;
+
+            var updatedItem = await _repository.Update(entity);
+            if (updatedItem == null)
+            {
+                return Ok(ResponseDTO.BadRequest("Item ID is not existed."));
+            }
+            return Ok(ResponseDTO.Ok(entity));
         }
     }
 }

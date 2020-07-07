@@ -160,9 +160,9 @@ namespace shop_giay_server._Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateCustomer(int id, [FromBody] CustomerDTO dto)
         {
-            if (id != dto.Id)
+            if (id == dto.Id)
             {
-                return Ok(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
+                return BadRequest(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
             }
             var entity = _mapper.Map<Customer>(dto);
             entity.Id = id;
@@ -170,11 +170,31 @@ namespace shop_giay_server._Controllers
             var updatedItem = await _repository.Update(entity);
             if (updatedItem == null)
             {
-                return Ok(ResponseDTO.BadRequest("Item ID is not existed."));
+                return BadRequest(ResponseDTO.BadRequest("Item ID is not existed."));
             }
             return Ok(ResponseDTO.Ok(entity));
         }
+
+
         // address update
+        [Route("admin/[controller]/{id:int}")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateAddress(int id, [FromBody] AddressDTO dto)
+        {
+            if (id == dto.Id)
+            {
+                return BadRequest(ResponseDTO.BadRequest("URL ID and Item ID does not matched."));
+            }
+            var entity = _mapper.Map<Address>(dto);
+            entity.Id = id;
+
+            var updatedItem = _context.Addresses.Update(entity);
+            if (updatedItem == null)
+            {
+                return BadRequest(ResponseDTO.BadRequest("Item ID is not existed."));
+            }
+            return Ok(ResponseDTO.Ok(entity));
+        }
     }
 
 

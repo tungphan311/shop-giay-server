@@ -26,6 +26,7 @@ namespace shop_giay_server.Dtos
         public int GenderId { get; set; }
     }
 
+
     public class ShoesDTO : ShoesLiteDTO
     {
         public ShoesTypeLiteDTO ShoesType { get; set; }

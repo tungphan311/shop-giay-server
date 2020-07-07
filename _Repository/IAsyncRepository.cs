@@ -22,6 +22,8 @@ namespace shop_giay_server._Repository
         Task<(IEnumerable<T> result, int totalRecords)> GetAllWithQuery(IQueryCollection query, bool loadAllNavProperties = true);
         Task<(IEnumerable<T> result, int totalRecords)> GetAll(Dictionary<string, StringValues> queries, bool loadAllNavProperties = true);
 
+        // lambda
+
         Task<int> CountAll();
         Task<int> CountWhere(Expression<Func<T, bool>> predicate);
 
