@@ -32,7 +32,7 @@ namespace shop_giay_server.Controllers
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, customer.Username)
+                new Claim("sub", customer.Username)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
@@ -43,7 +43,8 @@ namespace shop_giay_server.Controllers
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.Now.AddDays(1),
-                SigningCredentials = creds
+                SigningCredentials = creds,
+
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -51,7 +52,16 @@ namespace shop_giay_server.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
-            var data = "AuthorizedToken: " + tokenString;
+            var data = new ResponseLoginDto
+            {
+                id = customer.Id,
+                name = customer.Name,
+                dateOfBirth = customer.DateOfBirth,
+                email = customer.Email,
+                phoneNumber = customer.PhoneNumber,
+                gender = customer.Gender,
+                authorizedToken = tokenString
+            };
 
             return Ok(new ResponseDTO(data, "200", "Login successfully"));
         }
@@ -61,5 +71,16 @@ namespace shop_giay_server.Controllers
     {
         public string Username { get; set; }
         public string Password { get; set; }
+    }
+
+    public class ResponseLoginDto
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+        public DateTime dateOfBirth { get; set; }
+        public string email { get; set; }
+        public string phoneNumber { get; set; }
+        public int gender { get; set; }
+        public string authorizedToken { get; set; }
     }
 }
