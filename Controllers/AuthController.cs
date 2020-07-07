@@ -106,9 +106,57 @@ namespace shop_giay_server.Controllers
 
             return Ok(ResponseDTO.Ok(items, items.Count()));
         }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            var users = await repo.GetUserById(id);
+
+            if (users == null)
+            {
+                return BadRequest(ResponseDTO.NotFound());
+            }
+
+            var items = mapper.Map<ResponseUserDto>(users);
+
+            return Ok(ResponseDTO.Ok(items));
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdateUser(int id, UpdateDto dto)
+        {
+            var user = await repo.GetUserById(id);
+
+            if (user == null)
+            {
+                return BadRequest(ResponseDTO.NotFound());
+            }
+
+            user.Username = dto.Username;
+            user.Email = dto.Email;
+            user.RoleId = dto.RoleId;
+            user.Name = dto.Name;
+            user.PhoneNumber = dto.PhoneNumber;
+
+            await repo.Update(user);
+            return Ok(ResponseDTO.Ok(user));
+        }
     }
 
     public class ResponseUserDto : BaseDTO
+    {
+        public string Username { get; set; }
+
+        public int RoleId { get; set; }
+
+        public string Name { get; set; }
+
+        public string PhoneNumber { get; set; }
+
+        public string Email { get; set; }
+    }
+
+    public class UpdateDto : BaseDTO
     {
         public string Username { get; set; }
 

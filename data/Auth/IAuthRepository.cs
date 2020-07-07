@@ -13,5 +13,9 @@ namespace shop_giay_server.data
         Task<bool> UserExists(string username);
 
         Task<IEnumerable<User>> GetUser();
+
+        Task<User> GetUserById(int id);
+
+        Task<User> Update(User user);
     }
 }
