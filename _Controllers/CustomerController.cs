@@ -74,7 +74,7 @@ namespace shop_giay_server._Controllers
                 Point = 0,
                 PhoneNumber = model.phoneNumber,
                 Email = model.email,
-                DateOfBirth = new DateTime(), // todo: fix datetime format
+                DateOfBirth = model.dateOfBirth,
                 CustomerTypeId = model.customerTypeId
             };
 
@@ -340,7 +340,7 @@ namespace shop_giay_server._Controllers
     {
         public string username { get; set; } = null;
         public int customerTypeId { get; set; } = 1;
-        public DateTime dateOfBirth { get; set; } = new DateTime();
+        public DateTime dateOfBirth { get; set; }
 
         public string name { get; set; }
         public string email { get; set; }

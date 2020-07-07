@@ -118,10 +118,39 @@ namespace shop_giay_server._Controllers
 
         [HttpPost]
         [Route("client/[controller]/{addressId:int}")]
-        public async Task<IActionResult> ClientCreateOrder(int addressId)
+        public async Task<IActionResult> ClientProcessOrder(int addressId)
         {
+            var customer = GetCustomer();
+            if (customer == null)
+            {
+                return Ok(ResponseDTO.BadRequest("Invalid customer's username."));
+            }
+
+
 
             return Ok();
+        }
+
+        #endregion
+
+        #region HELPER METHODS
+
+        public async Task<Order> CreateOrder(int customerId)
+        {
+            // get cart items
+            return null;
+        }
+
+        public Customer GetCustomer()
+        {
+            var sessionUsername = HttpContext.Session.GetString(SessionConstant.Username);
+            if (string.IsNullOrEmpty(sessionUsername))
+            {
+                return null;
+            }
+
+            var customer = _context.Customers.FirstOrDefault(c => c.Username == sessionUsername);
+            return customer;
         }
 
         #endregion
