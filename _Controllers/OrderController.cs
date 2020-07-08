@@ -249,7 +249,7 @@ namespace shop_giay_server._Controllers
 
         [Route("client/[controller]/{id:int}")]
         [HttpGet]
-        public async Task<IActionResult> ClientGetOrderById(int id)
+        public async override Task<IActionResult> GetByIdForClient(int id)
         {
             // Get customer
             var customer = GetCustomer();
