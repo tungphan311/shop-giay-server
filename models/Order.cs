@@ -27,6 +27,9 @@ namespace shop_giay_server.models
 
         public string RecipientPhoneNumber { get; set; }
 
+        public int AddressId { get; set; }
+        public Address Address { get; set; }
+
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
 

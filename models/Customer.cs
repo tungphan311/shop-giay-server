@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace shop_giay_server.models
 {
-    public class Customer: BaseEntity
+    public class Customer : BaseEntity
     {
         public string Username { get; set; }
 
