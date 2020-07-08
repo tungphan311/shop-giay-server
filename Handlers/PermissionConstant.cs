@@ -87,6 +87,8 @@ namespace shop_giay_server.Handlers
         public static string Create_Stock_Admin = "Create_Stock_Admin";
         public static string Update_Stock_Admin = "Update_Stock_Admin";
         public static string Delete_Stock_Admin = "Delete_Stock_Admin";
+
+        public static string Get_Report_Admin = "Get_Report_Admin";
     }
 
     public static class PermissionPath

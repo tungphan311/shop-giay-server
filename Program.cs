@@ -130,6 +130,8 @@ namespace shop_giay_server
             PermissionPath.mapApi.Add(PermissionConstant.Create_User_Admin, "POST/admin/auth/register");
             PermissionPath.mapApi.Add(PermissionConstant.Get_User_Admin, "GET/admin/auth");
             PermissionPath.mapApi.Add(PermissionConstant.Update_User_Admin, "PUT/admin/auth");
+
+            PermissionPath.mapApi.Add(PermissionConstant.Get_Report_Admin, "GET/admin/report");
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
