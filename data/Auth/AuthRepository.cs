@@ -90,5 +90,20 @@ namespace shop_giay_server.data
 
             return users;
         }
+
+        public async Task<User> GetUserById(int id)
+        {
+            var user = await context.Users.FirstOrDefaultAsync(x => x.Id == id);
+
+            return user;
+        }
+
+        public async Task<User> Update(User user)
+        {
+            context.Users.Update(user);
+            await context.SaveChangesAsync();
+
+            return user;
+        }
     }
 }

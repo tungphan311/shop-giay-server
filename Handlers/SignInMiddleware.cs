@@ -120,8 +120,8 @@ namespace shop_giay_server.Handlers
                         {
                             context.Session.SetString(SessionConstant.Site, SessionConstant.Client);
 
-                            var username = decodeToken.Claims.FirstOrDefault(c => c.Type == "unique_name") != null ?
-                                decodeToken.Claims.FirstOrDefault(c => c.Type == "unique_name").Value : null;
+                            var username = decodeToken.Claims.FirstOrDefault(c => c.Type == "sub") != null ?
+                                decodeToken.Claims.FirstOrDefault(c => c.Type == "sub").Value : null;
 
                             // todo:
                             // var customer = await dataContext.Customers.FirstOrDefaultAsync(c => c.Username == username);
