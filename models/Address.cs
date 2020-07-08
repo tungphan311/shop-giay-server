@@ -10,7 +10,7 @@ namespace shop_giay_server.models
         public override string ToString()
         {
             var strs = new List<string>() { Street, Ward, District, City }
-                .Where(c => string.IsNullOrEmpty(c));
+                .Where(c => !string.IsNullOrEmpty(c));
             return string.Join(", ", strs);
         }
     }

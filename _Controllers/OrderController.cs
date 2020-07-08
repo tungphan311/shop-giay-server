@@ -170,7 +170,8 @@ namespace shop_giay_server._Controllers
                 RecipientName = sendAddress.RecipientName,
                 RecipientPhoneNumber = sendAddress.RecipientPhoneNumber,
                 CustomerId = customer.Id,
-                OrderItems = new List<OrderItem>()
+                OrderItems = new List<OrderItem>(),
+                AddressId = addressId
             };
             newOrder = await _repository.Add(newOrder);
 
@@ -194,6 +195,18 @@ namespace shop_giay_server._Controllers
                 //}
                 item.Total = item.Amount * priceWithSale;
                 orderTotal += item.Total;
+
+                // Update stock
+                var stock = _context.Stocks.FirstOrDefault(c => c.Id == item.StockId);
+                if (stock != null)
+                {
+                    // TODO: Check
+                    stock.Instock -= item.Amount;
+                }
+
+                // Update cartItems in database
+                _context.CartItems.Remove(ci);
+
                 orderItems.Add(item);
             }
             newOrder.OrderItems = orderItems;
@@ -203,12 +216,13 @@ namespace shop_giay_server._Controllers
             // Response
             var responseDTO = new ClientOrderResponseDTO()
             {
+                id = newOrder.Id,
                 customerID = customer.Id,
                 saleID = 0,
                 city = sendAddress.City,
                 orderDate = newOrder.OrderDate,
-                confirmDate = newOrder.ConfirmDate.Value,
-                deliveryDate = newOrder.DeliveryDate.Value,
+                confirmDate = newOrder.ConfirmDate,
+                deliveryDate = newOrder.DeliveryDate,
                 total = newOrder.Total,
                 status = newOrder.Status,
                 paymentStatus = newOrder.DeliveryDate.HasValue
@@ -233,62 +247,123 @@ namespace shop_giay_server._Controllers
         }
 
 
-        // [Route("client/[controller]/{id:int}")]
-        // [HTTPGet]
-        // public async Task<IActionResult> ClientGetOrderById(int id)
-        // {
-        //     // Get customer
-        //     var customer = GetCustomer();
-        //     if (customer == null)
-        //     {
-        //         return Ok(ResponseDTO.BadRequest("Invalid customer's username."));
-        //     }
-
-        //     // Get order   
-        //     var order = customer.Orders.FirstOrDefault(c => c.Id == id);
-        //     var sendAddress = order.
-        //     if (order == null)
-        //     {
-        //         return Ok(ResponseDTO.BadRequest($"No order with id {id} for username: {customer.Username}."));
-        //     }
-
-        //     var orderItems = order.OrderItems;
-
-        //     var responseDTO = new ClientOrderResponseDTO()
-        //     {
-        //         customerID = customer.Id,
-        //         saleID = 0,
-        //         city = sendAddress.City,
-        //         orderDate = newOrder.OrderDate,
-        //         confirmDate = newOrder.ConfirmDate.Value,
-        //         deliveryDate = newOrder.DeliveryDate.Value,
-        //         total = newOrder.Total,
-        //         status = newOrder.Status,
-        //         paymentStatus = newOrder.DeliveryDate.HasValue
-        //                         ? (int)PaymentStatus.Paid
-        //                         : (int)PaymentStatus.NotYet,
-        //         deliveryAddress = newOrder.DeliverAddress,
-        //         recipientName = sendAddress.RecipientName,
-        //         recipientPhoneNumber = sendAddress.RecipientPhoneNumber,
-        //         cartItemDTOList = orderItems.Select(c => new ClientOrder_CartItemDTO
-        //         {
-        //             stockId = c.StockId,
-        //             shoesId = c.Stock.ShoesId,
-        //             name = c.Stock.Shoes.Name,
-        //             sizeName = c.Stock.Size.Name,
-        //             quantity = c.Amount,
-        //             price = c.Total,
-        //             image = c.Stock.Shoes.ShoesImages.FirstOrDefault().ImagePath
-        //         }).ToList()
-        //     };
-
-        //     return Ok(ResponseDTO.Ok(responseDTO));
-        // }
-
-        private Order CreateOrderFrom(Customer customer, List<CartItem> cartItems)
+        [Route("client/[controller]/{id:int}")]
+        [HttpGet]
+        public async Task<IActionResult> ClientGetOrderById(int id)
         {
+            // Get customer
+            var customer = GetCustomer();
+            if (customer == null)
+            {
+                return Ok(ResponseDTO.BadRequest("Invalid customer's username."));
+            }
 
-            return new Order();
+            // Get order   
+            var newOrder = customer.Orders.FirstOrDefault(c => c.Id == id);
+            if (newOrder == null)
+            {
+                return Ok(ResponseDTO.BadRequest($"No order with id {id} for username: {customer.Username}."));
+            }
+
+            // Get address
+            var sendAddress = await _context.Addresses.FirstOrDefaultAsync(c => c.Id == (newOrder.AddressId ?? 0));
+            if (sendAddress == null)
+            {
+                return Ok(ResponseDTO.BadRequest("Invalid addrss for current order."));
+            }
+
+            // Response
+            var orderItems = newOrder.OrderItems;
+            var responseDTO = new ClientOrderResponseDTO()
+            {
+                id = newOrder.Id,
+                customerID = customer.Id,
+                saleID = 0,
+                city = sendAddress.City,
+                orderDate = newOrder.OrderDate,
+                confirmDate = newOrder.ConfirmDate,
+                deliveryDate = newOrder.DeliveryDate,
+                total = newOrder.Total,
+                status = newOrder.Status,
+                paymentStatus = newOrder.DeliveryDate.HasValue
+                                ? (int)PaymentStatus.Paid
+                                : (int)PaymentStatus.NotYet,
+                deliveryAddress = newOrder.DeliverAddress,
+                recipientName = sendAddress.RecipientName,
+                recipientPhoneNumber = sendAddress.RecipientPhoneNumber,
+                cartItemDTOList = orderItems.Select(c => new ClientOrder_CartItemDTO
+                {
+                    stockId = c.StockId,
+                    shoesId = c.Stock.ShoesId,
+                    name = c.Stock.Shoes.Name,
+                    sizeName = c.Stock.Size.Name,
+                    quantity = c.Amount,
+                    price = c.Total,
+                    image = c.Stock.Shoes.ShoesImages.FirstOrDefault().ImagePath
+                }).ToList()
+            };
+
+            return Ok(ResponseDTO.Ok(responseDTO));
+        }
+
+        [Route("client/[controller]/list")]
+        [HttpGet]
+        public async Task<IActionResult> ClientGetOrderList()
+        {
+            // Get customer
+            var customer = GetCustomer();
+            if (customer == null)
+            {
+                return Ok(ResponseDTO.BadRequest("Invalid customer's username."));
+            }
+
+            // Get orders
+            var orders = customer.Orders;
+            var listResults = new List<ClientOrderResponseDTO>();
+            foreach (var order in orders)
+            {
+                // Get address
+                var sendAddress = await _context.Addresses.FirstOrDefaultAsync(c => c.Id == (order.AddressId ?? 0));
+                if (sendAddress == null)
+                {
+                    // return Ok(ResponseDTO.BadRequest("Invalid addrss for current order."));
+                    continue;
+                }
+
+                // Response
+                var orderItems = order.OrderItems;
+                var responseDTO = new ClientOrderResponseDTO()
+                {
+                    id = order.Id,
+                    customerID = customer.Id,
+                    saleID = 0,
+                    city = sendAddress.City,
+                    orderDate = order.OrderDate,
+                    confirmDate = order.ConfirmDate,
+                    deliveryDate = order.DeliveryDate,
+                    total = order.Total,
+                    status = order.Status,
+                    paymentStatus = order.DeliveryDate.HasValue
+                                    ? (int)PaymentStatus.Paid
+                                    : (int)PaymentStatus.NotYet,
+                    deliveryAddress = order.DeliverAddress,
+                    recipientName = sendAddress.RecipientName,
+                    recipientPhoneNumber = sendAddress.RecipientPhoneNumber,
+                    cartItemDTOList = orderItems.Select(c => new ClientOrder_CartItemDTO
+                    {
+                        stockId = c.StockId,
+                        shoesId = c.Stock.ShoesId,
+                        name = c.Stock.Shoes.Name,
+                        sizeName = c.Stock.Size.Name,
+                        quantity = c.Amount,
+                        price = c.Total,
+                        image = c.Stock.Shoes.ShoesImages.FirstOrDefault().ImagePath
+                    }).ToList()
+                };
+
+                listResults.Add(responseDTO);
+            }
+            return Ok(ResponseDTO.Ok(listResults));
         }
 
         #endregion
@@ -305,10 +380,8 @@ namespace shop_giay_server._Controllers
 
             var customer = _context.Customers
                 .Include(c => c.Addresses)
-                .Include(c => c.Cart)
-                    .ThenInclude(c => c.CartItems)
-                    .ThenInclude(c => c.Stock)
-                    .ThenInclude(c => c.Shoes)
+                .Include(c => c.Cart).ThenInclude(c => c.CartItems).ThenInclude(c => c.Stock).ThenInclude(c => c.Shoes).ThenInclude(c => c.ShoesImages)
+                .Include(c => c.Cart).ThenInclude(c => c.CartItems).ThenInclude(c => c.Stock).ThenInclude(c => c.Size)
                 .Include(c => c.Orders).ThenInclude(c => c.OrderItems)
                 .FirstOrDefault(c => c.Username == sessionUsername);
             return customer;
@@ -335,9 +408,9 @@ namespace shop_giay_server._Controllers
         public int customerID { get; set; }
         public int saleID { get; set; }
         public string city { get; set; }
-        public DateTime orderDate { get; set; }
-        public DateTime confirmDate { get; set; }
-        public DateTime deliveryDate { get; set; }
+        public DateTime? orderDate { get; set; }
+        public DateTime? confirmDate { get; set; }
+        public DateTime? deliveryDate { get; set; }
         public float total { get; set; }
         public int status { get; set; }
         public int paymentStatus { get; set; }
