@@ -59,7 +59,7 @@ namespace shop_giay_server._Controllers
         public string name { get; set; }
         public string description { get; set; }
         public float rating { get; set; }
-        public float ratingCount { get; set; }
+        public int ratingCount { get; set; }
         public string styleName { get; set; }
         public string brandName { get; set; }
         public string genderName { get; set; }

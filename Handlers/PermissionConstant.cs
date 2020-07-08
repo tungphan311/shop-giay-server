@@ -111,7 +111,8 @@ namespace shop_giay_server.Handlers
             "client/order/{id}",
             "client/order/list",
             "client/customer/getInfo",
-            "client/customer/changePassword"
+            "client/customer/changePassword",
+            "client/shoes/rating"
         };
     }
 }
