@@ -142,9 +142,12 @@ namespace shop_giay_server._Controllers
 
             // Check addressId
             var sendAddress = customer.Addresses.FirstOrDefault(o => o.Id == addressId);
-            if (sendAddress == null)
+            if (sendAddress == null
+                || string.IsNullOrEmpty(sendAddress.RecipientName)
+                || string.IsNullOrEmpty(sendAddress.RecipientPhoneNumber)
+                || string.IsNullOrEmpty(sendAddress.ToString()))
             {
-                return Ok(ResponseDTO.BadRequest($"Invalid address id for current customer: {customer.Username}."));
+                return Ok(ResponseDTO.BadRequest($"Invalid address for current customer: {customer.Username}."));
             }
 
             // Check cart
@@ -159,7 +162,7 @@ namespace shop_giay_server._Controllers
             var newOrder = new Order()
             {
                 OrderDate = DateTime.Now,
-                Total = 0, // todo
+                Total = 0,
                 Status = (int)OrderStatus.Waiting,
                 DeliverAddress = sendAddress.ToString(),
                 ConfirmDate = null,
@@ -190,9 +193,16 @@ namespace shop_giay_server._Controllers
                 };
 
                 var priceWithSale = item.PricePerUnit;
-                //if () {
-                // todo: get sale
-                //}
+                var productSale = await _context.SaleProducts
+                                    .Include(c => c.Sale)
+                                    .FirstOrDefaultAsync(c => c.Shoes.Id == ci.Stock.Shoes.Id);
+                if (productSale != null && productSale.Sale.Status != 0)
+                {
+                    var sale = productSale.Sale;
+                    priceWithSale -= sale.SaleType == 1
+                        ? priceWithSale * (float)((float)sale.Amount / 100.0)
+                        : sale.Amount;
+                }
                 item.Total = item.Amount * priceWithSale;
                 orderTotal += item.Total;
 
