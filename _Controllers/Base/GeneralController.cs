@@ -283,6 +283,14 @@ namespace shop_giay_server._Controllers
             return await _GetAllModels<DTO>(context);
         }
 
+        [Route("client/[controller]s")]
+        [HttpGet]
+        public async virtual Task<IActionResult> GetAllForClientWithSBehind()
+        {
+            var context = RequestContext.ClientGetAll();
+            return await _GetAllModels<DTO>(context);
+        }
+
 
         /*
             Usage:
@@ -399,7 +407,8 @@ namespace shop_giay_server._Controllers
         }
 
 
-        protected async Task<Customer> GetCustomerFromSession() {
+        protected async Task<Customer> GetCustomerFromSession()
+        {
             var sessionUsername = HttpContext.Session.GetString(SessionConstant.Username);
             if (string.IsNullOrEmpty(sessionUsername))
             {
