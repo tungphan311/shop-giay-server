@@ -4,8 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 using shop_giay_server._Repository;
 using Microsoft.Extensions.Logging;
 using shop_giay_server.Dtos;
-using shop_giay_server.data;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
+using System.Linq;
+using System.Collections.Generic;
+using shop_giay_server.data;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
+using System;
 
 namespace shop_giay_server._Controllers
 {
@@ -26,6 +33,41 @@ namespace shop_giay_server._Controllers
 
             var item = _mapper.Map<ShoesBrand>(model);
             return await this._AddItem(item);
+        }
+
+        [Route("client/brands")]
+        [HttpGet]
+        public async virtual Task<IActionResult> GetAllWithCustomRoute()
+        {
+            var context = RequestContext.ClientGetAll();
+            return await _GetAllModels<ShoesBrandDTO>(context);
+        }
+
+        protected override async Task<IEnumerable<object>> FinishMappingResponseModels(
+            IEnumerable<object> responseEntities,
+            IEnumerable<ShoesBrand> entities,
+            RequestContext requestContext)
+        {
+            try
+            {
+                switch (requestContext.APIRoute)
+                {
+                    case APIRoute.ClientGetAll:
+                        IEnumerable<ShoesBrandDTO> list = (IEnumerable<ShoesBrandDTO>)responseEntities;
+                        responseEntities = list.Select(c => c.Name);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(0, e, "Cannot convert.");
+                return await base.FinishMappingResponseModels(responseEntities, entities, requestContext);
+            }
+
+            return await base.FinishMappingResponseModels(responseEntities, entities, requestContext);
         }
     }
 }

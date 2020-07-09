@@ -73,11 +73,51 @@ namespace shop_giay_server._Controllers
                                 });
                             }
                         }
+                        var saleInfo = GetSaleInfo(dto.id);
+                        dto.isOnSale = saleInfo.isOnSale;
+                        dto.salePrice = saleInfo.salePrice;
+                        // var saleInfo = _context.SaleProducts
+                        //                         .Include(c => c.Sale)
+                        //                         .FirstOrDefault(c => c.ShoesId == dto.id);
+                        // if (saleInfo != null && saleInfo.Sale.Status != 0)
+                        // {
+                        //     var sale = saleInfo.Sale;
+                        //     dto.isOnSale = true;
+                        //     dto.salePrice = sale.SaleType == 1
+                        //         ? dto.price * (float)(1 - (float)sale.Amount / 100.0)
+                        //         : dto.price - sale.Amount;
+                        // }
+                        // else
+                        // {
+                        //     dto.isOnSale = false;
+                        //     dto.salePrice = dto.price;
+                        // }
                         break;
 
+
                     case APIRoute.ClientGetAll:
-                        // todo: Add sale price for shoes
-                        // _context.Sales
+                        foreach (ResponseShoesDTO resEntity in responseEntities)
+                        {
+                            var sInfo = GetSaleInfo(resEntity.id);
+                            resEntity.isOnSale = sInfo.isOnSale;
+                            resEntity.salePrice = sInfo.salePrice;
+                            // var saleProduct = _context.SaleProducts
+                            //                     .Include(c => c.Sale)
+                            //                     .FirstOrDefault(c => c.ShoesId == resEntity.id);
+                            // if (saleProduct != null && saleProduct.Sale.Status != 0)
+                            // {
+                            //     var sale = saleProduct.Sale;
+                            //     resEntity.isOnSale = true;
+                            //     resEntity.salePrice = sale.SaleType == 1
+                            //         ? resEntity.price * (float)(1 - (float)sale.Amount / 100.0)
+                            //         : resEntity.price - sale.Amount;
+                            // }
+                            // else
+                            // {
+                            //     resEntity.isOnSale = false;
+                            //     resEntity.salePrice = resEntity.price;
+                            // }
+                        }
                         break;
 
                     default:
@@ -93,6 +133,31 @@ namespace shop_giay_server._Controllers
             return await base.FinishMappingResponseModels(responseEntities, entities, requestContext);
         }
 
+
+        private (float salePrice, bool isOnSale) GetSaleInfo(int shoesId)
+        {
+            var shoes = _context.Shoes.FirstOrDefault(c => c.Id == shoesId);
+            if (shoes == null)
+            {
+                return (0, false);
+            }
+
+            var saleInfo = _context.SaleProducts
+                                .Include(c => c.Sale)
+                                .FirstOrDefault(c => c.ShoesId == shoesId);
+            if (saleInfo != null && saleInfo.Sale.Status != 0)
+            {
+                var sale = saleInfo.Sale;
+                var salePrice = sale.SaleType == 1
+                    ? shoes.Price * (float)(1 - (float)sale.Amount / 100.0)
+                    : shoes.Price - sale.Amount;
+                return (salePrice, true);
+            }
+            else
+            {
+                return (shoes.Price, false);
+            }
+        }
 
         #endregion
 
@@ -113,10 +178,85 @@ namespace shop_giay_server._Controllers
 
         [Route("client/[controller]/rating")]
         [HttpPost]
-        public IActionResult ClientRateShoes([FromBody] BodyShoesRating model)
+        public async Task<IActionResult> ClientRateShoes([FromBody] BodyShoesRating model)
         {
+            // Check customer
+            var customer = GetCustomer();
+            if (customer == null)
+            {
+                return Ok(ResponseDTO.BadRequest("Login required."));
+            }
 
-            return BadRequest();
+            // Check shoes
+            var shoes = await _context.Shoes
+                .Include(c => c.ShoesBrand)
+                .Include(c => c.Gender)
+                .Include(c => c.ShoesType)
+                .Include(c => c.ShoesImages)
+                .Include(c => c.Stocks).ThenInclude(c => c.Size)
+                .FirstOrDefaultAsync(c => c.Id == model.shoesId);
+
+            if (shoes == null)
+            {
+                return Ok(ResponseDTO.BadRequest("Invalid shoesId."));
+            }
+
+            if (model.rating < 0) model.rating = 0;
+            if (model.rating > 5) model.rating = 5;
+
+            var review = new CustomerReview()
+            {
+                ShoesId = shoes.Id,
+                CustomerId = customer.Id,
+                Rate = model.rating,
+                Content = "",
+                Date = DateTime.Now
+            };
+            _context.CustomerReviews.Add(review);
+            await _context.SaveChangesAsync();
+
+            // Get rating
+            var ratingInfo = GetRatingForShoes(shoes.Id);
+
+            // Get sale
+            var saleInfo = GetSaleInfo(shoes.Id);
+
+            List<object> sizes = (List<object>)shoes.Stocks.Select(c => (object)c.Size.Name).ToList();
+
+            var result = new ResponseShoesDetailDTO()
+            {
+                id = shoes.Id,
+                code = shoes.Code,
+                name = shoes.Name,
+                description = shoes.Description,
+                rating = ratingInfo.rating,
+                ratingCount = ratingInfo.ratingCount,
+                styleName = shoes.ShoesType.Name,
+                brandName = shoes.ShoesBrand.Name,
+                genderName = shoes.Gender.Name,
+                price = shoes.Price,
+                isNew = shoes.IsNew,
+                isOnSale = saleInfo.isOnSale,
+                salePrice = saleInfo.salePrice,
+                images = shoes.ShoesImages.Select(c => c.ImagePath).ToList(),
+                sizes = sizes
+            };
+
+            return Ok(ResponseDTO.Ok(result));
+        }
+
+
+        private (float rating, int ratingCount) GetRatingForShoes(int shoesId)
+        {
+            var shoes = _context.Shoes.FirstOrDefault(c => c.Id == shoesId);
+            if (shoes == null)
+            {
+                return (0, 0);
+            }
+
+            var listReview = _context.CustomerReviews.Where(c => c.ShoesId == shoesId).Select(c => c.Rate);
+            var totalRate = (float)listReview.Sum() / (float)listReview.Count();
+            return (totalRate, listReview.Count());
         }
 
         #endregion
@@ -186,8 +326,8 @@ namespace shop_giay_server._Controllers
             if (shoes.IsNew) shoes.IsNew = true;
             return await this._AddItem(shoes);
         }
-        
-        
+
+
         [Route("admin/[controller]/{id:int}")]
         [HttpPut]
 
@@ -317,6 +457,23 @@ namespace shop_giay_server._Controllers
                 return true;
             }
             return false;
+        }
+
+        public Customer GetCustomer()
+        {
+            var sessionUsername = HttpContext.Session.GetString(SessionConstant.Username);
+            if (string.IsNullOrEmpty(sessionUsername))
+            {
+                return null;
+            }
+
+            var customer = _context.Customers
+                .Include(c => c.Addresses)
+                .Include(c => c.Cart).ThenInclude(c => c.CartItems).ThenInclude(c => c.Stock).ThenInclude(c => c.Shoes).ThenInclude(c => c.ShoesImages)
+                .Include(c => c.Cart).ThenInclude(c => c.CartItems).ThenInclude(c => c.Stock).ThenInclude(c => c.Size)
+                .Include(c => c.Orders).ThenInclude(c => c.OrderItems)
+                .FirstOrDefault(c => c.Username == sessionUsername);
+            return customer;
         }
 
         #endregion
