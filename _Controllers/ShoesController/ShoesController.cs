@@ -416,12 +416,18 @@ namespace shop_giay_server._Controllers
                     //dynamic entity = _context.Query(info.type).Where("o => o.Name == @0", paramValue);
                     dynamic entity = _context.Query(info.type).FirstOrDefault("c => c.Name == @0", paramValue);
 
+                    var id = 0;
                     if (entity != null)
                     {
-                        var queryItem = new KeyValuePair<String, StringValues>(info.internalKey, entity.Id.ToString());
-                        query = query.AppendQueryItem(queryItem);
+                        id = entity.Id;
                     }
-
+                    else if (info.queryKey == "gender")
+                    {
+                        if (paramValue.ToLower() == "nam") id = 6;
+                        else id = 7;
+                    }
+                    var queryItem = new KeyValuePair<String, StringValues>(info.internalKey, id.ToString());
+                    query = query.AppendQueryItem(queryItem);
                 }
             }
             return query;

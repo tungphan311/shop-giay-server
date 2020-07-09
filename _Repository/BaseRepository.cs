@@ -104,7 +104,6 @@ namespace shop_giay_server._Repository
             AddCompareQueries(ref query, dictQuery, ">=");
             AddSearchQueries(ref query, dictQuery);
 
-
             // Get total records without paging
             var totalRecords = await query.CountAsync();
 
@@ -127,6 +126,15 @@ namespace shop_giay_server._Repository
             {
                 foreach (var p in _dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
                     query = query.Include(p.Name);
+            }
+
+            // Ad-hoc: size query for shoes
+            if (typeof(T) == typeof(Shoes) && dictQuery.Keys.Contains("sizeid"))
+            {
+                var value = dictQuery["sizeid"][0];
+                var _value = int.Parse(value);
+                IQueryable<Shoes> _query = (IQueryable<Shoes>)query;
+                query = (IQueryable<T>)_query.Where(c => c.Stocks.Where(c => c.SizeId == _value).Count() >= 1);
             }
 
             var listResult = await query.ToListAsync();

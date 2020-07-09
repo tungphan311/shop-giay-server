@@ -25,7 +25,7 @@ namespace shop_giay_server.Crons
             return base.StartAsync(cancellationToken);
         }
 
-        public override Task DoWork(CancellationToken cancellationToken)
+        public async override Task DoWork(CancellationToken cancellationToken)
         {
             using (var scope = _serviceScopeFactory.CreateScope())
             {
@@ -48,10 +48,10 @@ namespace shop_giay_server.Crons
                     }
                 }
 
-                _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
 
-            return Task.CompletedTask;
+            await Task.CompletedTask;
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)

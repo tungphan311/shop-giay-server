@@ -146,12 +146,12 @@ namespace shop_giay_server._Controllers
 
             return Ok(ResponseDTO.Ok(new
             {
-                Id = customer.Id,
+                id = customer.Id,
                 customer.Name,
-                DateOfBirth = customer.DateOfBirth.ToString("o"),
-                Email = customer.Email,
-                PhoneNumber = customer.PhoneNumber,
-                Gender = customer.Gender
+                dateOfBirth = customer.DateOfBirth.ToString("o"),
+                email = customer.Email,
+                phoneNumber = customer.PhoneNumber,
+                gender = customer.Gender
             }));
         }
 
@@ -359,12 +359,14 @@ namespace shop_giay_server._Controllers
         {
             return new
             {
-                Id = address.Id,
-                CustomerId = customerId,
-                City = address.City,
-                address.District,
-                address.Ward,
-                address.Street
+                id = address.Id,
+                customerId = customerId,
+                city = address.City,
+                district = address.District,
+                ward = address.Ward,
+                street = address.Street,
+                recipientName = address.RecipientName,
+                recipientPhoneNumber = address.RecipientPhoneNumber
             };
         }
 

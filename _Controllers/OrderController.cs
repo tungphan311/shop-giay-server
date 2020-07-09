@@ -129,15 +129,15 @@ namespace shop_giay_server._Controllers
 
         #region Client's API
 
-        [HttpPost]
-        [Route("client/[controller]/{addressId:int}")]
-        public async Task<IActionResult> ClientProcessOrder(int addressId)
+        [HttpPost()]
+        [Route("client/[controller]")]
+        public async Task<IActionResult> ClientProcessOrder([FromQuery(Name = "addressId")] int addressId)
         {
             // Get customer
             var customer = GetCustomer();
             if (customer == null)
             {
-                return Ok(ResponseDTO.BadRequest("Invalid customer's username."));
+                return BadRequest(ResponseDTO.BadRequest("Invalid customer's username."));
             }
 
             // Check addressId
@@ -145,16 +145,16 @@ namespace shop_giay_server._Controllers
             if (sendAddress == null
                 || string.IsNullOrEmpty(sendAddress.RecipientName)
                 || string.IsNullOrEmpty(sendAddress.RecipientPhoneNumber)
-                || string.IsNullOrEmpty(sendAddress.ToString()))
+                )
             {
-                return Ok(ResponseDTO.BadRequest($"Invalid address for current customer: {customer.Username}."));
+                return BadRequest(ResponseDTO.BadRequest($"Invalid address for current customer: {customer.Username}."));
             }
 
             // Check cart
             var cartItems = customer.Cart.CartItems;
             if (customer.Cart.CartItems.Count == 0)
             {
-                return Ok(ResponseDTO.BadRequest($"No items in cart for current customer: {customer.Username}"));
+                return BadRequest(ResponseDTO.BadRequest($"No items in cart for current customer: {customer.Username}"));
             }
 
             // Convert cart items to order items
@@ -265,25 +265,45 @@ namespace shop_giay_server._Controllers
             var customer = GetCustomer();
             if (customer == null)
             {
-                return Ok(ResponseDTO.BadRequest("Invalid customer's username."));
+                return BadRequest(ResponseDTO.BadRequest("Invalid customer's username."));
             }
 
             // Get order   
             var newOrder = customer.Orders.FirstOrDefault(c => c.Id == id);
             if (newOrder == null)
             {
-                return Ok(ResponseDTO.BadRequest($"No order with id {id} for username: {customer.Username}."));
+                return BadRequest(ResponseDTO.BadRequest($"No order with id {id} for username: {customer.Username}."));
             }
 
             // Get address
             var sendAddress = await _context.Addresses.FirstOrDefaultAsync(c => c.Id == (newOrder.AddressId ?? 0));
             if (sendAddress == null)
             {
-                return Ok(ResponseDTO.BadRequest("Invalid addrss for current order."));
+                return BadRequest(ResponseDTO.BadRequest("Invalid addrss for current order."));
             }
 
             // Response
             var orderItems = newOrder.OrderItems;
+            List<ClientOrder_CartItemDTO> cartItemDTOList = new List<ClientOrder_CartItemDTO>() { };
+            foreach (var item in orderItems)
+            {
+                var stock = await _context.Stocks.FirstOrDefaultAsync(s => s.Id == item.StockId);
+                var shoes = await _context.Shoes.FirstOrDefaultAsync(s => s.Id == stock.ShoesId);
+                var image = await _context.ShoesImages.FirstOrDefaultAsync(i => i.ShoesId == item.Stock.ShoesId);
+                var size = await _context.Sizes.FirstOrDefaultAsync(s => s.Id == stock.SizeId);
+                var cart = new ClientOrder_CartItemDTO
+                {
+                    stockId = item.Id,
+                    shoesId = shoes.Id,
+                    name = shoes.Name,
+                    sizeName = size.Name,
+                    quantity = item.Amount,
+                    price = item.Total,
+                    image = image != null ? image.ImagePath : ""
+                };
+                cartItemDTOList.Add(cart);
+            }
+
             var responseDTO = new ClientOrderResponseDTO()
             {
                 id = newOrder.Id,
@@ -301,16 +321,17 @@ namespace shop_giay_server._Controllers
                 deliveryAddress = newOrder.DeliverAddress,
                 recipientName = sendAddress.RecipientName,
                 recipientPhoneNumber = sendAddress.RecipientPhoneNumber,
-                cartItemDTOList = orderItems.Select(c => new ClientOrder_CartItemDTO
-                {
-                    stockId = c.StockId,
-                    shoesId = c.Stock.ShoesId,
-                    name = c.Stock.Shoes.Name,
-                    sizeName = c.Stock.Size.Name,
-                    quantity = c.Amount,
-                    price = c.Total,
-                    image = c.Stock.Shoes.ShoesImages.FirstOrDefault().ImagePath
-                }).ToList()
+                cartItemDTOList = cartItemDTOList
+                // cartItemDTOList = orderItems.Select(c => new ClientOrder_CartItemDTO
+                // {
+                //     stockId = c.StockId,
+                //     shoesId = c.Stock.ShoesId,
+                //     name = c.Stock.Shoes.Name,
+                //     sizeName = c.Stock.Size.Name,
+                //     quantity = c.Amount,
+                //     price = c.Total,
+                //     image = c.Stock.Shoes.ShoesImages.FirstOrDefault().ImagePath
+                // }).ToList()
             };
 
             return Ok(ResponseDTO.Ok(responseDTO));
@@ -342,6 +363,25 @@ namespace shop_giay_server._Controllers
 
                 // Response
                 var orderItems = order.OrderItems;
+                List<ClientOrder_CartItemDTO> cartItemDTOList = new List<ClientOrder_CartItemDTO>() { };
+                foreach (var item in orderItems)
+                {
+                    var stock = await _context.Stocks.FirstOrDefaultAsync(s => s.Id == item.StockId);
+                    var shoes = await _context.Shoes.FirstOrDefaultAsync(s => s.Id == stock.ShoesId);
+                    var image = await _context.ShoesImages.FirstOrDefaultAsync(i => i.ShoesId == item.Stock.ShoesId);
+                    var size = await _context.Sizes.FirstOrDefaultAsync(s => s.Id == stock.SizeId);
+                    var cart = new ClientOrder_CartItemDTO
+                    {
+                        stockId = item.Id,
+                        shoesId = shoes.Id,
+                        name = shoes.Name,
+                        sizeName = size.Name,
+                        quantity = item.Amount,
+                        price = item.Total,
+                        image = image != null ? image.ImagePath : ""
+                    };
+                    cartItemDTOList.Add(cart);
+                }
                 var responseDTO = new ClientOrderResponseDTO()
                 {
                     id = order.Id,
@@ -359,16 +399,17 @@ namespace shop_giay_server._Controllers
                     deliveryAddress = order.DeliverAddress,
                     recipientName = sendAddress.RecipientName,
                     recipientPhoneNumber = sendAddress.RecipientPhoneNumber,
-                    cartItemDTOList = orderItems.Select(c => new ClientOrder_CartItemDTO
-                    {
-                        stockId = c.StockId,
-                        shoesId = c.Stock.ShoesId,
-                        name = c.Stock.Shoes.Name,
-                        sizeName = c.Stock.Size.Name,
-                        quantity = c.Amount,
-                        price = c.Total,
-                        image = c.Stock.Shoes.ShoesImages.FirstOrDefault().ImagePath
-                    }).ToList()
+                    cartItemDTOList = cartItemDTOList
+                    // cartItemDTOList = orderItems.Select(c => new ClientOrder_CartItemDTO
+                    // {
+                    //     stockId = c.StockId,
+                    //     shoesId = c.Stock.ShoesId,
+                    //     name = c.Stock.Shoes.Name,
+                    //     sizeName = c.Stock.Size.Name,
+                    //     quantity = c.Amount,
+                    //     price = c.Total,
+                    //     image = c.Stock.Shoes.ShoesImages.FirstOrDefault().ImagePath
+                    // }).ToArray().ToList()
                 };
 
                 listResults.Add(responseDTO);

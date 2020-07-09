@@ -10,13 +10,13 @@ namespace shop_giay_server.models
 
         public string Description { get; set; }
 
-        public float Rating { get; set; }
+        public float Rating { get; set; } = 0;
 
         public float Price { get; set; }
 
-        public bool IsNew { get; set; }
+        public bool IsNew { get; set; } = true;
 
-        public bool IsOnSale { get; set; }
+        public bool IsOnSale { get; set; } = false;
 
         public int StyleId { get; set; }
         public ShoesType ShoesType { get; set; }
