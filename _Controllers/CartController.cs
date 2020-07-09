@@ -97,7 +97,7 @@ namespace shop_giay_server._Controllers
                 return Ok(ResponseDTO.BadRequest());
             }
 
-            var cart = _context.Carts.FirstOrDefaultAsync(o => o.CustomerId == customer.Id);
+            var cart = await _context.Carts.FirstOrDefaultAsync(o => o.CustomerId == customer.Id);
             if (cart == null)
             {
                 return Ok(ResponseDTO.OkEmpty());
