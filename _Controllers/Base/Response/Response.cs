@@ -13,8 +13,9 @@ namespace shop_giay_server._Controllers
     {
         public string Code { get; set; }
         public string Msg { get; set; }
-        public int Total { get; set; }
         public string Data { get; set; }
+        public int totalRecords { get; }
+        public int Total { get; set; }
     }
 
     public class ResponseDTO : IResponse
@@ -23,6 +24,13 @@ namespace shop_giay_server._Controllers
         public string Msg { get; set; }
         public int Total { get; set; }
         public string Data { get; set; }
+        public int totalRecords
+        {
+            get
+            {
+                return Total;
+            }
+        }
 
 
         public ResponseDTO(IEnumerable<object> data, string code = "200", string msg = "Success.", int total = 0)
