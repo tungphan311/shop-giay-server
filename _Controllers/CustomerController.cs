@@ -146,12 +146,12 @@ namespace shop_giay_server._Controllers
 
             return Ok(ResponseDTO.Ok(new
             {
-                Id = customer.Id,
+                id = customer.Id,
                 customer.Name,
-                DateOfBirth = customer.DateOfBirth.ToString("o"),
-                Email = customer.Email,
-                PhoneNumber = customer.PhoneNumber,
-                Gender = customer.Gender
+                dateOfBirth = customer.DateOfBirth.ToString("o"),
+                email = customer.Email,
+                phoneNumber = customer.PhoneNumber,
+                gender = customer.Gender
             }));
         }
 
