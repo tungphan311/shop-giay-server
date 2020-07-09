@@ -64,7 +64,7 @@ namespace shop_giay_server.Controllers
 
             if (userFromRepo == null)
             {
-                return Unauthorized();
+                return BadRequest(ResponseDTO.Unauthorized());
             }
 
             var role = await context.Roles.FirstOrDefaultAsync(x => x.Id == userFromRepo.RoleId);
