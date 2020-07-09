@@ -421,6 +421,11 @@ namespace shop_giay_server._Controllers
                     {
                         id = entity.Id;
                     }
+                    else if (info.queryKey == "gender")
+                    {
+                        if (paramValue == "nam") id = 3;
+                        else id = 2;
+                    }
                     var queryItem = new KeyValuePair<String, StringValues>(info.internalKey, id.ToString());
                     query = query.AppendQueryItem(queryItem);
                 }
