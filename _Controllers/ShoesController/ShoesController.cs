@@ -423,8 +423,8 @@ namespace shop_giay_server._Controllers
                     }
                     else if (info.queryKey == "gender")
                     {
-                        if (paramValue.ToLower() == "nam") id = 4;
-                        else id = 5;
+                        if (paramValue.ToLower() == "nam") id = 6;
+                        else id = 7;
                     }
                     var queryItem = new KeyValuePair<String, StringValues>(info.internalKey, id.ToString());
                     query = query.AppendQueryItem(queryItem);
