@@ -28,7 +28,7 @@ namespace shop_giay_server
                     var context = services.GetRequiredService<DataContext>();
 
                     context.Database.Migrate();
-
+                    // Seed.Run(context);
                     // Seed.SeedShoes(context);
                     AddPermissionPath();
                     // Seed.SeedAll(context);
