@@ -364,7 +364,9 @@ namespace shop_giay_server._Controllers
                 city = address.City,
                 district = address.District,
                 ward = address.Ward,
-                street = address.Street
+                street = address.Street,
+                recipientName = address.RecipientName,
+                recipientPhoneNumber = address.RecipientPhoneNumber
             };
         }
 
