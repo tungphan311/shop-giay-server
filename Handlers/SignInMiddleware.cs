@@ -123,7 +123,7 @@ namespace shop_giay_server.Handlers
                             var username = decodeToken.Claims.FirstOrDefault(c => c.Type == "sub") != null ?
                                 decodeToken.Claims.FirstOrDefault(c => c.Type == "sub").Value : null;
 
-                            // todo:
+                            // 
                             // var customer = await dataContext.Customers.FirstOrDefaultAsync(c => c.Username == username);
 
                             if (username == null)

@@ -5,7 +5,7 @@ namespace shop_giay_server.models
 {
     public class Sale : BaseEntity
     {
-        public int SaleType { get; set; } // 
+        public int SaleType { get; set; } // saletype = 1 là % = 2 là VND
 
         public int Amount { get; set; }
 

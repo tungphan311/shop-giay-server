@@ -44,11 +44,11 @@ namespace shop_giay_server._Controllers
         public string name { get; set; }
         public string description { get; set; }
         public float price { get; set; }
-        public int isNew { get; set; }
-        public int isOnSale { get; set; }
+        public bool isNew { get; set; }
+        public bool isOnSale { get; set; }
         public string imagePath { get; set; }
         public int quantity { get; set; }
-        public int salePrice { get; set; }
+        public float salePrice { get; set; }
         public string styleName { get; set; }
     }
 
@@ -59,14 +59,14 @@ namespace shop_giay_server._Controllers
         public string name { get; set; }
         public string description { get; set; }
         public float rating { get; set; }
-        public float ratingCount { get; set; }
+        public int ratingCount { get; set; }
         public string styleName { get; set; }
         public string brandName { get; set; }
         public string genderName { get; set; }
         public float price { get; set; }
-        public int isNew { get; set; }
-        public int isOnSale { get; set; }
-        public int salePrice { get; set; }
+        public bool isNew { get; set; }
+        public bool isOnSale { get; set; }
+        public float salePrice { get; set; }
         public List<string> images { get; set; } = new List<string>();
 
         [IgnoreMap]
