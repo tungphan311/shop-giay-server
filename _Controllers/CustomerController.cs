@@ -359,12 +359,12 @@ namespace shop_giay_server._Controllers
         {
             return new
             {
-                Id = address.Id,
-                CustomerId = customerId,
-                City = address.City,
-                address.District,
-                address.Ward,
-                address.Street
+                id = address.Id,
+                customerId = customerId,
+                city = address.City,
+                district = address.District,
+                ward = address.Ward,
+                street = address.Street
             };
         }
 
