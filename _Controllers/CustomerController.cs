@@ -12,16 +12,23 @@ using System;
 using shop_giay_server;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Configuration;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace shop_giay_server._Controllers
 {
     public class CustomerController : GeneralController<Customer, CustomerDTO>
     {
         private readonly IAuthRepository _authRepo;
+        private readonly IConfiguration _config;
 
-        public CustomerController(IAsyncRepository<Customer> repo, ILogger<CustomerController> logger, IMapper mapper, IAuthRepository authRepo, DataContext context)
+        public CustomerController(IAsyncRepository<Customer> repo, ILogger<CustomerController> logger, IMapper mapper, IAuthRepository authRepo, DataContext context, IConfiguration config)
             : base(repo, logger, mapper, context)
         {
+            _config = config;
             _authRepo = authRepo;
         }
 
@@ -43,10 +50,10 @@ namespace shop_giay_server._Controllers
             }
 
             // Get gender 
-            var gender = 1;
+            var gender = 0;
             if (model.gender.ToLower() == "nam" || model.gender.ToLower() == "male")
             {
-                gender = 0;
+                gender = 1;
             }
 
             // Validate
@@ -56,7 +63,7 @@ namespace shop_giay_server._Controllers
 
             if (existed)
             {
-                return Ok(ResponseDTO.BadRequest("Khách hàng đã tồn tại."));
+                return BadRequest(ResponseDTO.BadRequest("Khách hàng đã tồn tại."));
             }
 
             // Create pass
@@ -81,10 +88,40 @@ namespace shop_giay_server._Controllers
             // Create customer 
             var result = await _repository.Add(customer);
 
-            // Ad-hoc: erase password 
-            result.PasswordHash = null;
-            result.PasswordSalt = null;
-            return Ok(ResponseDTO.Ok(result));
+            var claims = new[]
+            {
+                new Claim("sub", customer.Username)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(1),
+                SigningCredentials = creds,
+
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            var response = new ResponseLoginDto
+            {
+                id = result.Id,
+                name = result.Name,
+                dateOfBirth = result.DateOfBirth,
+                email = result.Email,
+                phoneNumber = result.PhoneNumber,
+                gender = result.Gender,
+                authorizedToken = tokenString
+            };
+
+            return Ok(ResponseDTO.Ok(response));
         }
 
 
@@ -395,5 +432,10 @@ namespace shop_giay_server._Controllers
     {
         public string oldPassword { get; set; }
         public string newPassword { get; set; }
+    }
+
+    public class ResponseRegiterDTO
+    {
+        public string authorizedToken { get; set; }
     }
 }
