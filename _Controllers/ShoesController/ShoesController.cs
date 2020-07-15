@@ -76,22 +76,11 @@ namespace shop_giay_server._Controllers
                         var saleInfo = GetSaleInfo(dto.id);
                         dto.isOnSale = saleInfo.isOnSale;
                         dto.salePrice = saleInfo.salePrice;
-                        // var saleInfo = _context.SaleProducts
-                        //                         .Include(c => c.Sale)
-                        //                         .FirstOrDefault(c => c.ShoesId == dto.id);
-                        // if (saleInfo != null && saleInfo.Sale.Status != 0)
-                        // {
-                        //     var sale = saleInfo.Sale;
-                        //     dto.isOnSale = true;
-                        //     dto.salePrice = sale.SaleType == 1
-                        //         ? dto.price * (float)(1 - (float)sale.Amount / 100.0)
-                        //         : dto.price - sale.Amount;
-                        // }
-                        // else
-                        // {
-                        //     dto.isOnSale = false;
-                        //     dto.salePrice = dto.price;
-                        // }
+
+                        var ratingInfo = GetRatingForShoes(dto.id);
+                        dto.rating = ratingInfo.rating;
+                        dto.ratingCount = ratingInfo.ratingCount;
+
                         break;
 
 
@@ -101,22 +90,10 @@ namespace shop_giay_server._Controllers
                             var sInfo = GetSaleInfo(resEntity.id);
                             resEntity.isOnSale = sInfo.isOnSale;
                             resEntity.salePrice = sInfo.salePrice;
-                            // var saleProduct = _context.SaleProducts
-                            //                     .Include(c => c.Sale)
-                            //                     .FirstOrDefault(c => c.ShoesId == resEntity.id);
-                            // if (saleProduct != null && saleProduct.Sale.Status != 0)
-                            // {
-                            //     var sale = saleProduct.Sale;
-                            //     resEntity.isOnSale = true;
-                            //     resEntity.salePrice = sale.SaleType == 1
-                            //         ? resEntity.price * (float)(1 - (float)sale.Amount / 100.0)
-                            //         : resEntity.price - sale.Amount;
-                            // }
-                            // else
-                            // {
-                            //     resEntity.isOnSale = false;
-                            //     resEntity.salePrice = resEntity.price;
-                            // }
+
+                            // var rInfo = GetRatingForShoes(resEntity.id);
+                            // resEntity.rating = rInfo.rating;
+                            // resEntity.ratingCount = rInfo.ratingCount;
                         }
                         break;
 
@@ -229,19 +206,32 @@ namespace shop_giay_server._Controllers
             if (model.rating < 0) model.rating = 0;
             if (model.rating > 5) model.rating = 5;
 
-            var review = new CustomerReview()
+            var review = _context.CustomerReviews.FirstOrDefault(c => c.CustomerId == customer.Id && c.ShoesId == shoes.Id);
+            if (review != null)
             {
-                ShoesId = shoes.Id,
-                CustomerId = customer.Id,
-                Rate = model.rating,
-                Content = "",
-                Date = DateTime.Now
-            };
-            _context.CustomerReviews.Add(review);
-            await _context.SaveChangesAsync();
+                review.Rate = model.rating;
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                review = new CustomerReview()
+                {
+                    ShoesId = shoes.Id,
+                    CustomerId = customer.Id,
+                    Rate = model.rating,
+                    Content = "",
+                    Date = DateTime.Now
+                };
+                _context.CustomerReviews.Add(review);
+                await _context.SaveChangesAsync();
+            }
 
             // Get rating
             var ratingInfo = GetRatingForShoes(shoes.Id);
+
+            // Update shoesrating
+            shoes.Rating = ratingInfo.rating;
+            await _context.SaveChangesAsync();
 
             // Get sale
             var saleInfo = GetSaleInfo(shoes.Id);
