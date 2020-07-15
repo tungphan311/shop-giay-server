@@ -295,6 +295,32 @@ namespace shop_giay_server._Controllers
 
         #region Admin API
 
+        public class CustomerUpdateDTO
+        {
+            public string name { get; set; }
+            public string email { get; set; }
+            public int gender { get; set; }
+            public string phoneNumber { get; set; }
+        }
+
+        // Client Customer Update
+        [Route("client/[controller]/{id:int}")]
+        [HttpPut]
+        public IActionResult ClientUpdateCustomer(int id, [FromBody] CustomerUpdateDTO dto)
+        {
+            var customer = _context.Customers.FirstOrDefault(c => c.Id == id);
+            if (customer == null)
+            {
+                return Ok(ResponseDTO.BadRequest("CustomerId is not found."));
+            }
+
+            customer.PhoneNumber = dto.phoneNumber;
+            customer.Email = dto.email;
+            customer.Gender = dto.gender;
+            customer.Name = dto.name;
+            _context.SaveChanges();
+            return Ok(ResponseDTO.Ok(customer));
+        }
 
         // Customer Update
         [Route("admin/[controller]/{id:int}")]
