@@ -176,9 +176,22 @@ namespace shop_giay_server._Controllers
             return await _GetById<ResponseShoesDetailDTO>(id, context);
         }
 
+        private (float rating, int ratingCount) GetRatingForShoes(int shoesId)
+        {
+            var shoes = _context.Shoes.FirstOrDefault(c => c.Id == shoesId);
+            if (shoes == null)
+            {
+                return (0, 0);
+            }
+
+            var listReview = _context.CustomerReviews.Where(c => c.ShoesId == shoesId).Select(c => c.Rate);
+            var totalRate = (float)listReview.Sum() / (float)listReview.Count();
+            return (totalRate, listReview.Count());
+        }
+
         [Route("client/[controller]/rating")]
         [HttpPost]
-        public async Task<IActionResult> ClientRateShoes([FromBody] BodyShoesRating model)
+        public async Task<IActionResult> ClientRateShoes([FromBody] BodyShoesRatingDTO model)
         {
             // Check customer
             var customer = GetCustomer();
@@ -187,6 +200,18 @@ namespace shop_giay_server._Controllers
                 return Ok(ResponseDTO.BadRequest("Login required."));
             }
 
+            // Parse 
+            var shoesId = 0;
+            try
+            {
+                shoesId = int.Parse(model.shoesId);
+            }
+            catch
+            {
+                return Ok(ResponseDTO.BadRequest("Invalid shoesId."));
+            }
+
+
             // Check shoes
             var shoes = await _context.Shoes
                 .Include(c => c.ShoesBrand)
@@ -194,7 +219,7 @@ namespace shop_giay_server._Controllers
                 .Include(c => c.ShoesType)
                 .Include(c => c.ShoesImages)
                 .Include(c => c.Stocks).ThenInclude(c => c.Size)
-                .FirstOrDefaultAsync(c => c.Id == model.shoesId);
+                .FirstOrDefaultAsync(c => c.Id == shoesId);
 
             if (shoes == null)
             {
@@ -245,19 +270,6 @@ namespace shop_giay_server._Controllers
             return Ok(ResponseDTO.Ok(result));
         }
 
-
-        private (float rating, int ratingCount) GetRatingForShoes(int shoesId)
-        {
-            var shoes = _context.Shoes.FirstOrDefault(c => c.Id == shoesId);
-            if (shoes == null)
-            {
-                return (0, 0);
-            }
-
-            var listReview = _context.CustomerReviews.Where(c => c.ShoesId == shoesId).Select(c => c.Rate);
-            var totalRate = (float)listReview.Sum() / (float)listReview.Count();
-            return (totalRate, listReview.Count());
-        }
 
         #endregion
 

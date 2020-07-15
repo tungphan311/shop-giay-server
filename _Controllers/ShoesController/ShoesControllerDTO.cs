@@ -73,9 +73,9 @@ namespace shop_giay_server._Controllers
         public List<dynamic> sizes { get; set; } = new List<dynamic>();
     }
 
-    public class BodyShoesRating
+    public class BodyShoesRatingDTO
     {
-        public int shoesId { get; set; }
+        public string shoesId { get; set; }
         public int rating { get; set; }
     }
 }
